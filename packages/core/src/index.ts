@@ -49,6 +49,23 @@ export {
   buildTextQueryDomain,
   DEFAULT_MAX_SMART_FIELDS,
 } from "./smart-fields.js";
+export { FieldPolicy, type FieldPolicyDoc } from "./field-policy.js";
+export {
+  MemoryApprovalStore,
+  WRITE_APPROVAL_TTL_MS,
+  buildApprovalToken,
+  verifyWriteApproval,
+  type ApprovalTokenStore,
+  type WriteApproval,
+} from "./approval/token.js";
+export {
+  previewWrite,
+  validateWrite,
+  executeApprovedWrite,
+  chatterPost,
+  executeMethod,
+  PHASE3_TOOLS,
+} from "./tools/write.js";
 
 export const CLOUD_V1_TOOL_COUNT = 23;
 export const CLOUD_V1_PROMPT_COUNT = 7;

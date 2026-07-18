@@ -5,6 +5,7 @@ import OAuthProvider from "@cloudflare/workers-oauth-provider";
 import {
   PHASE1_TOOLS,
   PHASE2_TOOLS,
+  PHASE3_TOOLS,
   Json2Transport,
   XmlRpcTransport,
   listModels,
@@ -21,8 +22,16 @@ import {
   diagnoseOdooCall,
   inspectModelRelationships,
   diagnoseAccess,
+  previewWrite,
+  validateWrite,
+  executeApprovedWrite,
+  chatterPost,
+  executeMethod,
+  MemoryApprovalStore,
+  FieldPolicy,
   type OdooTransport,
   type DomainConditionInput,
+  type WriteApproval,
 } from "@erpipe/core";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { McpAgent } from "agents/mcp";
@@ -49,6 +58,9 @@ export type Env = {
   ODOO_TRANSPORT?: string;
   ODOO_LOCALE?: string;
   ODOO_JSON2_DB_HEADER?: string;
+  ODOO_MCP_ENABLE_WRITES?: string;
+  ODOO_MCP_ALLOW_UNKNOWN_METHODS?: string;
+  ODOO_MCP_FIELD_POLICY_JSON?: string;
 };
 
 function connectionSlug(env: Env): string {
@@ -110,12 +122,36 @@ function noOdoo() {
 export class SelfhostMcp extends McpAgent<Env, Record<string, never>, Props> {
   server = new McpServer({
     name: "erpipe-selfhost",
-    version: "0.2.0",
+    version: "0.3.0",
   });
+
+  /** Per-session approval tokens (consume-once). */
+  private approvalStore = new MemoryApprovalStore();
 
   async init() {
     const transport = makeTransport(this.env);
-    const allTools = [...PHASE1_TOOLS, ...PHASE2_TOOLS, "ping"];
+    const writesEnabled =
+      this.env.ODOO_MCP_ENABLE_WRITES === "1" ||
+      this.env.ODOO_MCP_ENABLE_WRITES === "true";
+    const allowUnknown =
+      this.env.ODOO_MCP_ALLOW_UNKNOWN_METHODS === "1" ||
+      this.env.ODOO_MCP_ALLOW_UNKNOWN_METHODS === "true";
+    let fieldPolicy = new FieldPolicy();
+    if (this.env.ODOO_MCP_FIELD_POLICY_JSON) {
+      try {
+        fieldPolicy = FieldPolicy.fromDoc(
+          JSON.parse(this.env.ODOO_MCP_FIELD_POLICY_JSON) as object,
+        );
+      } catch {
+        /* ignore invalid policy JSON */
+      }
+    }
+    const allTools = [
+      ...PHASE1_TOOLS,
+      ...PHASE2_TOOLS,
+      ...PHASE3_TOOLS,
+      "ping",
+    ];
 
     this.server.tool(
       "ping",
@@ -142,7 +178,7 @@ export class SelfhostMcp extends McpAgent<Env, Record<string, never>, Props> {
           healthCheck({
             name: "erpipe-selfhost",
             toolCount: allTools.length,
-            writesEnabled: false,
+            writesEnabled,
             transport: transport?.kind ?? null,
           }),
         ),
@@ -347,6 +383,107 @@ export class SelfhostMcp extends McpAgent<Env, Record<string, never>, Props> {
       async (args) => {
         if (!transport) return noOdoo();
         return textResult(await diagnoseAccess(transport, args));
+      },
+    );
+
+    // --- Phase 3 writes ---
+    this.server.tool(
+      "preview_write",
+      "Preview a standard write and build an approval token (does not execute)",
+      {
+        model: z.string(),
+        operation: z.string(),
+        values: z.record(z.string(), z.unknown()).optional(),
+        values_list: z.array(z.record(z.string(), z.unknown())).optional(),
+        record_ids: z.array(z.number().int().positive()).optional(),
+        context: z.record(z.string(), z.unknown()).optional(),
+      },
+      async (args) =>
+        textResult(
+          await previewWrite({
+            ...args,
+            instance: "default",
+          }),
+        ),
+    );
+
+    this.server.tool(
+      "validate_write",
+      "Validate write payload against live fields_get and store approval token",
+      {
+        model: z.string(),
+        operation: z.string(),
+        values: z.record(z.string(), z.unknown()).optional(),
+        values_list: z.array(z.record(z.string(), z.unknown())).optional(),
+        record_ids: z.array(z.number().int().positive()).optional(),
+        context: z.record(z.string(), z.unknown()).optional(),
+      },
+      async (args) => {
+        if (!transport) return noOdoo();
+        return textResult(
+          await validateWrite(transport, this.approvalStore, {
+            ...args,
+            instance: "default",
+            fieldPolicy,
+          }),
+        );
+      },
+    );
+
+    this.server.tool(
+      "execute_approved_write",
+      "Execute a previously validated write (requires writes_enabled + confirm)",
+      {
+        approval: z.record(z.string(), z.unknown()),
+        confirm: z.boolean().optional(),
+      },
+      async ({ approval, confirm }) => {
+        if (!transport) return noOdoo();
+        return textResult(
+          await executeApprovedWrite(transport, this.approvalStore, {
+            approval: approval as WriteApproval,
+            confirm: !!confirm,
+            writesEnabled,
+            fieldPolicy,
+          }),
+        );
+      },
+    );
+
+    this.server.tool(
+      "chatter_post",
+      "Post a chatter note (writes_enabled only; no approval token)",
+      {
+        model: z.string(),
+        record_id: z.number().int().positive(),
+        body: z.string(),
+      },
+      async (args) => {
+        if (!transport) return noOdoo();
+        return textResult(
+          await chatterPost(transport, { ...args, writesEnabled }),
+        );
+      },
+    );
+
+    this.server.tool(
+      "execute_method",
+      "Execute a non-CRUD model method (create/write/unlink blocked)",
+      {
+        model: z.string(),
+        method: z.string(),
+        args: z.array(z.unknown()).optional(),
+        kwargs: z.record(z.string(), z.unknown()).optional(),
+      },
+      async (args) => {
+        if (!transport) return noOdoo();
+        return textResult(
+          await executeMethod(transport, {
+            ...args,
+            writesEnabled,
+            allowUnknownMethods: allowUnknown,
+          }),
+        );
       },
     );
   }

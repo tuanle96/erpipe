@@ -4,32 +4,21 @@
 **Target:** `http://127.0.0.1:8070` · db `bestmix_7_7` · Odoo **18.0e** · transport **xmlrpc**  
 **Script:** `npm run smoke:live`
 
-## Phase 1 + 2 (latest)
+## Latest (Phase 1–3)
 
-| Step | Result |
-|------|--------|
-| connect/authenticate | PASS |
-| serverVersion | PASS `18.0+e` |
-| health_check | PASS |
-| build_domain | PASS |
-| list_models | PASS |
-| get_model_fields | PASS (`res.partner` 242 fields) |
-| search_records | PASS |
-| read_record | PASS |
-| search_records + query | PASS |
-| get_odoo_profile | PASS |
-| schema_catalog | PASS |
-| aggregate_records | PASS (`read_group`) |
-| inspect_model_relationships | PASS |
-| diagnose_access | PASS |
-| diagnose_odoo_call | PASS |
-| search_employee | PASS |
+| Suite | Result |
+|-------|--------|
+| Read / diagnose (P1–P2) | PASS |
+| preview_write / validate_write | PASS |
+| execute denied when writes off | PASS |
+| execute create + unlink cleanup (`ODOO_MCP_ENABLE_WRITES=1`) | PASS |
 
 ```bash
-ODOO_URL=http://127.0.0.1:8070 \
-ODOO_DB=bestmix_7_7 \
-ODOO_USERNAME=admin \
-ODOO_PASSWORD=admin \
-ODOO_TRANSPORT=xmlrpc \
-npm run smoke:live
+# read-only gate check
+ODOO_URL=http://127.0.0.1:8070 ODOO_DB=bestmix_7_7 ODOO_USERNAME=admin \
+ODOO_PASSWORD=admin ODOO_TRANSPORT=xmlrpc npm run smoke:live
+
+# full gated write + cleanup
+ODOO_MCP_ENABLE_WRITES=1 ODOO_URL=... ODOO_DB=... ODOO_USERNAME=admin \
+ODOO_PASSWORD=admin ODOO_TRANSPORT=xmlrpc npm run smoke:live
 ```

@@ -278,6 +278,77 @@ try {
   ok("search_employee", `soft-fail ${e.message.slice(0, 80)}`);
 }
 
+// Phase 3 — gated writes (opt-in)
+const writesEnabled =
+  process.env.ODOO_MCP_ENABLE_WRITES === "1" ||
+  process.env.ODOO_MCP_ENABLE_WRITES === "true";
+{
+  const store = new core.MemoryApprovalStore();
+  const partnerVals = {
+    name: "ERPipe Smoke Temp Partner",
+    mobile: "0900000000", // Bestmix constraint: tax or mobile or phone
+  };
+  const preview = await core.previewWrite({
+    model: "res.partner",
+    operation: "create",
+    values: partnerVals,
+  });
+  if (preview.success) ok("preview_write", "token ok");
+  else fail("preview_write", JSON.stringify(preview).slice(0, 120));
+
+  const validated = await core.validateWrite(transport, store, {
+    model: "res.partner",
+    operation: "create",
+    values: partnerVals,
+  });
+  if (validated.success && validated.approval_status?.stored) {
+    ok("validate_write", "stored");
+  } else {
+    fail("validate_write", JSON.stringify(validated).slice(0, 160));
+  }
+
+  if (writesEnabled && validated.success) {
+    const created = await core.executeApprovedWrite(transport, store, {
+      approval: validated.approval,
+      confirm: true,
+      writesEnabled: true,
+    });
+    if (created.success) {
+      ok("execute_approved_write create", `id=${created.result}`);
+      const id = Number(created.result);
+      const store2 = new core.MemoryApprovalStore();
+      const v2 = await core.validateWrite(transport, store2, {
+        model: "res.partner",
+        operation: "unlink",
+        record_ids: [id],
+      });
+      const un = await core.executeApprovedWrite(transport, store2, {
+        approval: v2.approval,
+        confirm: true,
+        writesEnabled: true,
+      });
+      if (un.success) ok("execute_approved_write unlink cleanup", "cleaned");
+      else fail("execute_approved_write unlink cleanup", JSON.stringify(un).slice(0, 160));
+    } else {
+      fail("execute_approved_write create", JSON.stringify(created).slice(0, 200));
+    }
+  } else {
+    const denied = await core.executeApprovedWrite(transport, store, {
+      approval: validated.approval,
+      confirm: true,
+      writesEnabled: false,
+    });
+    if (!denied.success && denied.code === "WRITE_GATE_DENIED") {
+      ok("execute_approved_write denied when writes off", "gate ok");
+    } else {
+      fail(
+        "execute_approved_write denied when writes off",
+        JSON.stringify(denied).slice(0, 120),
+      );
+    }
+  }
+}
+
 console.log("\n--- Summary ---");
 const failed = steps.filter((s) => !s.pass);
 console.log(`${steps.length - failed.length}/${steps.length} passed`);
