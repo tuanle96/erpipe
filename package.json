@@ -1,0 +1,26 @@
+{
+  "name": "erpipe",
+  "version": "0.1.0",
+  "private": true,
+  "description": "ERPipe — MCP for Odoo (open-core TypeScript monorepo)",
+  "license": "MIT",
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "npm run build -w @erpipe/core -w @erpipe/odoo-xmlrpc -w @erpipe/worker-selfhost",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "npm run typecheck -w @erpipe/core -w @erpipe/odoo-xmlrpc -w @erpipe/worker-selfhost",
+    "dev:selfhost": "npm run dev -w @erpipe/worker-selfhost",
+    "deploy:selfhost": "npm run deploy -w @erpipe/worker-selfhost",
+    "smoke:live": "npm run build -w @erpipe/odoo-xmlrpc -w @erpipe/core && node scripts/smoke-live.mjs"
+  },
+  "devDependencies": {
+    "typescript": "^5.8.3",
+    "vitest": "^3.2.4"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
