@@ -21,7 +21,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Notes
 
-- npm packages are **source-ready** (`publishConfig.access: public`) but may not yet be published to the registry; install from git until first npm release is announced.
-- Hosted multi-tenant product remains a separate private repository.
+- Published to npm: `@erpipe/core@0.1.0`, `@erpipe/odoo-xmlrpc@0.1.0` (`npm install @erpipe/core @erpipe/odoo-xmlrpc`)
+- `@erpipe/worker-selfhost` remains private (example only)
+- Hosted multi-tenant product remains a separate private repository
 
 [0.1.0]: https://github.com/tuanle96/erpipe/releases/tag/v0.1.0

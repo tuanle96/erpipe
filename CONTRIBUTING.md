@@ -23,11 +23,24 @@ npm test
 
 | Path | Package | Notes |
 |------|---------|--------|
-| `packages/core` | `@erpipe/core` | Tools, transports, field policy — no Workers imports |
-| `packages/xmlrpc` | `@erpipe/odoo-xmlrpc` | Fetch-based XML-RPC |
+| `packages/core` | `@erpipe/core` | Tools, transports, field policy — no Workers imports · **published** |
+| `packages/xmlrpc` | `@erpipe/odoo-xmlrpc` | Fetch-based XML-RPC · **published** |
 | `packages/worker-selfhost` | `@erpipe/worker-selfhost` | Example Worker (private, not published) |
 
 Build order matters: **xmlrpc → core → worker-selfhost**. Root `npm run build` enforces this.
+
+### Publishing (maintainers)
+
+```bash
+npm run build
+npm run typecheck
+npm test
+# publish dependency first
+npm publish -w @erpipe/odoo-xmlrpc --access public
+npm publish -w @erpipe/core --access public
+```
+
+Bump versions in the workspace `package.json` files (and lockstep dependency ranges) before each release.
 
 ## Development
 

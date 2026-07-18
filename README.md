@@ -1,6 +1,7 @@
 # ERPipe — MCP for Odoo
 
 [![CI](https://github.com/tuanle96/erpipe/actions/workflows/ci.yml/badge.svg)](https://github.com/tuanle96/erpipe/actions/workflows/ci.yml)
+[![npm @erpipe/core](https://img.shields.io/npm/v/@erpipe/core.svg)](https://www.npmjs.com/package/@erpipe/core)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Node](https://img.shields.io/badge/node-%3E%3D20-brightgreen)](package.json)
 
@@ -49,9 +50,20 @@ Open-source **TypeScript** building blocks for **remote MCP** access to [Odoo](h
 - Optional: Cloudflare account for `deploy:selfhost`
 - Optional: Odoo 16–19 for live smoke
 
-## Install (from source)
+## Install
 
-npm packages may not be on the public registry yet. Use git / monorepo workspace:
+```bash
+npm install @erpipe/core @erpipe/odoo-xmlrpc
+```
+
+| Package | npm |
+|---------|-----|
+| `@erpipe/core` | [npmjs.com/package/@erpipe/core](https://www.npmjs.com/package/@erpipe/core) |
+| `@erpipe/odoo-xmlrpc` | [npmjs.com/package/@erpipe/odoo-xmlrpc](https://www.npmjs.com/package/@erpipe/odoo-xmlrpc) |
+
+Self-host Worker example stays in this monorepo only (`@erpipe/worker-selfhost` is private / not published).
+
+### Develop from source
 
 ```bash
 git clone https://github.com/tuanle96/erpipe.git
@@ -60,17 +72,6 @@ npm install
 npm run build
 npm run typecheck
 npm test
-```
-
-Workspace packages:
-
-```json
-{
-  "dependencies": {
-    "@erpipe/core": "file:./packages/core",
-    "@erpipe/odoo-xmlrpc": "file:./packages/xmlrpc"
-  }
-}
 ```
 
 ## Quick start (self-host Worker)
