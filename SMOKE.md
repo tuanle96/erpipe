@@ -4,18 +4,26 @@
 **Target:** `http://127.0.0.1:8070` · db `bestmix_7_7` · Odoo **18.0e** · transport **xmlrpc**  
 **Script:** `npm run smoke:live`
 
+## Phase 1 + 2 (latest)
+
 | Step | Result |
 |------|--------|
 | connect/authenticate | PASS |
 | serverVersion | PASS `18.0+e` |
 | health_check | PASS |
 | build_domain | PASS |
-| list_models | PASS (sample `res.bank`) |
+| list_models | PASS |
 | get_model_fields | PASS (`res.partner` 242 fields) |
-| search_records | PASS (3 partners, smart fields) |
+| search_records | PASS |
 | read_record | PASS |
-
-**Note:** DEV `bestmix_7_7` login used for smoke: `admin` / `admin`.
+| search_records + query | PASS |
+| get_odoo_profile | PASS |
+| schema_catalog | PASS |
+| aggregate_records | PASS (`read_group`) |
+| inspect_model_relationships | PASS |
+| diagnose_access | PASS |
+| diagnose_odoo_call | PASS |
+| search_employee | PASS |
 
 ```bash
 ODOO_URL=http://127.0.0.1:8070 \
@@ -25,4 +33,3 @@ ODOO_PASSWORD=admin \
 ODOO_TRANSPORT=xmlrpc \
 npm run smoke:live
 ```
-

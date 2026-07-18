@@ -1,4 +1,8 @@
 import { OdooError } from "../errors.js";
+import {
+  selectSmartFields,
+  DEFAULT_MAX_SMART_FIELDS,
+} from "../smart-fields.js";
 
 const MODEL_NAME_RE =
   /^[a-zA-Z_][a-zA-Z0-9_]*(?:\.[a-zA-Z_][a-zA-Z0-9_]*)*$/;
@@ -45,38 +49,21 @@ export function normalizeDomainInput(domain: unknown): unknown[] {
       return [o.field, o.operator, o.value];
     });
   }
-  throw new OdooError("VALIDATION_ERROR", "domain must be a list or conditions object");
+  throw new OdooError(
+    "VALIDATION_ERROR",
+    "domain must be a list or conditions object",
+  );
 }
 
-/** Minimal smart-fields: when fields omitted, prefer common business fields present in metadata. */
+/** Smart-fields via field_ranking port when fields omitted. */
 export function resolveReadFields(
   fieldsMeta: Record<string, unknown> | null,
   fields: string[] | null | undefined,
-  maxSmart = 15,
+  maxSmart = DEFAULT_MAX_SMART_FIELDS,
 ): string[] | null {
   if (fields === undefined || fields === null) {
     if (!fieldsMeta) return ["id", "name", "display_name"];
-    const preferred = [
-      "id",
-      "name",
-      "display_name",
-      "ref",
-      "code",
-      "default_code",
-      "email",
-      "phone",
-      "state",
-      "stage_id",
-      "partner_id",
-      "user_id",
-      "company_id",
-      "date",
-      "create_date",
-      "write_date",
-    ];
-    const available = new Set(Object.keys(fieldsMeta));
-    const picked = preferred.filter((f) => available.has(f)).slice(0, maxSmart);
-    return picked.length ? picked : ["id"];
+    return selectSmartFields(fieldsMeta, maxSmart);
   }
   if (fields.length === 1 && fields[0] === "*") {
     return null; // all fields

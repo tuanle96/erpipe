@@ -1,16 +1,26 @@
 /**
- * ERPipe self-host Worker — OAuth + /{slug}/mcp + Phase-1 tools.
+ * ERPipe self-host Worker — OAuth + /{slug}/mcp + Phase-1/2 tools.
  */
 import OAuthProvider from "@cloudflare/workers-oauth-provider";
 import {
   PHASE1_TOOLS,
+  PHASE2_TOOLS,
   Json2Transport,
+  XmlRpcTransport,
   listModels,
   getModelFields,
   searchRecords,
   readRecord,
   healthCheck,
   buildDomainTool,
+  getOdooProfile,
+  schemaCatalog,
+  aggregateRecords,
+  searchEmployee,
+  searchHolidays,
+  diagnoseOdooCall,
+  inspectModelRelationships,
+  diagnoseAccess,
   type OdooTransport,
   type DomainConditionInput,
 } from "@erpipe/core";
@@ -35,6 +45,8 @@ export type Env = {
   ODOO_DB?: string;
   ODOO_API_KEY?: string;
   ODOO_USERNAME?: string;
+  ODOO_PASSWORD?: string;
+  ODOO_TRANSPORT?: string;
   ODOO_LOCALE?: string;
   ODOO_JSON2_DB_HEADER?: string;
 };
@@ -47,26 +59,63 @@ function connectionSlug(env: Env): string {
 function makeTransport(env: Env): OdooTransport | null {
   const url = env.ODOO_URL?.trim();
   const db = env.ODOO_DB?.trim();
+  if (!url || !db) return null;
+
+  const transportPref = (env.ODOO_TRANSPORT ?? "").toLowerCase();
   const apiKey = env.ODOO_API_KEY?.trim();
-  if (!url || !db || !apiKey) return null;
-  return new Json2Transport({
+  const password = env.ODOO_PASSWORD?.trim() || apiKey;
+  const username = env.ODOO_USERNAME?.trim() || "admin";
+
+  const useJson2 =
+    transportPref === "json2" ||
+    (transportPref !== "xmlrpc" && !!apiKey && !env.ODOO_PASSWORD);
+
+  if (useJson2) {
+    if (!apiKey) return null;
+    return new Json2Transport({
+      url,
+      db,
+      apiKey,
+      locale: env.ODOO_LOCALE,
+      json2DbHeader: env.ODOO_JSON2_DB_HEADER !== "0",
+      allowHttp: true,
+    });
+  }
+
+  if (!password) return null;
+  return new XmlRpcTransport({
     url,
     db,
-    apiKey,
+    username,
+    password,
     locale: env.ODOO_LOCALE,
-    json2DbHeader: env.ODOO_JSON2_DB_HEADER !== "0",
     allowHttp: true,
+  });
+}
+
+function textResult(payload: unknown) {
+  return {
+    content: [{ type: "text" as const, text: JSON.stringify(payload) }],
+  };
+}
+
+function noOdoo() {
+  return textResult({
+    success: false,
+    error:
+      "Odoo not configured. Set ODOO_URL, ODOO_DB, and ODOO_PASSWORD (xmlrpc) or ODOO_API_KEY (json2).",
   });
 }
 
 export class SelfhostMcp extends McpAgent<Env, Record<string, never>, Props> {
   server = new McpServer({
     name: "erpipe-selfhost",
-    version: "0.1.0",
+    version: "0.2.0",
   });
 
   async init() {
     const transport = makeTransport(this.env);
+    const allTools = [...PHASE1_TOOLS, ...PHASE2_TOOLS, "ping"];
 
     this.server.tool(
       "ping",
@@ -79,7 +128,8 @@ export class SelfhostMcp extends McpAgent<Env, Record<string, never>, Props> {
           slug: this.props?.slug ?? null,
           connectionId: this.props?.connectionId ?? null,
           odoo_configured: transport !== null,
-          phase1_tools: PHASE1_TOOLS,
+          transport: transport?.kind ?? null,
+          tools: allTools,
         }),
     );
 
@@ -91,9 +141,9 @@ export class SelfhostMcp extends McpAgent<Env, Record<string, never>, Props> {
         textResult(
           healthCheck({
             name: "erpipe-selfhost",
-            toolCount: PHASE1_TOOLS.length + 1,
+            toolCount: allTools.length,
             writesEnabled: false,
-            transport: transport ? "json2" : null,
+            transport: transport?.kind ?? null,
           }),
         ),
     );
@@ -128,7 +178,7 @@ export class SelfhostMcp extends McpAgent<Env, Record<string, never>, Props> {
 
     this.server.tool(
       "search_records",
-      "Search Odoo records with read-only search_read",
+      "Search Odoo records with read-only search_read; optional free-text query",
       {
         model: z.string(),
         domain: z.unknown().optional(),
@@ -136,6 +186,7 @@ export class SelfhostMcp extends McpAgent<Env, Record<string, never>, Props> {
         limit: z.number().int().positive().optional(),
         offset: z.number().int().nonnegative().optional(),
         order: z.string().optional(),
+        query: z.string().optional(),
       },
       async (args) => {
         if (!transport) return noOdoo();
@@ -178,21 +229,127 @@ export class SelfhostMcp extends McpAgent<Env, Record<string, never>, Props> {
           }),
         ),
     );
+
+    // --- Phase 2 ---
+    this.server.tool(
+      "get_odoo_profile",
+      "Read a bounded profile of the connected Odoo environment",
+      {
+        include_modules: z.boolean().optional(),
+        module_limit: z.number().int().positive().optional(),
+      },
+      async (args) => {
+        if (!transport) return noOdoo();
+        return textResult(await getOdooProfile(transport, args));
+      },
+    );
+
+    this.server.tool(
+      "schema_catalog",
+      "Build a bounded Odoo model schema catalog",
+      {
+        query: z.string().optional(),
+        models: z.array(z.string()).optional(),
+        include_fields: z.boolean().optional(),
+        limit: z.number().int().positive().optional(),
+      },
+      async (args) => {
+        if (!transport) return noOdoo();
+        return textResult(await schemaCatalog(transport, args));
+      },
+    );
+
+    this.server.tool(
+      "aggregate_records",
+      "Group records server-side and aggregate measures (read_group)",
+      {
+        model: z.string(),
+        group_by: z.array(z.string()),
+        measures: z.array(z.string()).optional(),
+        domain: z.unknown().optional(),
+        lazy: z.boolean().optional(),
+        limit: z.number().int().positive().optional(),
+        offset: z.number().int().nonnegative().optional(),
+        order: z.string().optional(),
+      },
+      async (args) => {
+        if (!transport) return noOdoo();
+        return textResult(await aggregateRecords(transport, args));
+      },
+    );
+
+    this.server.tool(
+      "search_employee",
+      "Search for employees by name",
+      {
+        name: z.string(),
+        limit: z.number().int().positive().optional(),
+      },
+      async (args) => {
+        if (!transport) return noOdoo();
+        return textResult(await searchEmployee(transport, args));
+      },
+    );
+
+    this.server.tool(
+      "search_holidays",
+      "Search holidays within a date range",
+      {
+        start_date: z.string(),
+        end_date: z.string(),
+        employee_id: z.number().int().positive().optional(),
+      },
+      async (args) => {
+        if (!transport) return noOdoo();
+        return textResult(await searchHolidays(transport, args));
+      },
+    );
+
+    this.server.tool(
+      "diagnose_odoo_call",
+      "Diagnose model/method/payload issues without executing the call",
+      {
+        model: z.string(),
+        method: z.string(),
+        args: z.array(z.unknown()).optional(),
+        kwargs: z.record(z.string(), z.unknown()).optional(),
+        transport: z.string().optional(),
+        target_version: z.string().optional(),
+      },
+      async (args) => textResult(diagnoseOdooCall(args)),
+    );
+
+    this.server.tool(
+      "inspect_model_relationships",
+      "Inspect model relationships and required field metadata",
+      {
+        model: z.string(),
+        include_readonly: z.boolean().optional(),
+        include_computed: z.boolean().optional(),
+      },
+      async (args) => {
+        if (!transport) return noOdoo();
+        return textResult(await inspectModelRelationships(transport, args));
+      },
+    );
+
+    this.server.tool(
+      "diagnose_access",
+      "Diagnose ACL visibility for an Odoo model (current credentials)",
+      {
+        model: z.string(),
+        operation: z.string().optional(),
+        domain: z.unknown().optional(),
+        record_ids: z.array(z.number().int().positive()).optional(),
+        expected_count: z.number().int().nonnegative().optional(),
+        limit: z.number().int().positive().optional(),
+      },
+      async (args) => {
+        if (!transport) return noOdoo();
+        return textResult(await diagnoseAccess(transport, args));
+      },
+    );
   }
-}
-
-function textResult(payload: unknown) {
-  return {
-    content: [{ type: "text" as const, text: JSON.stringify(payload) }],
-  };
-}
-
-function noOdoo() {
-  return textResult({
-    success: false,
-    error:
-      "Odoo not configured. Set ODOO_URL, ODOO_DB, ODOO_API_KEY (JSON-2) on the Worker.",
-  });
 }
 
 function createGuardedApiHandler(expectedSlug: string) {

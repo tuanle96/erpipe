@@ -9,6 +9,7 @@ import {
   ABS_MAX_LIMIT,
 } from "./helpers.js";
 import { buildDomain, type DomainConditionInput } from "./domain.js";
+import { buildTextQueryDomain, rankRelevantFields } from "../smart-fields.js";
 
 export type ToolResult = Record<string, unknown>;
 
@@ -99,14 +100,16 @@ export async function getModelFields(
       );
     }
     if (opts.relevance === "top") {
-      const max = opts.max_fields ?? 15;
-      const names = Object.keys(fields).slice(0, max);
+      const max = opts.max_fields ?? 30;
+      const ranking = rankRelevantFields(fields, max);
+      const names = ranking.map((r) => r.field);
       fields = Object.fromEntries(names.map((n) => [n, fields[n]]));
       return {
         success: true,
         count: names.length,
         result: fields,
         relevance_applied: true,
+        ranking,
       };
     }
     return { success: true, count: Object.keys(fields).length, result: fields };
@@ -124,6 +127,7 @@ export async function searchRecords(
     limit?: number;
     offset?: number;
     order?: string | null;
+    query?: string | null;
   },
 ): Promise<ToolResult> {
   try {
@@ -132,14 +136,20 @@ export async function searchRecords(
     const offset = opts.offset ?? 0;
     if (offset < 0) throw new OdooError("VALIDATION_ERROR", "offset must be >= 0");
 
-    const domain = normalizeDomainInput(opts.domain);
+    let domain = normalizeDomainInput(opts.domain);
     let fieldsMeta: Record<string, unknown> | null = null;
-    if (opts.fields == null) {
+    if (opts.fields == null || (opts.query != null && String(opts.query).trim())) {
       try {
         fieldsMeta = await fieldsGet(transport, opts.model);
       } catch {
         fieldsMeta = null;
       }
+    }
+    let queryFieldsUsed: string[] | undefined;
+    if (opts.query != null && String(opts.query).trim()) {
+      const built = buildTextQueryDomain(String(opts.query), fieldsMeta);
+      domain = [...built.domain, ...domain];
+      queryFieldsUsed = built.fieldsUsed;
     }
     const resolved = resolveReadFields(fieldsMeta, opts.fields);
     const kwargs: Record<string, unknown> = {
@@ -157,13 +167,15 @@ export async function searchRecords(
       kwargs,
     );
     const list = Array.isArray(records) ? records : [];
-    return {
+    const report: ToolResult = {
       success: true,
       count: list.length,
       result: list,
       smart_fields_applied: opts.fields == null,
       fields_used: resolved,
     };
+    if (queryFieldsUsed) report.query_fields_used = queryFieldsUsed;
+    return report;
   } catch (e) {
     return fail(e);
   }

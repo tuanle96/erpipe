@@ -23,6 +23,17 @@ export {
   buildDomainTool,
   type ToolResult,
 } from "./tools/read.js";
+export {
+  getOdooProfile,
+  schemaCatalog,
+  aggregateRecords,
+  searchEmployee,
+  searchHolidays,
+  diagnoseOdooCall,
+  inspectModelRelationships,
+  diagnoseAccess,
+  PHASE2_TOOLS,
+} from "./tools/phase2.js";
 export { buildDomain, type DomainConditionInput, type BuildDomainResult } from "./tools/domain.js";
 export {
   validateModelName,
@@ -32,6 +43,12 @@ export {
   MAX_SEARCH_LIMIT,
   ABS_MAX_LIMIT,
 } from "./tools/helpers.js";
+export {
+  selectSmartFields,
+  rankRelevantFields,
+  buildTextQueryDomain,
+  DEFAULT_MAX_SMART_FIELDS,
+} from "./smart-fields.js";
 
 export const CLOUD_V1_TOOL_COUNT = 23;
 export const CLOUD_V1_PROMPT_COUNT = 7;
