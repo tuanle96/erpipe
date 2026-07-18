@@ -1,0 +1,953 @@
+{
+  "manifest_version": 1,
+  "source": {
+    "behavior_commit": "89198e2efddd10eb027b96b9ae3b2a9d20c60573",
+    "behavior_tag": "v1.2.1",
+    "mcp": "1.27.0",
+    "package": "odoo-mcp",
+    "package_version": "1.2.1",
+    "pydantic": "2.13.3",
+    "python": "3.12.13",
+    "schema_source_commit": "247045a8d34bb3caa5316a85f35414823cee0d15"
+  },
+  "tier": "cloud-v1-phase1",
+  "tool_count": 6,
+  "tools": {
+    "build_domain": {
+      "input_schema": {
+        "properties": {
+          "conditions": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "title": "Conditions",
+            "type": "array"
+          },
+          "fields_metadata": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Fields Metadata"
+          },
+          "logical_operator": {
+            "default": "and",
+            "title": "Logical Operator",
+            "type": "string"
+          }
+        },
+        "required": [
+          "conditions"
+        ],
+        "title": "build_domainArguments",
+        "type": "object"
+      },
+      "output_schema": {
+        "additionalProperties": true,
+        "properties": {
+          "conditions": {
+            "anyOf": [
+              {
+                "items": {
+                  "items": {},
+                  "type": "array"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Normalized field/operator/value conditions.",
+            "title": "Conditions"
+          },
+          "domain": {
+            "anyOf": [
+              {
+                "items": {},
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Validated Odoo domain expression.",
+            "title": "Domain"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Sanitized error message when success is false.",
+            "title": "Error"
+          },
+          "issues": {
+            "anyOf": [
+              {
+                "items": {
+                  "additionalProperties": true,
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Validation errors and warnings.",
+            "title": "Issues"
+          },
+          "metadata_used": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Metadata Used"
+          },
+          "success": {
+            "description": "False when the call failed; see error.",
+            "title": "Success",
+            "type": "boolean"
+          },
+          "tool": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Reporting tool name.",
+            "title": "Tool"
+          }
+        },
+        "required": [
+          "success"
+        ],
+        "title": "BuildDomainResponse",
+        "type": "object"
+      },
+      "output_schema_sha256": "eb78ec4eeb039bcd5f832e1cb762d62332e83f766176bdafa1d7546a4edac7af",
+      "runtime_verified": {
+        "error": true,
+        "success": true
+      },
+      "success_marker": "domain"
+    },
+    "get_model_fields": {
+      "input_schema": {
+        "properties": {
+          "field_names": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Field Names"
+          },
+          "instance": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Instance"
+          },
+          "max_fields": {
+            "default": 30,
+            "title": "Max Fields",
+            "type": "integer"
+          },
+          "model": {
+            "title": "Model",
+            "type": "string"
+          },
+          "relevance": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Relevance"
+          }
+        },
+        "required": [
+          "model"
+        ],
+        "title": "get_model_fieldsArguments",
+        "type": "object"
+      },
+      "output_schema": {
+        "additionalProperties": true,
+        "properties": {
+          "count": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Count"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Sanitized error message when success is false.",
+            "title": "Error"
+          },
+          "ranking": {
+            "anyOf": [
+              {
+                "items": {
+                  "additionalProperties": true,
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Relevance scores when relevance=\"top\".",
+            "title": "Ranking"
+          },
+          "relevance_applied": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Relevance Applied"
+          },
+          "restricted_fields": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Fields marked restricted by the field ACL.",
+            "title": "Restricted Fields"
+          },
+          "result": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Mapping of field name to fields_get metadata.",
+            "title": "Result"
+          },
+          "success": {
+            "description": "False when the call failed; see error.",
+            "title": "Success",
+            "type": "boolean"
+          },
+          "tool": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Reporting tool name.",
+            "title": "Tool"
+          }
+        },
+        "required": [
+          "success"
+        ],
+        "title": "GetModelFieldsResponse",
+        "type": "object"
+      },
+      "output_schema_sha256": "8c7d54762e53d87a529794f0e719e43429ddad68e0c3839185a1c641efe0fe5a",
+      "runtime_verified": {
+        "error": true,
+        "success": true
+      },
+      "success_marker": "result"
+    },
+    "health_check": {
+      "input_schema": {
+        "properties": {},
+        "title": "health_checkArguments",
+        "type": "object"
+      },
+      "output_schema": {
+        "additionalProperties": true,
+        "properties": {
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Sanitized error message when success is false.",
+            "title": "Error"
+          },
+          "plugins": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Opt-in plugin load state and tool filtering.",
+            "title": "Plugins"
+          },
+          "rate_limits": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Rate Limits"
+          },
+          "runtime": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Non-secret runtime security posture.",
+            "title": "Runtime"
+          },
+          "server": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Server name, instructions, surface counts.",
+            "title": "Server"
+          },
+          "success": {
+            "description": "False when the call failed; see error.",
+            "title": "Success",
+            "type": "boolean"
+          },
+          "tool": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Reporting tool name.",
+            "title": "Tool"
+          }
+        },
+        "required": [
+          "success"
+        ],
+        "title": "HealthCheckResponse",
+        "type": "object"
+      },
+      "output_schema_sha256": "b76b7b7c5292d0fae495bf02e01d6e2a0a6e714d1f9ba02c802eb03b8e2f6d99",
+      "runtime_verified": {
+        "error": true,
+        "success": true
+      },
+      "success_marker": "server"
+    },
+    "list_models": {
+      "input_schema": {
+        "properties": {
+          "instance": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Instance"
+          },
+          "limit": {
+            "default": 100,
+            "title": "Limit",
+            "type": "integer"
+          },
+          "query": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Query"
+          }
+        },
+        "title": "list_modelsArguments",
+        "type": "object"
+      },
+      "output_schema": {
+        "$defs": {
+          "ModelSummary": {
+            "additionalProperties": true,
+            "description": "One model entry from list_models / schema_catalog.",
+            "properties": {
+              "model": {
+                "description": "Technical model name, e.g. res.partner.",
+                "title": "Model",
+                "type": "string"
+              },
+              "name": {
+                "default": "",
+                "description": "Human display name.",
+                "title": "Name",
+                "type": "string"
+              }
+            },
+            "required": [
+              "model"
+            ],
+            "title": "ModelSummary",
+            "type": "object"
+          }
+        },
+        "additionalProperties": true,
+        "properties": {
+          "count": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Count"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Sanitized error message when success is false.",
+            "title": "Error"
+          },
+          "result": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/$defs/ModelSummary"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Result"
+          },
+          "success": {
+            "description": "False when the call failed; see error.",
+            "title": "Success",
+            "type": "boolean"
+          },
+          "tool": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Reporting tool name.",
+            "title": "Tool"
+          }
+        },
+        "required": [
+          "success"
+        ],
+        "title": "ListModelsResponse",
+        "type": "object"
+      },
+      "output_schema_sha256": "c6679365bf0454dcb3e852cd7426a32a3092e7e33b45e244e57586db80600309",
+      "runtime_verified": {
+        "error": true,
+        "success": true
+      },
+      "success_marker": "result"
+    },
+    "read_record": {
+      "input_schema": {
+        "properties": {
+          "fields": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Fields"
+          },
+          "instance": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Instance"
+          },
+          "model": {
+            "title": "Model",
+            "type": "string"
+          },
+          "record_id": {
+            "title": "Record Id",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "model",
+          "record_id"
+        ],
+        "title": "read_recordArguments",
+        "type": "object"
+      },
+      "output_schema": {
+        "additionalProperties": true,
+        "properties": {
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Sanitized error message when success is false.",
+            "title": "Error"
+          },
+          "fields_used": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Fields Used"
+          },
+          "redacted_fields": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Redacted Fields"
+          },
+          "result": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "The record (field-ACL redacted).",
+            "title": "Result"
+          },
+          "smart_fields_applied": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Smart Fields Applied"
+          },
+          "success": {
+            "description": "False when the call failed; see error.",
+            "title": "Success",
+            "type": "boolean"
+          },
+          "tool": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Reporting tool name.",
+            "title": "Tool"
+          }
+        },
+        "required": [
+          "success"
+        ],
+        "title": "ReadRecordResponse",
+        "type": "object"
+      },
+      "output_schema_sha256": "3a2e7bc75e796550f4c80b0c8d12d6b2471c1086769060eeae39b7a671ea6f71",
+      "runtime_verified": {
+        "error": true,
+        "success": true
+      },
+      "success_marker": "result"
+    },
+    "search_records": {
+      "input_schema": {
+        "properties": {
+          "domain": {
+            "anyOf": [
+              {},
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Domain"
+          },
+          "fields": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Fields"
+          },
+          "instance": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Instance"
+          },
+          "limit": {
+            "default": 10,
+            "title": "Limit",
+            "type": "integer"
+          },
+          "model": {
+            "title": "Model",
+            "type": "string"
+          },
+          "offset": {
+            "default": 0,
+            "title": "Offset",
+            "type": "integer"
+          },
+          "order": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Order"
+          },
+          "query": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Query"
+          }
+        },
+        "required": [
+          "model"
+        ],
+        "title": "search_recordsArguments",
+        "type": "object"
+      },
+      "output_schema": {
+        "additionalProperties": true,
+        "properties": {
+          "count": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Count"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Sanitized error message when success is false.",
+            "title": "Error"
+          },
+          "fields_used": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Fields Used"
+          },
+          "query_fields_used": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Fields matched by the free-text query shortcut.",
+            "title": "Query Fields Used"
+          },
+          "redacted_fields": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Redacted Fields"
+          },
+          "result": {
+            "anyOf": [
+              {
+                "items": {
+                  "additionalProperties": true,
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Matched records (field-ACL redacted).",
+            "title": "Result"
+          },
+          "smart_fields_applied": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Smart Fields Applied"
+          },
+          "success": {
+            "description": "False when the call failed; see error.",
+            "title": "Success",
+            "type": "boolean"
+          },
+          "tool": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Reporting tool name.",
+            "title": "Tool"
+          }
+        },
+        "required": [
+          "success"
+        ],
+        "title": "SearchRecordsResponse",
+        "type": "object"
+      },
+      "output_schema_sha256": "ba23fd58aea755e600e3b4a55df1149f767ae2582f4c45fecd434adc1b53e9aa",
+      "runtime_verified": {
+        "error": true,
+        "success": true
+      },
+      "success_marker": "result"
+    }
+  }
+}

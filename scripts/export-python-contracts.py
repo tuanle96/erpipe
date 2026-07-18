@@ -15,7 +15,6 @@ from typing import Any
 
 from odoo_mcp import schemas, server
 
-
 CONTRACTS: dict[str, tuple[type[schemas.ToolResponse], str, dict[str, Any]]] = {
     "health_check": (schemas.HealthCheckResponse, "server", {}),
     "list_models": (
@@ -62,9 +61,7 @@ CONTRACTS: dict[str, tuple[type[schemas.ToolResponse], str, dict[str, Any]]] = {
 
 
 def git(repo: Path, *args: str) -> str:
-    return subprocess.check_output(
-        ["git", "-C", str(repo), *args], text=True
-    ).strip()
+    return subprocess.check_output(["git", "-C", str(repo), *args], text=True).strip()
 
 
 def canonical_hash(value: Any) -> str:
