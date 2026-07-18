@@ -278,6 +278,66 @@ try {
   ok("search_employee", `soft-fail ${e.message.slice(0, 80)}`);
 }
 
+// Phase 4 — report tools (mostly pure; business_pack may hit Odoo)
+{
+  const r = core.generateJson2Payload({
+    model: "res.partner",
+    method: "search_read",
+    args: [[], ["id", "name"], 0, 5],
+    base_url: url,
+    database: db,
+  });
+  ok(
+    "generate_json2_payload",
+    r.success
+      ? `path=${r.endpoint?.path} body_keys=${Object.keys(r.body || {}).join(",")}`
+      : JSON.stringify(r).slice(0, 120),
+  );
+}
+{
+  const r = core.upgradeRiskReport({
+    source_version: "18.0",
+    target_version: "19.0",
+    modules: [{ name: "x_smoke_custom", custom: true }],
+    methods: [{ model: "res.partner", method: "write" }],
+  });
+  ok(
+    "upgrade_risk_report",
+    r.success
+      ? `risk=${r.summary?.risk} n=${(r.risks || []).length}`
+      : JSON.stringify(r).slice(0, 120),
+  );
+}
+{
+  const r = core.fitGapReport({
+    requirements: [
+      "Manage contacts and sale orders",
+      "Custom API integration for warehouse",
+    ],
+  });
+  ok(
+    "fit_gap_report",
+    r.success
+      ? `fit=${r.summary?.fit} gap=${r.summary?.gap}`
+      : JSON.stringify(r).slice(0, 120),
+  );
+}
+try {
+  const r = await core.businessPackReportLive(transport, {
+    pack: "accounting",
+    use_live_metadata: true,
+    module_limit: 50,
+  });
+  ok(
+    "business_pack_report",
+    r.success
+      ? `pack=${r.pack} present_models=${(r.available_models || []).length} missing=${(r.missing_models || []).length}`
+      : JSON.stringify(r).slice(0, 160),
+  );
+} catch (e) {
+  fail("business_pack_report", e.message);
+}
+
 // Phase 3 — gated writes (opt-in)
 const writesEnabled =
   process.env.ODOO_MCP_ENABLE_WRITES === "1" ||

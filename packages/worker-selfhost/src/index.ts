@@ -1,11 +1,12 @@
 /**
- * ERPipe self-host Worker — OAuth + /{slug}/mcp + Phase-1/2 tools.
+ * ERPipe self-host Worker — OAuth + /{slug}/mcp + Phase 1–4 tools (23).
  */
 import OAuthProvider from "@cloudflare/workers-oauth-provider";
 import {
   PHASE1_TOOLS,
   PHASE2_TOOLS,
   PHASE3_TOOLS,
+  PHASE4_TOOLS,
   Json2Transport,
   XmlRpcTransport,
   listModels,
@@ -27,6 +28,10 @@ import {
   executeApprovedWrite,
   chatterPost,
   executeMethod,
+  generateJson2Payload,
+  upgradeRiskReport,
+  fitGapReport,
+  businessPackReportLive,
   MemoryApprovalStore,
   FieldPolicy,
   type OdooTransport,
@@ -122,7 +127,7 @@ function noOdoo() {
 export class SelfhostMcp extends McpAgent<Env, Record<string, never>, Props> {
   server = new McpServer({
     name: "erpipe-selfhost",
-    version: "0.3.0",
+    version: "0.4.0",
   });
 
   /** Per-session approval tokens (consume-once). */
@@ -150,6 +155,7 @@ export class SelfhostMcp extends McpAgent<Env, Record<string, never>, Props> {
       ...PHASE1_TOOLS,
       ...PHASE2_TOOLS,
       ...PHASE3_TOOLS,
+      ...PHASE4_TOOLS,
       "ping",
     ];
 
@@ -485,6 +491,66 @@ export class SelfhostMcp extends McpAgent<Env, Record<string, never>, Props> {
           }),
         );
       },
+    );
+
+    // --- Phase 4 reports (D14 → 23 tools) ---
+    this.server.tool(
+      "generate_json2_payload",
+      "Build a JSON-2 request preview without network access",
+      {
+        model: z.string(),
+        method: z.string(),
+        args: z.array(z.unknown()).optional(),
+        kwargs: z.record(z.string(), z.unknown()).optional(),
+        base_url: z.string().optional(),
+        database: z.string().optional(),
+        include_database_header: z.boolean().optional(),
+      },
+      async (args) => textResult(generateJson2Payload(args)),
+    );
+
+    this.server.tool(
+      "upgrade_risk_report",
+      "Report Odoo upgrade and JSON-2 migration risks (input-driven)",
+      {
+        source_version: z.string().optional(),
+        target_version: z.string().optional(),
+        modules: z.array(z.record(z.string(), z.unknown())).optional(),
+        methods: z.array(z.record(z.string(), z.unknown())).optional(),
+        source_findings: z.array(z.record(z.string(), z.unknown())).optional(),
+        observed_errors: z.array(z.unknown()).optional(),
+        use_live_metadata: z.boolean().optional(),
+        include_debug: z.boolean().optional(),
+      },
+      async (args) => textResult(upgradeRiskReport(args)),
+    );
+
+    this.server.tool(
+      "fit_gap_report",
+      "Classify Odoo requirements into fit/gap implementation buckets",
+      {
+        requirements: z.array(z.union([z.string(), z.record(z.string(), z.unknown())])),
+        available_models: z.array(z.string()).optional(),
+        available_fields: z.record(z.string(), z.unknown()).optional(),
+        installed_modules: z
+          .array(z.union([z.string(), z.record(z.string(), z.unknown())]))
+          .optional(),
+        business_context: z.record(z.string(), z.unknown()).optional(),
+        use_live_metadata: z.boolean().optional(),
+      },
+      async (args) => textResult(fitGapReport(args)),
+    );
+
+    this.server.tool(
+      "business_pack_report",
+      "Report expected modules, models, and safe discovery calls for a business pack",
+      {
+        pack: z.string(),
+        use_live_metadata: z.boolean().optional(),
+        module_limit: z.number().int().positive().optional(),
+      },
+      async (args) =>
+        textResult(await businessPackReportLive(transport, args)),
     );
   }
 }

@@ -66,6 +66,16 @@ export {
   executeMethod,
   PHASE3_TOOLS,
 } from "./tools/write.js";
+export {
+  generateJson2Payload,
+  upgradeRiskReport,
+  fitGapReport,
+  businessPackReport,
+  businessPackReportLive,
+  classifyMethodSafety,
+  BUSINESS_PACKS,
+  PHASE4_TOOLS,
+} from "./tools/reports.js";
 
 export const CLOUD_V1_TOOL_COUNT = 23;
 export const CLOUD_V1_PROMPT_COUNT = 7;
