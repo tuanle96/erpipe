@@ -375,10 +375,10 @@ const writesEnabled =
   process.env.ODOO_MCP_ENABLE_WRITES === "true";
 {
   const store = new core.MemoryApprovalStore();
-  const partnerVals = {
-    name: "ERPipe Smoke Temp Partner",
-    mobile: "0900000000", // Bestmix constraint: tax or mobile or phone
-  };
+    const partnerVals = {
+      name: "ERPipe Smoke Temp Partner",
+      phone: "0900000000", // Portable across Odoo 17–19; also satisfies Bestmix constraint.
+    };
   const preview = await core.previewWrite({
     model: "res.partner",
     operation: "create",
