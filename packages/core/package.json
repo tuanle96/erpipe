@@ -1,6 +1,6 @@
 {
   "name": "@erpipe/core",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "ERPipe core — Odoo transports, tools, field policy (Workers-free)",
   "license": "MIT",
   "author": "Lê Anh Tuấn <justin.le.1105@gmail.com>",
@@ -45,7 +45,7 @@
   },
   "dependencies": {
     "zod": "^4.0.0",
-    "@erpipe/odoo-xmlrpc": "0.1.0"
+    "@erpipe/odoo-xmlrpc": "0.1.1"
   },
   "devDependencies": {
     "typescript": "^5.8.3",

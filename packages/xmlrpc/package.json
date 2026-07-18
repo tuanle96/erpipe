@@ -1,6 +1,6 @@
 {
   "name": "@erpipe/odoo-xmlrpc",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Fetch-based XML-RPC client for Odoo (Workers-compatible)",
   "license": "MIT",
   "author": "Lê Anh Tuấn <justin.le.1105@gmail.com>",
