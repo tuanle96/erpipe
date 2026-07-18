@@ -231,8 +231,10 @@ export async function readRecord(
 export function healthCheck(info: {
   name?: string;
   toolCount?: number;
+  promptCount?: number;
   writesEnabled?: boolean;
   transport?: string | null;
+  allowUnknownMethods?: boolean;
 }): ToolResult {
   return {
     success: true,
@@ -240,13 +242,13 @@ export function healthCheck(info: {
     server: {
       name: info.name ?? "erpipe",
       tools: info.toolCount ?? 6,
-      prompts: 0,
+      prompts: info.promptCount ?? 0,
       resources: 0,
     },
     runtime: {
       writes_enabled: info.writesEnabled ?? false,
       transport: info.transport ?? null,
-      broad_side_effect_mode: false,
+      broad_side_effect_mode: info.allowUnknownMethods ?? false,
     },
     rate_limits: { enabled: false },
     plugins: { loaded: [] },

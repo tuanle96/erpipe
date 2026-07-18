@@ -1,5 +1,5 @@
 /**
- * ERPipe self-host Worker — OAuth + /{slug}/mcp + Phase 1–4 tools (23).
+ * ERPipe self-host Worker — OAuth + /{slug}/mcp + Phase 1–4 tools (23) + 7 prompts.
  */
 import OAuthProvider from "@cloudflare/workers-oauth-provider";
 import {
@@ -7,6 +7,9 @@ import {
   PHASE2_TOOLS,
   PHASE3_TOOLS,
   PHASE4_TOOLS,
+  CLOUD_V1_PROMPTS,
+  CLOUD_V1_PROMPT_COUNT,
+  renderCloudPrompt,
   Json2Transport,
   XmlRpcTransport,
   listModels,
@@ -116,6 +119,17 @@ function textResult(payload: unknown) {
   };
 }
 
+function promptResult(text: string) {
+  return {
+    messages: [
+      {
+        role: "user" as const,
+        content: { type: "text" as const, text },
+      },
+    ],
+  };
+}
+
 function noOdoo() {
   return textResult({
     success: false,
@@ -172,6 +186,7 @@ export class SelfhostMcp extends McpAgent<Env, Record<string, never>, Props> {
           odoo_configured: transport !== null,
           transport: transport?.kind ?? null,
           tools: allTools,
+          prompts: [...CLOUD_V1_PROMPTS],
         }),
     );
 
@@ -184,8 +199,10 @@ export class SelfhostMcp extends McpAgent<Env, Record<string, never>, Props> {
           healthCheck({
             name: "erpipe-selfhost",
             toolCount: allTools.length,
+            promptCount: CLOUD_V1_PROMPT_COUNT,
             writesEnabled,
             transport: transport?.kind ?? null,
+            allowUnknownMethods: allowUnknown,
           }),
         ),
     );
@@ -551,6 +568,107 @@ export class SelfhostMcp extends McpAgent<Env, Record<string, never>, Props> {
       },
       async (args) =>
         textResult(await businessPackReportLive(transport, args)),
+    );
+
+    // --- Cloud v1 prompts (7) ---
+    this.server.registerPrompt(
+      "diagnose_failed_odoo_call",
+      {
+        description:
+          "Guide an assistant through diagnosing a failed Odoo model call.",
+        argsSchema: {
+          model: z.string().describe("Odoo model technical name"),
+          method: z.string().describe("Method that failed"),
+          error: z.string().optional().describe("Observed error text"),
+        },
+      },
+      async (args) =>
+        promptResult(
+          renderCloudPrompt("diagnose_failed_odoo_call", args) ?? "",
+        ),
+    );
+
+    this.server.registerPrompt(
+      "fit_gap_workshop",
+      {
+        description:
+          "Structure an Odoo fit/gap workshop from raw requirements.",
+        argsSchema: {
+          requirement: z.string().describe("Business requirement text"),
+        },
+      },
+      async (args) =>
+        promptResult(renderCloudPrompt("fit_gap_workshop", args) ?? ""),
+    );
+
+    this.server.registerPrompt(
+      "json2_migration_plan",
+      {
+        description:
+          "Plan migration from XML-RPC/JSON-RPC style calls to Odoo JSON-2.",
+        argsSchema: {
+          model: z.string().describe("Odoo model technical name"),
+          method: z.string().describe("Method to migrate"),
+        },
+      },
+      async (args) =>
+        promptResult(renderCloudPrompt("json2_migration_plan", args) ?? ""),
+    );
+
+    this.server.registerPrompt(
+      "safe_write_review",
+      {
+        description: "Review a proposed create/write/unlink before execution.",
+        argsSchema: {
+          model: z.string().describe("Odoo model technical name"),
+          operation: z.string().describe("create | write | unlink"),
+        },
+      },
+      async (args) =>
+        promptResult(renderCloudPrompt("safe_write_review", args) ?? ""),
+    );
+
+    this.server.registerPrompt(
+      "invoice_approval_chain",
+      {
+        description:
+          "Find, validate, and gated-post draft customer invoices with human checkpoints.",
+        argsSchema: {
+          journal: z.string().optional().describe("Optional journal filter"),
+          date_from: z.string().optional().describe("Optional date from"),
+          date_to: z.string().optional().describe("Optional date to"),
+        },
+      },
+      async (args) =>
+        promptResult(renderCloudPrompt("invoice_approval_chain", args) ?? ""),
+    );
+
+    this.server.registerPrompt(
+      "po_to_receipt",
+      {
+        description:
+          "Three-way match a purchase order against its receipt and vendor bill; flag discrepancies.",
+        argsSchema: {
+          purchase_order: z.string().describe("PO name or id reference"),
+        },
+      },
+      async (args) =>
+        promptResult(renderCloudPrompt("po_to_receipt", args) ?? ""),
+    );
+
+    this.server.registerPrompt(
+      "customer_onboarding",
+      {
+        description:
+          "Dedup-check then create a customer with contacts and payment terms via the write gate.",
+        argsSchema: {
+          company_name: z.string().describe("Customer company name"),
+          email: z.string().optional().describe("Optional email"),
+          vat: z.string().optional().describe("Optional VAT/tax id"),
+        },
+      },
+      async (args) =>
+        promptResult(renderCloudPrompt("customer_onboarding", args) ?? ""),
     );
   }
 }

@@ -88,10 +88,41 @@ try {
 {
   const h = core.healthCheck({
     name: "smoke",
-    toolCount: 6,
+    toolCount: 23,
+    promptCount: core.CLOUD_V1_PROMPT_COUNT,
     transport: transportName,
   });
-  ok("health_check", h.success ? "success" : h.error);
+  ok(
+    "health_check",
+    h.success
+      ? `tools=${h.server?.tools} prompts=${h.server?.prompts}`
+      : h.error,
+  );
+}
+
+// prompts (pure text — no Odoo)
+{
+  const names = core.CLOUD_V1_PROMPTS;
+  if (!names || names.length !== 7) {
+    fail("prompts catalog", `expected 7 got ${names?.length}`);
+  } else {
+    let allOk = true;
+    for (const name of names) {
+      const text = core.renderCloudPrompt(name, {
+        model: "res.partner",
+        method: "search_read",
+        requirement: "contacts",
+        operation: "create",
+        purchase_order: "PO0001",
+        company_name: "Smoke Co",
+      });
+      if (!text || text.length < 40) {
+        fail(`prompt ${name}`, "empty or short");
+        allOk = false;
+      }
+    }
+    if (allOk) ok("prompts catalog", `7/7 render (${names.join(", ")})`);
+  }
 }
 
 // build_domain pure

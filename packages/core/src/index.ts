@@ -76,6 +76,20 @@ export {
   BUSINESS_PACKS,
   PHASE4_TOOLS,
 } from "./tools/reports.js";
+export {
+  CLOUD_V1_PROMPTS,
+  PROMPT_CATALOG,
+  renderCloudPrompt,
+  promptDiagnoseFailedOdooCall,
+  promptFitGapWorkshop,
+  promptJson2MigrationPlan,
+  promptSafeWriteReview,
+  promptInvoiceApprovalChain,
+  promptPoToReceipt,
+  promptCustomerOnboarding,
+  type CloudV1PromptName,
+  type PromptDef,
+} from "./prompts.js";
 
 export const CLOUD_V1_TOOL_COUNT = 23;
 export const CLOUD_V1_PROMPT_COUNT = 7;
