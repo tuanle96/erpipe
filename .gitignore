@@ -10,3 +10,6 @@ worker-configuration.d.ts
 .env
 .env.*
 !
+
+# Local AI planning artifacts (not product source)
+plans/
