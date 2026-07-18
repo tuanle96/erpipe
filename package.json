@@ -15,6 +15,7 @@
     "dev:selfhost": "npm run dev -w @erpipe/worker-selfhost",
     "deploy:selfhost": "npm run deploy -w @erpipe/worker-selfhost",
     "smoke:live": "npm run build -w @erpipe/odoo-xmlrpc -w @erpipe/core && node scripts/smoke-live.mjs",
+    "fanout:matrix": "npm run build -w @erpipe/odoo-xmlrpc -w @erpipe/core && node scripts/fanout-matrix.mjs",
     "parity": "npm run build -w @erpipe/core && node scripts/parity-harness.mjs",
     "parity:ts": "npm run build -w @erpipe/core && PARITY_TS_ONLY=1 node scripts/parity-harness.mjs"
   },

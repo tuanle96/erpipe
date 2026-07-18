@@ -140,10 +140,7 @@ try {
 try {
   const r = await core.listModels(transport, { limit: 10, query: "res." });
   if (r.success && r.count > 0) {
-    ok(
-      "list_models",
-      `count=${r.count} sample=${r.result?.[0]?.model ?? "?"}`,
-    );
+    ok("list_models", `count=${r.count} sample=${r.result?.[0]?.model ?? "?"}`);
   } else fail("list_models", JSON.stringify(r).slice(0, 200));
 } catch (e) {
   fail("list_models", e.message);
@@ -234,7 +231,10 @@ try {
 
 try {
   const r = await core.schemaCatalog(transport, { query: "res.", limit: 5 });
-  ok("schema_catalog", r.success ? `count=${r.count}` : JSON.stringify(r).slice(0, 120));
+  ok(
+    "schema_catalog",
+    r.success ? `count=${r.count}` : JSON.stringify(r).slice(0, 120),
+  );
 } catch (e) {
   fail("schema_catalog", e.message);
 }
@@ -294,7 +294,10 @@ try {
     transport: transportName,
     target_version: "18.0",
   });
-  ok("diagnose_odoo_call", r.success ? `json2_ready=${r.classification?.json2_ready}` : "issues");
+  ok(
+    "diagnose_odoo_call",
+    r.success ? `json2_ready=${r.classification?.json2_ready}` : "issues",
+  );
 }
 
 try {
@@ -375,10 +378,10 @@ const writesEnabled =
   process.env.ODOO_MCP_ENABLE_WRITES === "true";
 {
   const store = new core.MemoryApprovalStore();
-    const partnerVals = {
-      name: "ERPipe Smoke Temp Partner",
-      phone: "0900000000", // Portable across Odoo 17–19; also satisfies Bestmix constraint.
-    };
+  const partnerVals = {
+    name: "ERPipe Smoke Temp Partner",
+    phone: "0900000000", // Portable across Odoo 17–19; also satisfies Bestmix constraint.
+  };
   const preview = await core.previewWrite({
     model: "res.partner",
     operation: "create",
@@ -419,9 +422,16 @@ const writesEnabled =
         writesEnabled: true,
       });
       if (un.success) ok("execute_approved_write unlink cleanup", "cleaned");
-      else fail("execute_approved_write unlink cleanup", JSON.stringify(un).slice(0, 160));
+      else
+        fail(
+          "execute_approved_write unlink cleanup",
+          JSON.stringify(un).slice(0, 160),
+        );
     } else {
-      fail("execute_approved_write create", JSON.stringify(created).slice(0, 200));
+      fail(
+        "execute_approved_write create",
+        JSON.stringify(created).slice(0, 200),
+      );
     }
   } else {
     const denied = await core.executeApprovedWrite(transport, store, {
