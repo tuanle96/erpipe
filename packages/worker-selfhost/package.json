@@ -2,8 +2,24 @@
   "name": "@erpipe/worker-selfhost",
   "version": "0.1.0",
   "private": true,
-  "description": "Single-tenant ERPipe Worker example (OAuth + /{slug}/mcp + ping)",
+  "description": "Single-tenant ERPipe Worker example (OAuth + /{slug}/mcp + D14 tools)",
   "license": "MIT",
+  "author": "Lê Anh Tuấn <justin.le.1105@gmail.com>",
+  "homepage": "https://github.com/tuanle96/erpipe/tree/main/packages/worker-selfhost#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tuanle96/erpipe.git",
+    "directory": "packages/worker-selfhost"
+  },
+  "bugs": {
+    "url": "https://github.com/tuanle96/erpipe/issues"
+  },
+  "keywords": [
+    "mcp",
+    "odoo",
+    "cloudflare-workers",
+    "self-host"
+  ],
   "type": "module",
   "scripts": {
     "dev": "wrangler dev",
@@ -24,5 +40,8 @@
     "@cloudflare/workers-types": "^4.20250620.0",
     "typescript": "^5.8.3",
     "wrangler": "^4.112.0"
+  },
+  "engines": {
+    "node": ">=20"
   }
 }

@@ -1,8 +1,23 @@
 # Tool schemas
 
-JSON Schema files for the 23-tool cloud tier are **generated** from the Python
-`mcp-odoo` repo (Pydantic models + `tools/list`), not hand-written.
+Optional home for **exported JSON Schema** of the MCP tool surface (D14: 23 tools).
 
-See HANDOFF §8.1 in `mcp-odoo/plans/260714-0931-odoo-mcp-cloud/`.
+Today the authoritative schema lives in TypeScript / Zod inside `@erpipe/core` (`packages/core/src`). This directory is reserved for:
 
-Placeholders will appear here when Phase 1 schema export lands.
+- Generated JSON Schema snapshots for external consumers
+- Diffable schema freezes between releases
+
+Nothing required at install time. When exports land they will be generated from the same source as the runtime tools — not hand-edited duplicates.
+
+See [docs/tools.md](../docs/tools.md) for the human-readable catalog.
+
+`phase1-python-contracts.json` is the pinned six-tool Phase-1 manifest. Regenerate it with:
+
+```bash
+/path/to/mcp-odoo/.venv/bin/python scripts/export-python-contracts.py \
+  --mcp-odoo /path/to/mcp-odoo \
+  --output schemas/phase1-python-contracts.json
+```
+
+The exporter reads the real FastMCP `tools/list` schemas and runtime-validates both
+success and error envelopes against their Pydantic response models before writing.

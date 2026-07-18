@@ -4,14 +4,32 @@
   "private": true,
   "description": "ERPipe — MCP for Odoo (open-core TypeScript monorepo)",
   "license": "MIT",
+  "author": "Lê Anh Tuấn <justin.le.1105@gmail.com>",
+  "homepage": "https://github.com/tuanle96/erpipe#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tuanle96/erpipe.git"
+  },
+  "bugs": {
+    "url": "https://github.com/tuanle96/erpipe/issues"
+  },
+  "keywords": [
+    "mcp",
+    "odoo",
+    "model-context-protocol",
+    "typescript",
+    "cloudflare-workers",
+    "xmlrpc",
+    "open-core"
+  ],
   "workspaces": [
     "packages/*"
   ],
   "scripts": {
-    "build": "npm run build -w @erpipe/core -w @erpipe/odoo-xmlrpc -w @erpipe/worker-selfhost",
+    "build": "npm run build -w @erpipe/odoo-xmlrpc && npm run build -w @erpipe/core && npm run build -w @erpipe/worker-selfhost",
     "test": "vitest run",
     "test:watch": "vitest",
-    "typecheck": "npm run typecheck -w @erpipe/core -w @erpipe/odoo-xmlrpc -w @erpipe/worker-selfhost",
+    "typecheck": "npm run typecheck -w @erpipe/odoo-xmlrpc && npm run typecheck -w @erpipe/core && npm run typecheck -w @erpipe/worker-selfhost",
     "dev:selfhost": "npm run dev -w @erpipe/worker-selfhost",
     "deploy:selfhost": "npm run deploy -w @erpipe/worker-selfhost",
     "smoke:live": "npm run build -w @erpipe/odoo-xmlrpc -w @erpipe/core && node scripts/smoke-live.mjs",

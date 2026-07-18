@@ -1,0 +1,38 @@
+name: Feature request
+description: Suggest an improvement for the open-core surface
+title: "[feat] "
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem / motivation
+      description: What problem does this solve?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: How should it work?
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+    validations:
+      required: false
+  - type: dropdown
+    id: surface
+    attributes:
+      label: Surface area
+      options:
+        - New MCP tool
+        - Prompt
+        - Transport / protocol
+        - Self-host worker
+        - Docs / DX
+        - Other
+    validations:
+      required: true

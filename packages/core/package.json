@@ -3,6 +3,26 @@
   "version": "0.1.0",
   "description": "ERPipe core — Odoo transports, tools, field policy (Workers-free)",
   "license": "MIT",
+  "author": "Lê Anh Tuấn <justin.le.1105@gmail.com>",
+  "homepage": "https://github.com/tuanle96/erpipe/tree/main/packages/core#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tuanle96/erpipe.git",
+    "directory": "packages/core"
+  },
+  "bugs": {
+    "url": "https://github.com/tuanle96/erpipe/issues"
+  },
+  "keywords": [
+    "mcp",
+    "odoo",
+    "model-context-protocol",
+    "typescript",
+    "tools"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -28,5 +48,8 @@
   "devDependencies": {
     "typescript": "^5.8.3",
     "vitest": "^3.2.4"
+  },
+  "engines": {
+    "node": ">=20"
   }
 }

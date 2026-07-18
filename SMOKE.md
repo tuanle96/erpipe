@@ -1,10 +1,34 @@
 # Live smoke results
 
-**Date:** 2026-07-18  
-**Target:** `http://127.0.0.1:8070` · db `bestmix_7_7` · Odoo **18.0e** · transport **xmlrpc**  
-**Script:** `npm run smoke:live`
+**Script:** `npm run smoke:live`  
+**Requires:** reachable Odoo + credentials via env
 
-## Latest (D14: 23 tools + 7 prompts)
+## Env
+
+| Variable | Required | Notes |
+|----------|----------|--------|
+| `ODOO_URL` | yes | e.g. `http://127.0.0.1:8069` |
+| `ODOO_DB` | yes | database name |
+| `ODOO_USERNAME` | for xmlrpc | default `admin` |
+| `ODOO_PASSWORD` or `ODOO_API_KEY` | yes | password (xmlrpc) or API key |
+| `ODOO_TRANSPORT` | no | `xmlrpc` \| `json2` (default inferred) |
+| `ODOO_MCP_ENABLE_WRITES` | no | `1` / `true` to exercise execute create + unlink |
+
+## Example
+
+```bash
+ODOO_URL=http://127.0.0.1:8069 \
+ODOO_DB=odoo \
+ODOO_USERNAME=admin \
+ODOO_PASSWORD=admin \
+ODOO_TRANSPORT=xmlrpc \
+npm run smoke:live
+```
+
+## Latest recorded (maintainer)
+
+**Date:** 2026-07-18  
+**Target:** local Odoo **18** · transport **xmlrpc**
 
 | Suite | Result |
 |-------|--------|
@@ -16,7 +40,4 @@
 | execute denied when writes off | PASS |
 | execute create + unlink (`ODOO_MCP_ENABLE_WRITES=1`) | PASS (prior run) |
 
-```bash
-ODOO_URL=http://127.0.0.1:8070 ODOO_DB=bestmix_7_7 ODOO_USERNAME=admin \
-ODOO_PASSWORD=admin ODOO_TRANSPORT=xmlrpc npm run smoke:live
-```
+Re-run on your instance before relying on smoke for a release.
