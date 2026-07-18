@@ -4,6 +4,8 @@
 [![npm @erpipe/core](https://img.shields.io/npm/v/@erpipe/core.svg)](https://www.npmjs.com/package/@erpipe/core)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Node](https://img.shields.io/badge/node-%3E%3D20-brightgreen)](package.json)
+[![Hosted: free v1](https://img.shields.io/badge/hosted-free_v1-00a99d.svg)](https://mcp.erpipe.com/)
+[![Live demo](https://img.shields.io/badge/demo-no_signup-e63973.svg)](https://mcp.erpipe.com/demo)
 
 Open-source **TypeScript** building blocks for **remote MCP** access to [Odoo](https://www.odoo.com/).
 
@@ -11,6 +13,8 @@ Open-source **TypeScript** building blocks for **remote MCP** access to [Odoo](h
 |--|--|
 | **This repo (MIT)** | Tool logic, transports, single-tenant self-host Worker example |
 | **Hosted product** | Multi-tenant control plane + dashboard — [mcp.erpipe.com](https://mcp.erpipe.com) (separate private repo) |
+
+**Try it now:** connect Claude to the [shared read-only Odoo demo](https://mcp.erpipe.com/demo), or [create a free v1 workspace](https://mcp.erpipe.com/). The demo uses isolated sample data and requires no signup.
 
 ## Why
 
