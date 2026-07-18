@@ -1,0 +1,210 @@
+{
+  "manifest": {
+    "tier": "cloud-v1",
+    "tool_count": 23,
+    "prompt_count": 7,
+    "mode": "pure",
+    "description": "Input-driven pure tools (no live Odoo). Tokens and diagnostic reports must match Python mcp-odoo on D14 surface."
+  },
+  "surface": {
+    "tools": [
+      "list_models",
+      "get_model_fields",
+      "search_records",
+      "read_record",
+      "build_domain",
+      "health_check",
+      "aggregate_records",
+      "search_employee",
+      "search_holidays",
+      "get_odoo_profile",
+      "schema_catalog",
+      "diagnose_odoo_call",
+      "diagnose_access",
+      "inspect_model_relationships",
+      "preview_write",
+      "validate_write",
+      "execute_approved_write",
+      "chatter_post",
+      "execute_method",
+      "generate_json2_payload",
+      "upgrade_risk_report",
+      "fit_gap_report",
+      "business_pack_report"
+    ],
+    "prompts": [
+      "diagnose_failed_odoo_call",
+      "fit_gap_workshop",
+      "json2_migration_plan",
+      "safe_write_review",
+      "invoice_approval_chain",
+      "po_to_receipt",
+      "customer_onboarding"
+    ]
+  },
+  "cases": [
+    {
+      "id": "json2_search_read_happy",
+      "tool": "generate_json2_payload",
+      "input": {
+        "model": "res.partner",
+        "method": "search_read",
+        "args": [[["is_company", "=", true]]],
+        "kwargs": { "fields": ["name"], "limit": 5 },
+        "base_url": "odoo.example.test",
+        "database": "demo-db"
+      },
+      "compare": "deep"
+    },
+    {
+      "id": "json2_no_db_header",
+      "tool": "generate_json2_payload",
+      "input": {
+        "model": "res.partner",
+        "method": "search_read",
+        "args": [[]],
+        "database": "demo-db",
+        "include_database_header": false
+      },
+      "compare": "deep"
+    },
+    {
+      "id": "json2_unlink_destructive_warning",
+      "tool": "generate_json2_payload",
+      "input": {
+        "model": "res.partner",
+        "method": "unlink",
+        "args": [[1, 2]]
+      },
+      "compare": "deep"
+    },
+    {
+      "id": "json2_custom_positional_unsupported",
+      "tool": "generate_json2_payload",
+      "input": {
+        "model": "sale.order",
+        "method": "custom_foo",
+        "args": [1, 2]
+      },
+      "compare": "deep"
+    },
+    {
+      "id": "upgrade_risk_to_22_blocked",
+      "tool": "upgrade_risk_report",
+      "input": {
+        "source_version": "18.0",
+        "target_version": "22.0",
+        "modules": [{ "name": "x_custom", "custom": true }],
+        "methods": [{ "model": "res.partner", "method": "write" }]
+      },
+      "compare": "deep"
+    },
+    {
+      "id": "upgrade_risk_to_19_warn",
+      "tool": "upgrade_risk_report",
+      "input": {
+        "source_version": "17.0",
+        "target_version": "19.0"
+      },
+      "compare": "deep"
+    },
+    {
+      "id": "fit_gap_mixed_requirements",
+      "tool": "fit_gap_report",
+      "input": {
+        "requirements": [
+          "Manage contacts and invoices",
+          "Custom API integration with external warehouse",
+          "Bypass access rules for reporting",
+          "Studio custom field on partner form",
+          "Configure tax and approval sequences"
+        ]
+      },
+      "compare": "deep"
+    },
+    {
+      "id": "business_pack_accounting_static",
+      "tool": "business_pack_report",
+      "input": { "pack": "accounting" },
+      "compare": "deep"
+    },
+    {
+      "id": "business_pack_hr_live_evidence",
+      "tool": "business_pack_report",
+      "input": {
+        "pack": "hr",
+        "available_models": ["hr.employee"],
+        "installed_modules": ["hr"]
+      },
+      "compare": "deep"
+    },
+    {
+      "id": "business_pack_unknown",
+      "tool": "business_pack_report",
+      "input": { "pack": "nope" },
+      "compare": "deep"
+    },
+    {
+      "id": "build_domain_and",
+      "tool": "build_domain",
+      "input": {
+        "conditions": [
+          { "field": "is_company", "operator": "=", "value": true },
+          { "field": "name", "operator": "ilike", "value": "a" }
+        ]
+      },
+      "compare": "deep"
+    },
+    {
+      "id": "preview_write_create_token",
+      "tool": "preview_write",
+      "input": {
+        "model": "res.partner",
+        "operation": "create",
+        "values": { "name": "Ada", "mobile": "1" }
+      },
+      "compare": "approval_core"
+    },
+    {
+      "id": "preview_write_unlink_token",
+      "tool": "preview_write",
+      "input": {
+        "model": "res.partner",
+        "operation": "unlink",
+        "record_ids": [42]
+      },
+      "compare": "approval_core"
+    },
+    {
+      "id": "prompt_diagnose",
+      "tool": "prompt",
+      "input": {
+        "name": "diagnose_failed_odoo_call",
+        "args": {
+          "model": "res.partner",
+          "method": "write",
+          "error": "AccessError"
+        }
+      },
+      "compare": "text"
+    },
+    {
+      "id": "prompt_safe_write",
+      "tool": "prompt",
+      "input": {
+        "name": "safe_write_review",
+        "args": { "model": "res.partner", "operation": "create" }
+      },
+      "compare": "text"
+    },
+    {
+      "id": "prompt_invoice_chain",
+      "tool": "prompt",
+      "input": {
+        "name": "invoice_approval_chain",
+        "args": { "journal": "INV", "date_from": "2026-01-01", "date_to": "2026-01-31" }
+      },
+      "compare": "text"
+    }
+  ]
+}

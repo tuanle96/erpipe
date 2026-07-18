@@ -146,6 +146,7 @@ describe("business_pack_report", () => {
   it("rejects unknown pack", () => {
     const r = businessPackReport({ pack: "nope" });
     expect(r.success).toBe(false);
+    expect(r.error).toBe("Unknown pack 'nope'.");
     expect((r.available_packs as string[]).includes("sales")).toBe(true);
   });
 

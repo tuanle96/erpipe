@@ -9,9 +9,9 @@ Open-source TypeScript building blocks for **remote MCP** access to Odoo.
 | Milestone | State |
 |-----------|--------|
 | Entry Gate B (OAuth + `/{slug}/mcp`) | **PASS** — see `mcp-odoo` plan spike |
-| Phase 0 skeleton | done |
-| Phase 1 (JSON-2 + 6 tools) | **in progress / wired** |
-| Phase 2–4 remaining tools | next |
+| D14 surface | **23 tools + 7 prompts** in `@erpipe/core` + worker-selfhost |
+| Pure parity vs mcp-odoo | **PASS** — `npm run parity` (see [PARITY.md](PARITY.md)) |
+| Live smoke Odoo 18 | **PASS** — `npm run smoke:live` (see [SMOKE.md](SMOKE.md)) |
 
 **Pins (proven by spike):**
 

@@ -701,7 +701,8 @@ export function businessPackReport(opts: {
     return {
       success: false,
       tool: "business_pack_report",
-      error: `Unknown pack ${JSON.stringify(opts.pack)}.`,
+      // Match Python repr-style quotes: Unknown pack 'nope'.
+      error: `Unknown pack '${opts.pack}'.`,
       available_packs: Object.keys(BUSINESS_PACKS).sort(),
     };
   }
