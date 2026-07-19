@@ -7,8 +7,11 @@
 
 import { JSON2_POSITIONAL_ARG_MAP } from "../transport/json2-map.js";
 import type { OdooTransport } from "../transport/types.js";
+import { BUSINESS_PACKS } from "./business-packs.js";
 import { ABS_MAX_LIMIT, clampLimit, fail, type ToolResult, validateModelName } from "./helpers.js";
 
+export type { BusinessPackDefinition } from "./business-packs.js";
+export { BUSINESS_PACKS } from "./business-packs.js";
 export type { ToolResult };
 
 const ODOO_RPC_REMOVAL = "Odoo 22 fall 2028";
@@ -33,37 +36,6 @@ const SIDE_EFFECT_PATTERNS = [
   /(^|_)post($|_)/,
   /(^|_)validate($|_)/,
 ];
-
-export const BUSINESS_PACKS: Record<
-  string,
-  { modules: string[]; models: string[]; safe_reports: string[] }
-> = {
-  sales: {
-    modules: ["sale", "sale_management", "crm"],
-    models: ["sale.order", "sale.order.line", "res.partner", "product.product"],
-    safe_reports: ["quotation_pipeline", "order_status", "customer_activity"],
-  },
-  crm: {
-    modules: ["crm"],
-    models: ["crm.lead", "crm.stage", "res.partner", "mail.activity"],
-    safe_reports: ["pipeline", "lost_reasons", "activity_backlog"],
-  },
-  inventory: {
-    modules: ["stock", "product"],
-    models: ["stock.picking", "stock.move", "stock.quant", "product.product"],
-    safe_reports: ["on_hand", "open_transfers", "reordering_attention"],
-  },
-  accounting: {
-    modules: ["account"],
-    models: ["account.move", "account.move.line", "account.journal", "res.partner"],
-    safe_reports: ["open_invoices", "journal_health", "partner_balances"],
-  },
-  hr: {
-    modules: ["hr", "hr_holidays"],
-    models: ["hr.employee", "hr.leave", "hr.leave.report.calendar"],
-    safe_reports: ["employee_lookup", "leave_calendar", "leave_status"],
-  },
-};
 
 export function classifyMethodSafety(method: string): {
   safety: string;
