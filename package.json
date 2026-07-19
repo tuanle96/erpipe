@@ -29,6 +29,7 @@
     "build": "npm run build -w @erpipe/odoo-xmlrpc && npm run build -w @erpipe/core && npm run build -w @erpipe/worker-selfhost",
     "test": "vitest run",
     "test:watch": "vitest",
+    "lint": "biome lint packages",
     "typecheck": "npm run typecheck -w @erpipe/odoo-xmlrpc && npm run typecheck -w @erpipe/core && npm run typecheck -w @erpipe/worker-selfhost",
     "dev:selfhost": "npm run dev -w @erpipe/worker-selfhost",
     "deploy:selfhost": "npm run deploy -w @erpipe/worker-selfhost",
@@ -38,6 +39,7 @@
     "parity:ts": "npm run build -w @erpipe/core && PARITY_TS_ONLY=1 node scripts/parity-harness.mjs"
   },
   "devDependencies": {
+    "@biomejs/biome": "^2.0.6",
     "typescript": "^5.8.3",
     "vitest": "^3.2.4"
   },
