@@ -5,7 +5,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Node](https://img.shields.io/badge/node-%3E%3D20-brightgreen)](package.json)
 [![Hosted: free v1](https://img.shields.io/badge/hosted-free_v1-00a99d.svg)](https://mcp.erpipe.com/)
-[![Live demo](https://img.shields.io/badge/demo-no_signup-e63973.svg)](https://mcp.erpipe.com/demo)
+[![Hosted product](https://img.shields.io/badge/hosted-mcp.erpipe.com-e63973.svg)](https://mcp.erpipe.com/)
 
 Open-source **TypeScript** building blocks for **remote MCP** access to [Odoo](https://www.odoo.com/).
 
@@ -14,11 +14,11 @@ Open-source **TypeScript** building blocks for **remote MCP** access to [Odoo](h
 | **This repo (MIT)** | Tool logic, transports, single-tenant self-host Worker example |
 | **Hosted product** | Multi-tenant control plane + dashboard — [mcp.erpipe.com](https://mcp.erpipe.com) (separate private repo) |
 
-**Try it now:** connect Claude to the [shared read-only Odoo demo](https://mcp.erpipe.com/demo), or [create a free v1 workspace](https://mcp.erpipe.com/). The demo uses isolated sample data and requires no signup.
+**Try it (ChatGPT-first, real Odoo only):** [create a free v1 workspace](https://mcp.erpipe.com/), add your HTTPS Odoo connection, then paste `https://mcp.erpipe.com/{slug}/mcp` into ChatGPT Developer Mode. Claude and other MCP clients use the same per-connection URL. There is no shared public sandbox.
 
 ## Why
 
-- Talk to Odoo from MCP clients (Claude, Cursor, custom agents) over a stable URL shape
+- Talk to Odoo from **ChatGPT** (primary), Claude, Cursor, and custom MCP agents over a stable URL shape
 - Workers-safe XML-RPC + JSON-2 transports
 - **Gated writes** (preview → approve → execute) with field policy
 - Shared **23-tool + 7-prompt** surface (D14 / cloud v1) — see [docs/tools.md](docs/tools.md)
@@ -95,11 +95,13 @@ npm run deploy:selfhost
 
 ## Canonical MCP URL
 
-Connection-scoped path (proven with Claude.ai):
+Connection-scoped path (production-proven with ChatGPT Developer Mode and Claude):
 
 ```text
 https://<host>/{connection_slug}/mcp
 ```
+
+Setup: [mcp.erpipe.com/docs/connector](https://mcp.erpipe.com/docs/connector)
 
 Reserved slugs (never use as connection id): `authorize`, `token`, `register`, `mcp`, `sse`, `.well-known`, `assets`, `health`, `app`, `admin`.
 
