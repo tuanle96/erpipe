@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import path from "node:path";
 /**
  * Live smoke against a real Odoo (XML-RPC or JSON-2).
  *
@@ -9,9 +10,7 @@
  *   ODOO_PASSWORD  or ODOO_API_KEY
  *   ODOO_TRANSPORT xmlrpc|json2  (default: xmlrpc if password, else json2)
  */
-import { pathToFileURL } from "node:url";
-import path from "node:path";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(__dirname, "..");

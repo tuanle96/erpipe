@@ -2,14 +2,14 @@ import { describe, expect, it } from "vitest";
 import {
   CLOUD_V1_PROMPTS,
   PROMPT_CATALOG,
-  renderCloudPrompt,
+  promptCustomerOnboarding,
   promptDiagnoseFailedOdooCall,
   promptFitGapWorkshop,
-  promptJson2MigrationPlan,
-  promptSafeWriteReview,
   promptInvoiceApprovalChain,
+  promptJson2MigrationPlan,
   promptPoToReceipt,
-  promptCustomerOnboarding,
+  promptSafeWriteReview,
+  renderCloudPrompt,
 } from "./prompts";
 
 describe("CLOUD_V1_PROMPTS", () => {

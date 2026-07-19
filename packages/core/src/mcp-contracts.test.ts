@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
-  CLOUD_V1_PYTHON_CONTRACTS,
   addCloudV1ToolContracts,
+  CLOUD_V1_PYTHON_CONTRACTS,
   cloudV1StructuredContent,
   getCloudV1ToolContract,
 } from "./mcp-contracts.js";

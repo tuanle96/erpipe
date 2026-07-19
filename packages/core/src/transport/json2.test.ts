@@ -1,14 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { buildJson2Payload } from "./json2";
 import { OdooError } from "../errors";
+import { buildJson2Payload } from "./json2";
 
 describe("buildJson2Payload", () => {
   it("maps search_read positionals", () => {
-    const p = buildJson2Payload(
-      "search_read",
-      [[["name", "=", "x"]], ["name"], 0, 10],
-      {},
-    );
+    const p = buildJson2Payload("search_read", [[["name", "=", "x"]], ["name"], 0, 10], {});
     expect(p).toEqual({
       domain: [["name", "=", "x"]],
       fields: ["name"],
@@ -22,8 +18,6 @@ describe("buildJson2Payload", () => {
   });
 
   it("rejects duplicate kwargs", () => {
-    expect(() =>
-      buildJson2Payload("search", [[]], { domain: [] }),
-    ).toThrow(/both positionally/);
+    expect(() => buildJson2Payload("search", [[]], { domain: [] })).toThrow(/both positionally/);
   });
 });

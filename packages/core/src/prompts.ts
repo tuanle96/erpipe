@@ -39,9 +39,7 @@ export const PROMPT_CATALOG: PromptDef[] = [
   {
     name: "fit_gap_workshop",
     description: "Structure an Odoo fit/gap workshop from raw requirements.",
-    args: [
-      { name: "requirement", description: "Business requirement text", required: true },
-    ],
+    args: [{ name: "requirement", description: "Business requirement text", required: true }],
   },
   {
     name: "json2_migration_plan",
@@ -61,8 +59,7 @@ export const PROMPT_CATALOG: PromptDef[] = [
   },
   {
     name: "invoice_approval_chain",
-    description:
-      "Find, validate, and gated-post draft customer invoices with human checkpoints.",
+    description: "Find, validate, and gated-post draft customer invoices with human checkpoints.",
     args: [
       { name: "journal", description: "Optional journal filter", required: false },
       { name: "date_from", description: "Optional date from", required: false },
@@ -124,10 +121,7 @@ export function promptFitGapWorkshop(args: { requirement: string }): string {
   );
 }
 
-export function promptJson2MigrationPlan(args: {
-  model: string;
-  method: string;
-}): string {
+export function promptJson2MigrationPlan(args: { model: string; method: string }): string {
   return (
     "Prepare a JSON-2 migration plan for this Odoo call.\n" +
     `Model: ${args.model}\n` +
@@ -138,10 +132,7 @@ export function promptJson2MigrationPlan(args: {
   );
 }
 
-export function promptSafeWriteReview(args: {
-  model: string;
-  operation: string;
-}): string {
+export function promptSafeWriteReview(args: { model: string; operation: string }): string {
   return (
     "Review this proposed Odoo write before any execution.\n" +
     `Model: ${args.model}\n` +
@@ -152,11 +143,9 @@ export function promptSafeWriteReview(args: {
   );
 }
 
-export function promptInvoiceApprovalChain(args: {
-  journal?: string;
-  date_from?: string;
-  date_to?: string;
-} = {}): string {
+export function promptInvoiceApprovalChain(
+  args: { journal?: string; date_from?: string; date_to?: string } = {},
+): string {
   return (
     "Process draft customer invoices safely. Requires the Accounting/Invoicing " +
     "module — confirm with business_pack_report(pack='accounting') and stop with " +

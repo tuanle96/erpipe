@@ -9,29 +9,23 @@ describe("normalizeOdooOrigin", () => {
   });
 
   it("rejects non-http(s)", () => {
-    expect(() => normalizeOdooOrigin("ftp://odoo.example.com")).toThrow(
-      /http\(s\)/,
-    );
+    expect(() => normalizeOdooOrigin("ftp://odoo.example.com")).toThrow(/http\(s\)/);
   });
 
   it("rejects userinfo", () => {
-    expect(() =>
-      normalizeOdooOrigin("https://user:pass@odoo.example.com"),
-    ).toThrow(/userinfo/);
+    expect(() => normalizeOdooOrigin("https://user:pass@odoo.example.com")).toThrow(/userinfo/);
   });
 });
 
 describe("assertSafeOdooUrl", () => {
   it("allows public https hostname", () => {
-    expect(() =>
-      assertSafeOdooUrl("https://odoo.example.com", { allowHttp: false }),
-    ).not.toThrow();
+    expect(() => assertSafeOdooUrl("https://odoo.example.com", { allowHttp: false })).not.toThrow();
   });
 
   it("rejects http when allowHttp=false", () => {
-    expect(() =>
-      assertSafeOdooUrl("http://odoo.example.com", { allowHttp: false }),
-    ).toThrow(/https/);
+    expect(() => assertSafeOdooUrl("http://odoo.example.com", { allowHttp: false })).toThrow(
+      /https/,
+    );
   });
 
   it("allows localhost and loopback for self-host", () => {
@@ -49,9 +43,7 @@ describe("assertSafeOdooUrl", () => {
       "169.254.1.1",
       "0.0.0.0",
     ]) {
-      expect(() => assertSafeOdooUrl(`http://${host}`), host).toThrow(
-        /private|link-local/,
-      );
+      expect(() => assertSafeOdooUrl(`http://${host}`), host).toThrow(/private|link-local/);
     }
   });
 
@@ -60,24 +52,13 @@ describe("assertSafeOdooUrl", () => {
   });
 
   it("blocks unique-local and link-local IPv6", () => {
-    for (const host of [
-      "fc00::1",
-      "fd12:3456:789a::1",
-      "fe80::1",
-      "feb0::1",
-      "ff02::1",
-      "::",
-    ]) {
-      expect(() => assertSafeOdooUrl(`http://[${host}]`), host).toThrow(
-        /private|link-local/,
-      );
+    for (const host of ["fc00::1", "fd12:3456:789a::1", "fe80::1", "feb0::1", "ff02::1", "::"]) {
+      expect(() => assertSafeOdooUrl(`http://[${host}]`), host).toThrow(/private|link-local/);
     }
   });
 
   it("blocks IPv4-mapped private IPv6", () => {
-    expect(() => assertSafeOdooUrl("http://[::ffff:192.168.0.1]")).toThrow(
-      /private|link-local/,
-    );
+    expect(() => assertSafeOdooUrl("http://[::ffff:192.168.0.1]")).toThrow(/private|link-local/);
   });
 
   it("allows public IPv6 for self-host", () => {

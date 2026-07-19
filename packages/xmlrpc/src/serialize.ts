@@ -34,10 +34,7 @@ export function serializeValue(value: unknown): string {
   }
   if (typeof value === "object") {
     const members = Object.entries(value as Record<string, unknown>)
-      .map(
-        ([k, v]) =>
-          `<member><name>${escapeXml(k)}</name>${serializeValue(v)}</member>`,
-      )
+      .map(([k, v]) => `<member><name>${escapeXml(k)}</name>${serializeValue(v)}</member>`)
       .join("");
     return `<value><struct>${members}</struct></value>`;
   }
@@ -45,7 +42,7 @@ export function serializeValue(value: unknown): string {
 }
 
 export function methodCall(methodName: string, params: unknown[]): string {
-  const serialized = params.map((p) => serializeValue(p)).join("");
+  const _serialized = params.map((p) => serializeValue(p)).join("");
   return (
     `<?xml version="1.0"?>` +
     `<methodCall>` +

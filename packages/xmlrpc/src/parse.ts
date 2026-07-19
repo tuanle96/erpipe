@@ -10,11 +10,7 @@ const parser = new XMLParser({
   htmlEntities: false,
   trimValues: true,
   // Force list semantics for repeating XML-RPC nodes
-  isArray: (name) =>
-    name === "param" ||
-    name === "member" ||
-    name === "value" ||
-    name === "data",
+  isArray: (name) => name === "param" || name === "member" || name === "value" || name === "data",
 });
 
 export class XmlRpcFault extends Error {

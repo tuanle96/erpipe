@@ -4,15 +4,10 @@
  *
  * Ports of mcp-odoo diagnostics.py / agent_tools.business_pack_report (pure + optional live).
  */
-import type { OdooTransport } from "../transport/types.js";
+
 import { JSON2_POSITIONAL_ARG_MAP } from "../transport/json2-map.js";
-import {
-  clampLimit,
-  fail,
-  validateModelName,
-  type ToolResult,
-  ABS_MAX_LIMIT,
-} from "./helpers.js";
+import type { OdooTransport } from "../transport/types.js";
+import { ABS_MAX_LIMIT, clampLimit, fail, type ToolResult, validateModelName } from "./helpers.js";
 
 export type { ToolResult };
 
@@ -60,12 +55,7 @@ export const BUSINESS_PACKS: Record<
   },
   accounting: {
     modules: ["account"],
-    models: [
-      "account.move",
-      "account.move.line",
-      "account.journal",
-      "res.partner",
-    ],
+    models: ["account.move", "account.move.line", "account.journal", "res.partner"],
     safe_reports: ["open_invoices", "journal_health", "partner_balances"],
   },
   hr: {
@@ -94,10 +84,7 @@ export function classifyMethodSafety(method: string): {
       confidence: READ_ONLY_METHODS.has(method) ? "high" : "medium",
     };
   }
-  if (
-    method === "message_post" ||
-    SIDE_EFFECT_PATTERNS.some((p) => p.test(method))
-  ) {
+  if (method === "message_post" || SIDE_EFFECT_PATTERNS.some((p) => p.test(method))) {
     return {
       safety: "side_effect",
       destructive_method: false,
@@ -165,10 +152,7 @@ function majorVersion(version: string | null | undefined): number {
   return m ? Number(m[1]) : 0;
 }
 
-function sanitizeOdooError(
-  error: unknown,
-  includeDebug = false,
-): Record<string, unknown> | null {
+function sanitizeOdooError(error: unknown, includeDebug = false): Record<string, unknown> | null {
   if (error == null) return null;
   let payload: Record<string, unknown>;
   if (typeof error === "object" && !Array.isArray(error)) {
@@ -234,9 +218,7 @@ function classifyFindingAction(code: string, severity: string): string {
   return "no_action";
 }
 
-function annotateFindingActions(
-  findings: Record<string, unknown>[],
-): Record<string, number> {
+function annotateFindingActions(findings: Record<string, unknown>[]): Record<string, number> {
   const summary = {
     no_action: 0,
     needs_review: 0,
@@ -273,12 +255,7 @@ export function generateJson2Payload(opts: {
   try {
     const { model, method } = opts;
     const path = `/json/2/${model}/${method}`;
-    const { body, warnings } = buildJson2Body(
-      model,
-      method,
-      opts.args,
-      opts.kwargs,
-    );
+    const { body, warnings } = buildJson2Body(model, method, opts.args, opts.kwargs);
     const safety = classifyMethodSafety(method);
     if (safety.destructive_method) {
       warnings.push({
@@ -287,10 +264,7 @@ export function generateJson2Payload(opts: {
       });
     } else if (safety.safety === "side_effect" || safety.safety === "unknown") {
       warnings.push({
-        code:
-          safety.safety === "side_effect"
-            ? "side_effect_method"
-            : "unknown_side_effects",
+        code: safety.safety === "side_effect" ? "side_effect_method" : "unknown_side_effects",
         message: `${model}.${method} is not a known read-only ORM method; review server-side implementation before executing it.`,
       });
     }
@@ -301,8 +275,7 @@ export function generateJson2Payload(opts: {
       Authorization: "bearer <api-key>",
       "Content-Type": "application/json",
       Accept: "application/json",
-      "X-Odoo-Database":
-        includeDb && opts.database ? opts.database : null,
+      "X-Odoo-Database": includeDb && opts.database ? opts.database : null,
     };
 
     return {
@@ -331,16 +304,18 @@ export function generateJson2Payload(opts: {
 }
 
 /** Input-driven Odoo upgrade / JSON-2 migration risk report. */
-export function upgradeRiskReport(opts: {
-  source_version?: string | null;
-  target_version?: string | null;
-  modules?: Record<string, unknown>[] | null;
-  methods?: Record<string, unknown>[] | null;
-  source_findings?: Record<string, unknown>[] | null;
-  observed_errors?: unknown[] | null;
-  use_live_metadata?: boolean;
-  include_debug?: boolean;
-} = {}): ToolResult {
+export function upgradeRiskReport(
+  opts: {
+    source_version?: string | null;
+    target_version?: string | null;
+    modules?: Record<string, unknown>[] | null;
+    methods?: Record<string, unknown>[] | null;
+    source_findings?: Record<string, unknown>[] | null;
+    observed_errors?: unknown[] | null;
+    use_live_metadata?: boolean;
+    include_debug?: boolean;
+  } = {},
+): ToolResult {
   try {
     const risks: Record<string, unknown>[] = [];
     const targetMajor = majorVersion(opts.target_version);
@@ -349,20 +324,15 @@ export function upgradeRiskReport(opts: {
         code: "xmlrpc_jsonrpc_removal",
         severity: "error",
         evidence: `Target version ${opts.target_version} reaches ${ODOO_RPC_REMOVAL}.`,
-        recommendation:
-          "Move integrations to External JSON-2 with named arguments.",
+        recommendation: "Move integrations to External JSON-2 with named arguments.",
       });
-    } else if (
-      targetMajor >= ODOO_RPC_DEPRECATION_MAJOR ||
-      opts.source_version
-    ) {
+    } else if (targetMajor >= ODOO_RPC_DEPRECATION_MAJOR || opts.source_version) {
       risks.push({
         code: "json2_migration",
         severity: "warning",
         evidence:
           "Odoo 19 introduces External JSON-2 as the replacement API; XML-RPC stays available but deprecated through Odoo 21.",
-        recommendation:
-          "Prefer JSON-2 payload previews and avoid new XML-RPC-only integrations.",
+        recommendation: "Prefer JSON-2 payload previews and avoid new XML-RPC-only integrations.",
       });
     }
 
@@ -381,35 +351,26 @@ export function upgradeRiskReport(opts: {
           code: "destructive_method_review",
           severity: "warning",
           evidence: `${model}.${method} can modify Odoo data.`,
-          recommendation:
-            "Validate access rules, required fields, and transaction boundaries.",
+          recommendation: "Validate access rules, required fields, and transaction boundaries.",
         });
       } else if (safety.safety === "unknown") {
         risks.push({
           code: "unknown_custom_method",
           severity: "warning",
           evidence: `${model}.${method} side effects are unknown.`,
-          recommendation:
-            "Inspect custom module source before migrating or invoking.",
+          recommendation: "Inspect custom module source before migrating or invoking.",
         });
       }
     }
 
     for (const module of opts.modules ?? []) {
-      const moduleName = String(
-        module.name ?? module.module ?? "unknown",
-      );
-      if (
-        module.custom ||
-        moduleName.startsWith("x_") ||
-        moduleName.startsWith("studio_")
-      ) {
+      const moduleName = String(module.name ?? module.module ?? "unknown");
+      if (module.custom || moduleName.startsWith("x_") || moduleName.startsWith("studio_")) {
         risks.push({
           code: "custom_module_upgrade",
           severity: "warning",
           evidence: `${moduleName} appears custom or Studio-like.`,
-          recommendation:
-            "Test views, fields, reports, actions, and access rules on staging.",
+          recommendation: "Test views, fields, reports, actions, and access rules on staging.",
         });
       }
     }
@@ -420,8 +381,7 @@ export function upgradeRiskReport(opts: {
         severity: String(finding.severity ?? "warning"),
         evidence: String(finding.evidence ?? finding),
         recommendation: String(
-          finding.recommendation ??
-            "Review this source finding before upgrade.",
+          finding.recommendation ?? "Review this source finding before upgrade.",
         ),
       });
     }
@@ -462,9 +422,7 @@ export function upgradeRiskReport(opts: {
         fields_get: false,
         source_scan: Boolean(opts.source_findings?.length),
         source:
-          opts.modules?.length ||
-          opts.methods?.length ||
-          opts.source_findings?.length
+          opts.modules?.length || opts.methods?.length || opts.source_findings?.length
             ? "input"
             : "none",
       },
@@ -486,41 +444,25 @@ function classifyRequirement(
   const text = requirement.toLowerCase();
   const modelText = availableModels.join(" ").toLowerCase();
   const moduleText = installedModules
-    .map((m) =>
-      typeof m === "object"
-        ? String(m.name ?? m.module ?? "")
-        : String(m),
-    )
+    .map((m) => (typeof m === "object" ? String(m.name ?? m.module ?? "") : String(m)))
     .join(" ")
     .toLowerCase();
 
-  if (
-    ["bypass access", "direct database", "modify core"].some((t) =>
-      text.includes(t),
-    )
-  ) {
+  if (["bypass access", "direct database", "modify core"].some((t) => text.includes(t))) {
     return {
       classification: "avoid",
       confidence: "medium",
       evidence: ["Requirement suggests bypassing Odoo safety boundaries."],
     };
   }
-  if (
-    ["studio", "custom field", "new field", "form view"].some((t) =>
-      text.includes(t),
-    )
-  ) {
+  if (["studio", "custom field", "new field", "form view"].some((t) => text.includes(t))) {
     return {
       classification: "studio",
       confidence: "medium",
       evidence: ["Looks like field/view customization."],
     };
   }
-  if (
-    ["custom", "integration", "api", "workflow", "complex"].some((t) =>
-      text.includes(t),
-    )
-  ) {
+  if (["custom", "integration", "api", "workflow", "complex"].some((t) => text.includes(t))) {
     return {
       classification: "custom_module",
       confidence: "medium",
@@ -528,9 +470,7 @@ function classifyRequirement(
     };
   }
   if (
-    ["configure", "sequence", "email template", "tax", "approval"].some((t) =>
-      text.includes(t),
-    )
+    ["configure", "sequence", "email template", "tax", "approval"].some((t) => text.includes(t))
   ) {
     return {
       classification: "configuration",
@@ -538,30 +478,18 @@ function classifyRequirement(
       evidence: ["Likely solvable through Odoo configuration."],
     };
   }
-  const standardTerms = [
-    "contact",
-    "partner",
-    "invoice",
-    "sale",
-    "purchase",
-    "inventory",
-    "crm",
-  ];
+  const standardTerms = ["contact", "partner", "invoice", "sale", "purchase", "inventory", "crm"];
   if (standardTerms.some((t) => text.includes(t))) {
     const evidence =
       modelText || moduleText
-        ? [
-            "Provided model/module evidence suggests standard Odoo coverage.",
-          ]
+        ? ["Provided model/module evidence suggests standard Odoo coverage."]
         : ["Matches common standard Odoo app terminology."];
     return { classification: "standard", confidence: "medium", evidence };
   }
   return {
     classification: "unknown",
     confidence: "low",
-    evidence: [
-      "Not enough model/module evidence to classify confidently.",
-    ],
+    evidence: ["Not enough model/module evidence to classify confidently."],
   };
 }
 
@@ -581,9 +509,7 @@ function recommendedFitGapCalls(
   classification: string,
 ): Record<string, unknown>[] {
   const first = requirement.split(/\s+/)[0] || null;
-  const calls: Record<string, unknown>[] = [
-    { tool: "list_models", arguments: { query: first } },
-  ];
+  const calls: Record<string, unknown>[] = [{ tool: "list_models", arguments: { query: first } }];
   if (
     classification === "studio" ||
     classification === "custom_module" ||
@@ -615,9 +541,7 @@ export function fitGapReport(opts: {
     for (const raw of opts.requirements) {
       const requirement =
         typeof raw === "object" && raw !== null
-          ? String(
-              (raw as { requirement?: unknown }).requirement ?? raw,
-            )
+          ? String((raw as { requirement?: unknown }).requirement ?? raw)
           : String(raw);
       const { classification, confidence, evidence } = classifyRequirement(
         requirement,
@@ -631,10 +555,7 @@ export function fitGapReport(opts: {
         classification,
         confidence,
         evidence,
-        recommended_next_calls: recommendedFitGapCalls(
-          requirement,
-          classification,
-        ),
+        recommended_next_calls: recommendedFitGapCalls(requirement, classification),
       });
     }
 
@@ -671,9 +592,7 @@ export function fitGapReport(opts: {
         fields_get: Boolean(opts.available_fields),
         modules: Boolean(opts.installed_modules?.length),
         source:
-          availableModels.length ||
-          opts.available_fields ||
-          installedModules.length
+          availableModels.length || opts.available_fields || installedModules.length
             ? "input"
             : "none",
       },
@@ -752,12 +671,10 @@ export async function businessPackReportLive(
 
     if (useLive && transport) {
       try {
-        const rows = (await transport.executeKw(
-          "ir.model",
-          "search_read",
-          [[]],
-          { fields: ["model"], limit: 2000 },
-        )) as { model?: string }[];
+        const rows = (await transport.executeKw("ir.model", "search_read", [[]], {
+          fields: ["model"],
+          limit: 2000,
+        })) as { model?: string }[];
         if (Array.isArray(rows)) {
           availableModels = rows
             .map((r) => r.model)
@@ -848,9 +765,13 @@ export async function renderReport(
         report_name?: string;
         report_type?: string;
       }[];
-      const pdf = (found ?? []).find(
-        (r) => !r.report_type || String(r.report_type).includes("qweb-pdf") || String(r.report_type).includes("pdf"),
-      ) ?? found?.[0];
+      const pdf =
+        (found ?? []).find(
+          (r) =>
+            !r.report_type ||
+            String(r.report_type).includes("qweb-pdf") ||
+            String(r.report_type).includes("pdf"),
+        ) ?? found?.[0];
       if (!pdf?.report_name && !pdf?.id) {
         return {
           success: false,

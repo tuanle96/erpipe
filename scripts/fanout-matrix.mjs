@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import path from "node:path";
 /**
  * Measure schema_catalog fan-out on Odoo 16–19 without logging credentials.
  *
@@ -9,15 +10,11 @@
  *   ODOO19_URL, ODOO19_DB, ODOO19_API_KEY
  * Optional: FANOUT_LIMIT (default 10), FANOUT_QUERY (default "res.")
  */
-import { pathToFileURL } from "node:url";
-import path from "node:path";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 
 const scriptDir = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(scriptDir, "..");
-const core = await import(
-  pathToFileURL(path.join(root, "packages/core/dist/index.js")).href
-);
+const core = await import(pathToFileURL(path.join(root, "packages/core/dist/index.js")).href);
 
 const encoder = new TextEncoder();
 const byteLength = (value) => encoder.encode(JSON.stringify(value)).byteLength;
@@ -92,9 +89,7 @@ async function measure(target) {
   const wallClockMs = Math.round(performance.now() - wallStart);
   const cpu = process.cpuUsage(cpuStart);
   if (!result.success) {
-    throw new Error(
-      `Odoo ${target.version} failed: ${result.error || "unknown"}`,
-    );
+    throw new Error(`Odoo ${target.version} failed: ${result.error || "unknown"}`);
   }
 
   return {

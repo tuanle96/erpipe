@@ -137,10 +137,7 @@ export class Json2Transport implements OdooTransport {
     return headers;
   }
 
-  private async fetchJson(
-    url: string,
-    init: RequestInit,
-  ): Promise<unknown> {
+  private async fetchJson(url: string, init: RequestInit): Promise<unknown> {
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), this.timeoutMs);
     try {
@@ -171,10 +168,7 @@ export class Json2Transport implements OdooTransport {
       if (e instanceof Error && e.name === "AbortError") {
         throw new OdooError("TIMEOUT", `JSON-2 request timed out after ${this.timeoutMs}ms`);
       }
-      throw new OdooError(
-        "CONNECTION_FAILED",
-        e instanceof Error ? e.message : String(e),
-      );
+      throw new OdooError("CONNECTION_FAILED", e instanceof Error ? e.message : String(e));
     } finally {
       clearTimeout(timer);
     }
@@ -187,10 +181,7 @@ function parseVersion(raw: string): OdooVersion {
   return { major: Number(m[1]), minor: Number(m[2]), raw };
 }
 
-async function readBodyCapped(
-  res: Response,
-  maxBytes: number,
-): Promise<Uint8Array> {
+async function readBodyCapped(res: Response, maxBytes: number): Promise<Uint8Array> {
   const cl = res.headers.get("content-length");
   if (cl && Number(cl) > maxBytes) {
     throw new OdooError("LIMIT_EXCEEDED", `Response Content-Length ${cl} exceeds cap ${maxBytes}`);

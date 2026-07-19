@@ -1,12 +1,8 @@
 import { describe, expect, it } from "vitest";
-import {
-  previewWrite,
-  validateWrite,
-  executeApprovedWrite,
-} from "./write";
 import { MemoryApprovalStore } from "../approval/token";
 import { FieldPolicy } from "../field-policy";
 import type { OdooTransport } from "../transport/types";
+import { executeApprovedWrite, previewWrite, validateWrite } from "./write";
 
 function mockTransport(
   fields: Record<string, unknown> = {
@@ -43,7 +39,7 @@ describe("write gate", () => {
       values: { name: "ERPipe Smoke Partner" },
     });
     expect(preview.success).toBe(true);
-    const approval = preview.approval as Record<string, unknown>;
+    const _approval = preview.approval as Record<string, unknown>;
 
     const validated = await validateWrite(t, store, {
       model: "res.partner",
@@ -106,9 +102,7 @@ describe("write gate", () => {
     });
     expect(validated.success).toBe(false);
     expect(
-      (validated.issues as { code: string }[]).some(
-        (i) => i.code === "field_policy_denied",
-      ),
+      (validated.issues as { code: string }[]).some((i) => i.code === "field_policy_denied"),
     ).toBe(true);
   });
 

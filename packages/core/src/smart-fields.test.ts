@@ -1,9 +1,5 @@
 import { describe, expect, it } from "vitest";
-import {
-  buildTextQueryDomain,
-  rankRelevantFields,
-  selectSmartFields,
-} from "./smart-fields";
+import { buildTextQueryDomain, rankRelevantFields, selectSmartFields } from "./smart-fields";
 
 const meta = {
   id: { type: "integer" },

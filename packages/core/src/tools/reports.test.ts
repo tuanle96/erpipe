@@ -1,12 +1,12 @@
 import { describe, expect, it } from "vitest";
 import {
-  generateJson2Payload,
-  upgradeRiskReport,
-  fitGapReport,
+  BUSINESS_PACKS,
   businessPackReport,
   classifyMethodSafety,
-  BUSINESS_PACKS,
+  fitGapReport,
+  generateJson2Payload,
   PHASE4_TOOLS,
+  upgradeRiskReport,
 } from "./reports";
 
 describe("classifyMethodSafety", () => {
@@ -34,19 +34,13 @@ describe("generate_json2_payload", () => {
     });
     expect(r.success).toBe(true);
     expect(r.tool).toBe("generate_json2_payload");
-    expect((r.endpoint as { path: string }).path).toBe(
-      "/json/2/res.partner/search_read",
-    );
-    expect((r.endpoint as { url: string }).url).toContain(
-      "https://odoo.example.com/json/2/",
-    );
+    expect((r.endpoint as { path: string }).path).toBe("/json/2/res.partner/search_read");
+    expect((r.endpoint as { url: string }).url).toContain("https://odoo.example.com/json/2/");
     const body = r.body as Record<string, unknown>;
     expect(body.domain).toEqual([["is_company", "=", true]]);
     expect(body.fields).toEqual(["id", "name"]);
     expect(body.limit).toBe(10);
-    expect((r.headers as Record<string, unknown>)["X-Odoo-Database"]).toBe(
-      "prod",
-    );
+    expect((r.headers as Record<string, unknown>)["X-Odoo-Database"]).toBe("prod");
   });
 
   it("warns on unmapped custom method positionals", () => {
@@ -57,9 +51,7 @@ describe("generate_json2_payload", () => {
     });
     expect(r.success).toBe(false);
     const warnings = r.warnings as { code: string }[];
-    expect(warnings.some((w) => w.code === "json2_positional_unsupported")).toBe(
-      true,
-    );
+    expect(warnings.some((w) => w.code === "json2_positional_unsupported")).toBe(true);
   });
 
   it("warns on destructive methods", () => {
@@ -81,15 +73,11 @@ describe("upgrade_risk_report", () => {
       target_version: "22.0",
     });
     expect(r.success).toBe(true);
-    expect((r.summary as { risk: string; blocked: boolean }).blocked).toBe(
-      true,
-    );
+    expect((r.summary as { risk: string; blocked: boolean }).blocked).toBe(true);
     expect((r.summary as { risk: string }).risk).toBe("high");
     const risks = r.risks as { code: string }[];
     expect(risks.some((x) => x.code === "xmlrpc_jsonrpc_removal")).toBe(true);
-    expect((r.transport as { json2_required: boolean }).json2_required).toBe(
-      true,
-    );
+    expect((r.transport as { json2_required: boolean }).json2_required).toBe(true);
   });
 
   it("warns on custom modules and destructive methods", () => {
@@ -100,12 +88,8 @@ describe("upgrade_risk_report", () => {
     });
     const risks = r.risks as { code: string }[];
     expect(risks.some((x) => x.code === "custom_module_upgrade")).toBe(true);
-    expect(risks.some((x) => x.code === "destructive_method_review")).toBe(
-      true,
-    );
-    expect(
-      (r.destructive_methods as unknown[]).length,
-    ).toBeGreaterThanOrEqual(1);
+    expect(risks.some((x) => x.code === "destructive_method_review")).toBe(true);
+    expect((r.destructive_methods as unknown[]).length).toBeGreaterThanOrEqual(1);
   });
 
   it("redacts observed error debug by default", () => {
@@ -156,9 +140,7 @@ describe("business_pack_report", () => {
     expect(r.pack).toBe("accounting");
     expect(r.missing_models).toEqual([]);
     expect((r.metadata_used as { source: string }).source).toBe("static_pack");
-    expect((r.expected_models as string[]).includes("account.move")).toBe(
-      true,
-    );
+    expect((r.expected_models as string[]).includes("account.move")).toBe(true);
   });
 
   it("computes missing models when live evidence provided", () => {

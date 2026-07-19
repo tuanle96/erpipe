@@ -43,9 +43,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "conditions"
-        ],
+        "required": ["conditions"],
         "title": "build_domainArguments",
         "type": "object"
       },
@@ -145,9 +143,7 @@
             "title": "Tool"
           }
         },
-        "required": [
-          "success"
-        ],
+        "required": ["success"],
         "title": "BuildDomainResponse",
         "type": "object"
       },
@@ -210,9 +206,7 @@
             "title": "Relevance"
           }
         },
-        "required": [
-          "model"
-        ],
+        "required": ["model"],
         "title": "get_model_fieldsArguments",
         "type": "object"
       },
@@ -322,9 +316,7 @@
             "title": "Tool"
           }
         },
-        "required": [
-          "success"
-        ],
+        "required": ["success"],
         "title": "GetModelFieldsResponse",
         "type": "object"
       },
@@ -431,9 +423,7 @@
             "title": "Tool"
           }
         },
-        "required": [
-          "success"
-        ],
+        "required": ["success"],
         "title": "HealthCheckResponse",
         "type": "object"
       },
@@ -498,9 +488,7 @@
                 "type": "string"
               }
             },
-            "required": [
-              "model"
-            ],
+            "required": ["model"],
             "title": "ModelSummary",
             "type": "object"
           }
@@ -566,9 +554,7 @@
             "title": "Tool"
           }
         },
-        "required": [
-          "success"
-        ],
+        "required": ["success"],
         "title": "ListModelsResponse",
         "type": "object"
       },
@@ -618,10 +604,7 @@
             "type": "integer"
           }
         },
-        "required": [
-          "model",
-          "record_id"
-        ],
+        "required": ["model", "record_id"],
         "title": "read_recordArguments",
         "type": "object"
       },
@@ -716,9 +699,7 @@
             "title": "Tool"
           }
         },
-        "required": [
-          "success"
-        ],
+        "required": ["success"],
         "title": "ReadRecordResponse",
         "type": "object"
       },
@@ -808,9 +789,7 @@
             "title": "Query"
           }
         },
-        "required": [
-          "model"
-        ],
+        "required": ["model"],
         "title": "search_recordsArguments",
         "type": "object"
       },
@@ -936,9 +915,7 @@
             "title": "Tool"
           }
         },
-        "required": [
-          "success"
-        ],
+        "required": ["success"],
         "title": "SearchRecordsResponse",
         "type": "object"
       },

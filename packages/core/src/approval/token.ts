@@ -21,14 +21,10 @@ export type WriteApproval = {
 export async function sha256Hex(input: string): Promise<string> {
   const data = new TextEncoder().encode(input);
   const buf = await crypto.subtle.digest("SHA-256", data);
-  return [...new Uint8Array(buf)]
-    .map((b) => b.toString(16).padStart(2, "0"))
-    .join("");
+  return [...new Uint8Array(buf)].map((b) => b.toString(16).padStart(2, "0")).join("");
 }
 
-export async function buildApprovalToken(
-  payload: Record<string, unknown>,
-): Promise<string> {
+export async function buildApprovalToken(payload: Record<string, unknown>): Promise<string> {
   const digest = await sha256Hex(canonicalJson(payload));
   return `odoo-write:${digest.slice(0, 32)}`;
 }
@@ -73,15 +69,8 @@ export async function verifyWriteApproval(
 }
 
 export type ApprovalTokenStore = {
-  issue(
-    token: string,
-    payload: WriteApproval,
-    expiresAt: number,
-  ): Promise<void>;
-  consume(
-    token: string,
-    now: number,
-  ): Promise<WriteApproval | null>;
+  issue(token: string, payload: WriteApproval, expiresAt: number): Promise<void>;
+  consume(token: string, now: number): Promise<WriteApproval | null>;
 };
 
 /** In-memory store for tests / single-process self-host. */
@@ -91,11 +80,7 @@ export class MemoryApprovalStore implements ApprovalTokenStore {
     { payload: WriteApproval; expiresAt: number; consumed: boolean }
   >();
 
-  async issue(
-    token: string,
-    payload: WriteApproval,
-    expiresAt: number,
-  ): Promise<void> {
+  async issue(token: string, payload: WriteApproval, expiresAt: number): Promise<void> {
     this.map.set(token, { payload, expiresAt, consumed: false });
   }
 

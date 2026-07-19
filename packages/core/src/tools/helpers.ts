@@ -1,13 +1,9 @@
-import type { OdooTransport } from "../transport/types.js";
-import { FIELDS_GET_ATTRIBUTES } from "../transport/json2-map.js";
 import { isOdooError, OdooError } from "../errors.js";
-import {
-  selectSmartFields,
-  DEFAULT_MAX_SMART_FIELDS,
-} from "../smart-fields.js";
+import { DEFAULT_MAX_SMART_FIELDS, selectSmartFields } from "../smart-fields.js";
+import { FIELDS_GET_ATTRIBUTES } from "../transport/json2-map.js";
+import type { OdooTransport } from "../transport/types.js";
 
-const MODEL_NAME_RE =
-  /^[a-zA-Z_][a-zA-Z0-9_]*(?:\.[a-zA-Z_][a-zA-Z0-9_]*)*$/;
+const MODEL_NAME_RE = /^[a-zA-Z_][a-zA-Z0-9_]*(?:\.[a-zA-Z_][a-zA-Z0-9_]*)*$/;
 
 export const MAX_SEARCH_LIMIT = 100;
 export const ABS_MAX_LIMIT = 500;
@@ -27,9 +23,7 @@ export function fail(error: unknown, tool?: string): ToolResult {
       : { success: false, error: error.message, code: error.code };
   }
   const message = error instanceof Error ? error.message : String(error);
-  return tool
-    ? { success: false, tool, error: message }
-    : { success: false, error: message };
+  return tool ? { success: false, tool, error: message } : { success: false, error: message };
 }
 
 export async function fieldsGet(
@@ -43,10 +37,7 @@ export async function fieldsGet(
     throw new OdooError("TRANSPORT_ERROR", "fields_get returned unexpected shape");
   }
   if ("error" in (fields as object)) {
-    throw new OdooError(
-      "TRANSPORT_ERROR",
-      String((fields as { error: unknown }).error),
-    );
+    throw new OdooError("TRANSPORT_ERROR", String((fields as { error: unknown }).error));
   }
   return fields as Record<string, unknown>;
 }
@@ -57,10 +48,7 @@ export function validateModelName(model: string): void {
   }
 }
 
-export function clampLimit(
-  limit: number,
-  maximum = MAX_SEARCH_LIMIT,
-): number {
+export function clampLimit(limit: number, maximum = MAX_SEARCH_LIMIT): number {
   if (!Number.isFinite(limit) || limit < 1) {
     throw new OdooError("LIMIT_EXCEEDED", "limit must be >= 1");
   }
@@ -90,10 +78,7 @@ export function normalizeDomainInput(domain: unknown): unknown[] {
       return [o.field, o.operator, o.value];
     });
   }
-  throw new OdooError(
-    "VALIDATION_ERROR",
-    "domain must be a list or conditions object",
-  );
+  throw new OdooError("VALIDATION_ERROR", "domain must be a list or conditions object");
 }
 
 /** Smart-fields via field_ranking port when fields omitted. */

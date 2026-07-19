@@ -1,17 +1,17 @@
-import type { OdooTransport } from "../transport/types.js";
 import { OdooError } from "../errors.js";
+import { buildTextQueryDomain, rankRelevantFields } from "../smart-fields.js";
+import type { OdooTransport } from "../transport/types.js";
+import { buildDomain, type DomainConditionInput } from "./domain.js";
 import {
+  ABS_MAX_LIMIT,
   clampLimit,
+  fail,
+  fieldsGet,
   normalizeDomainInput,
   resolveReadFields,
-  validateModelName,
-  fieldsGet,
-  fail,
   type ToolResult,
-  ABS_MAX_LIMIT,
+  validateModelName,
 } from "./helpers.js";
-import { buildDomain, type DomainConditionInput } from "./domain.js";
-import { buildTextQueryDomain, rankRelevantFields } from "../smart-fields.js";
 
 export type { ToolResult };
 
@@ -69,9 +69,7 @@ export async function getModelFields(
     let fields = await fieldsGet(transport, opts.model);
     if (opts.field_names?.length) {
       fields = Object.fromEntries(
-        opts.field_names
-          .filter((n) => n in fields)
-          .map((n) => [n, fields[n]]),
+        opts.field_names.filter((n) => n in fields).map((n) => [n, fields[n]]),
       );
     }
     if (opts.relevance === "top") {
@@ -135,12 +133,7 @@ export async function searchRecords(
     if (resolved !== null) kwargs.fields = resolved;
     if (opts.order) kwargs.order = opts.order;
 
-    const records = await transport.executeKw(
-      opts.model,
-      "search_read",
-      [],
-      kwargs,
-    );
+    const records = await transport.executeKw(opts.model, "search_read", [], kwargs);
     const list = Array.isArray(records) ? records : [];
     const report: ToolResult = {
       success: true,

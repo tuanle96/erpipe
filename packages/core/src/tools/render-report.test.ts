@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { renderReport } from "./reports.js";
 import type { OdooTransport } from "../transport/types.js";
+import { renderReport } from "./reports.js";
 
 function mockTransport(handlers: {
   search_read?: unknown;
@@ -47,9 +47,7 @@ describe("renderReport", () => {
   it("rejects oversized PDF payload", async () => {
     const huge = "A".repeat(10_000_000);
     const t = mockTransport({
-      search_read: [
-        { id: 1, report_name: "sale.report_saleorder", report_type: "qweb-pdf" },
-      ],
+      search_read: [{ id: 1, report_name: "sale.report_saleorder", report_type: "qweb-pdf" }],
       _render_qweb_pdf: [huge, "pdf"],
     });
     const res = await renderReport(t, {

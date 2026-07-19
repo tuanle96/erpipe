@@ -1,25 +1,20 @@
 /**
  * Gated write tools: preview_write → validate_write → execute_approved_write.
  */
-import type { OdooTransport } from "../transport/types.js";
-import { OdooError } from "../errors.js";
+
 import {
-  validateModelName,
-  fieldsGet,
-  fail as failBase,
-  type ToolResult,
-} from "./helpers.js";
-import { FieldPolicy } from "../field-policy.js";
-import {
-  ApprovalTokenStore,
+  type ApprovalTokenStore,
+  buildApprovalToken,
+  MAX_WRITE_BATCH_SIZE,
+  verifyWriteApproval,
   WRITE_APPROVAL_TTL_MS,
   WRITE_OPERATIONS,
-  MAX_WRITE_BATCH_SIZE,
-  buildApprovalToken,
-  canonicalWritePayload,
-  verifyWriteApproval,
   type WriteApproval,
 } from "../approval/token.js";
+import { OdooError } from "../errors.js";
+import { FieldPolicy } from "../field-policy.js";
+import type { OdooTransport } from "../transport/types.js";
+import { fail as failBase, fieldsGet, type ToolResult, validateModelName } from "./helpers.js";
 
 export type { ToolResult };
 
@@ -27,9 +22,7 @@ function fail(tool: string, error: unknown): ToolResult {
   return failBase(error, tool);
 }
 
-async function hashFieldsGet(
-  fields: Record<string, unknown>,
-): Promise<string> {
+async function hashFieldsGet(fields: Record<string, unknown>): Promise<string> {
   const { sha256Hex } = await import("../approval/token.js");
   const { canonicalJson } = await import("../approval/canonical.js");
   return sha256Hex(canonicalJson(fields));
@@ -87,9 +80,7 @@ export async function previewWrite(opts: {
       });
     }
     const values = { ...(opts.values ?? {}) };
-    const valuesList = opts.values_list
-      ? opts.values_list.map((e) => ({ ...e }))
-      : null;
+    const valuesList = opts.values_list ? opts.values_list.map((e) => ({ ...e })) : null;
     const recordIds = [...(opts.record_ids ?? [])].map(Number);
 
     if (valuesList != null) {
@@ -245,16 +236,11 @@ export async function validateWrite(
       }
       if (approval.values_list) {
         for (const [i, entry] of approval.values_list.entries()) {
-          issues.push(
-            ...metadataIssuesForValues(entry, fieldsMetadata, `values_list[${i}]`),
-          );
+          issues.push(...metadataIssuesForValues(entry, fieldsMetadata, `values_list[${i}]`));
         }
       } else if (approval.values && Object.keys(approval.values).length) {
         issues.push(
-          ...metadataIssuesForValues(
-            approval.values as Record<string, unknown>,
-            fieldsMetadata,
-          ),
+          ...metadataIssuesForValues(approval.values as Record<string, unknown>, fieldsMetadata),
         );
       }
     }
@@ -285,9 +271,7 @@ export async function validateWrite(
         stored,
         expires_in_seconds: WRITE_APPROVAL_TTL_MS / 1000,
         source: metadataSource,
-        reason: stored
-          ? undefined
-          : "execute requires successful validation + live fields_get",
+        reason: stored ? undefined : "execute requires successful validation + live fields_get",
       },
       metadata_used: { fields_get: !!fieldsMetadata, source: metadataSource },
     };
@@ -365,19 +349,13 @@ export async function executeApprovedWrite(
     let result: unknown;
     if (op === "create") {
       if (stored.values_list?.length) {
-        result = await transport.executeKw(
-          stored.model,
-          "create",
-          [stored.values_list],
-          { ...(stored.context ? { context: stored.context } : {}) },
-        );
+        result = await transport.executeKw(stored.model, "create", [stored.values_list], {
+          ...(stored.context ? { context: stored.context } : {}),
+        });
       } else {
-        result = await transport.executeKw(
-          stored.model,
-          "create",
-          [stored.values],
-          { ...(stored.context ? { context: stored.context } : {}) },
-        );
+        result = await transport.executeKw(stored.model, "create", [stored.values], {
+          ...(stored.context ? { context: stored.context } : {}),
+        });
       }
     } else if (op === "write") {
       result = await transport.executeKw(
@@ -387,12 +365,9 @@ export async function executeApprovedWrite(
         { ...(stored.context ? { context: stored.context } : {}) },
       );
     } else if (op === "unlink") {
-      result = await transport.executeKw(
-        stored.model,
-        "unlink",
-        [stored.record_ids],
-        { ...(stored.context ? { context: stored.context } : {}) },
-      );
+      result = await transport.executeKw(stored.model, "unlink", [stored.record_ids], {
+        ...(stored.context ? { context: stored.context } : {}),
+      });
     } else {
       return {
         success: false,
@@ -439,12 +414,11 @@ export async function chatterPost(
     if (opts.record_id < 1) {
       throw new OdooError("VALIDATION_ERROR", "record_id must be > 0");
     }
-    const result = await transport.executeKw(
-      opts.model,
-      "message_post",
-      [[opts.record_id]],
-      { body: opts.body, message_type: "comment", subtype_xmlid: "mail.mt_note" },
-    );
+    const result = await transport.executeKw(opts.model, "message_post", [[opts.record_id]], {
+      body: opts.body,
+      message_type: "comment",
+      subtype_xmlid: "mail.mt_note",
+    });
     return { success: true, tool: "chatter_post", result };
   } catch (e) {
     return fail("chatter_post", e);

@@ -1,120 +1,120 @@
-export { OdooError, isOdooError, type OdooErrorCode } from "./errors.js";
+export { canonicalJson } from "./approval/canonical.js";
+export {
+  type ApprovalTokenStore,
+  buildApprovalToken,
+  MemoryApprovalStore,
+  verifyWriteApproval,
+  WRITE_APPROVAL_TTL_MS,
+  type WriteApproval,
+} from "./approval/token.js";
+export { assertDomainList, isDomainList } from "./domain.js";
+export { isOdooError, OdooError, type OdooErrorCode } from "./errors.js";
+export { FieldPolicy, type FieldPolicyDoc } from "./field-policy.js";
+export {
+  addCloudV1ToolContracts,
+  CLOUD_V1_PYTHON_CONTRACTS,
+  type CloudV1ToolContract,
+  type CloudV1ToolName,
+  cloudV1StructuredContent,
+  getCloudV1ToolContract,
+  type JsonSchema,
+} from "./mcp-contracts.js";
+export {
+  CLOUD_V1_PROMPTS,
+  type CloudV1PromptName,
+  PROMPT_CATALOG,
+  type PromptDef,
+  promptCustomerOnboarding,
+  promptDiagnoseFailedOdooCall,
+  promptFitGapWorkshop,
+  promptInvoiceApprovalChain,
+  promptJson2MigrationPlan,
+  promptPoToReceipt,
+  promptSafeWriteReview,
+  renderCloudPrompt,
+} from "./prompts.js";
+export {
+  CLOUD_V1_RESOURCES,
+  type OdooResourceContext,
+  readCloudV1Resource,
+} from "./resources.js";
+export {
+  buildTextQueryDomain,
+  DEFAULT_MAX_SMART_FIELDS,
+  rankRelevantFields,
+  selectSmartFields,
+} from "./smart-fields.js";
+export { type BuildDomainResult, buildDomain, type DomainConditionInput } from "./tools/domain.js";
+export {
+  ABS_MAX_LIMIT,
+  BULK_READ_ID_CAP,
+  clampLimit,
+  DEFAULT_PREVIEW_SLICE,
+  fail,
+  fieldsGet,
+  MAX_SEARCH_LIMIT,
+  normalizeDomainInput,
+  PREVIEW_SLICE_MED,
+  resolveReadFields,
+  type ToolResult,
+  validateModelName,
+} from "./tools/helpers.js";
+export {
+  ABS_MAX_ATTACHMENT_BYTES,
+  aggregateRecords,
+  DEFAULT_MAX_ATTACHMENT_BYTES,
+  diagnoseAccess,
+  diagnoseOdooCall,
+  getOdooProfile,
+  inspectModelRelationships,
+  PHASE2_TOOLS,
+  readAttachment,
+  schemaCatalog,
+  searchEmployee,
+  searchHolidays,
+} from "./tools/phase2.js";
+export {
+  buildDomainTool,
+  getModelFields,
+  healthCheck,
+  listModels,
+  readRecord,
+  searchRecords,
+} from "./tools/read.js";
+export {
+  ABS_MAX_REPORT_BYTES,
+  BUSINESS_PACKS,
+  businessPackReport,
+  businessPackReportLive,
+  classifyMethodSafety,
+  DEFAULT_MAX_REPORT_BYTES,
+  fitGapReport,
+  generateJson2Payload,
+  PHASE4_TOOLS,
+  renderReport,
+  upgradeRiskReport,
+} from "./tools/reports.js";
+export {
+  chatterPost,
+  executeApprovedWrite,
+  executeMethod,
+  PHASE3_TOOLS,
+  previewWrite,
+  validateWrite,
+} from "./tools/write.js";
+export {
+  buildJson2Payload,
+  type Json2Config,
+  Json2Transport,
+} from "./transport/json2.js";
+export { FIELDS_GET_ATTRIBUTES, JSON2_POSITIONAL_ARG_MAP } from "./transport/json2-map.js";
 export type {
   ConnectionConfig,
   OdooTransport,
   OdooVersion,
 } from "./transport/types.js";
-export { assertDomainList, isDomainList } from "./domain.js";
-export { canonicalJson } from "./approval/canonical.js";
-export {
-  Json2Transport,
-  buildJson2Payload,
-  type Json2Config,
-} from "./transport/json2.js";
-export { XmlRpcTransport, type XmlRpcConfig } from "./transport/xmlrpc.js";
-export { JSON2_POSITIONAL_ARG_MAP, FIELDS_GET_ATTRIBUTES } from "./transport/json2-map.js";
-export { normalizeOdooOrigin, assertSafeOdooUrl } from "./transport/url-policy.js";
-export {
-  listModels,
-  getModelFields,
-  searchRecords,
-  readRecord,
-  healthCheck,
-  buildDomainTool,
-} from "./tools/read.js";
-export {
-  getOdooProfile,
-  schemaCatalog,
-  aggregateRecords,
-  searchEmployee,
-  searchHolidays,
-  diagnoseOdooCall,
-  inspectModelRelationships,
-  diagnoseAccess,
-  readAttachment,
-  DEFAULT_MAX_ATTACHMENT_BYTES,
-  ABS_MAX_ATTACHMENT_BYTES,
-  PHASE2_TOOLS,
-} from "./tools/phase2.js";
-export { buildDomain, type DomainConditionInput, type BuildDomainResult } from "./tools/domain.js";
-export {
-  validateModelName,
-  clampLimit,
-  normalizeDomainInput,
-  resolveReadFields,
-  fieldsGet,
-  fail,
-  MAX_SEARCH_LIMIT,
-  ABS_MAX_LIMIT,
-  BULK_READ_ID_CAP,
-  DEFAULT_PREVIEW_SLICE,
-  PREVIEW_SLICE_MED,
-  type ToolResult,
-} from "./tools/helpers.js";
-export {
-  selectSmartFields,
-  rankRelevantFields,
-  buildTextQueryDomain,
-  DEFAULT_MAX_SMART_FIELDS,
-} from "./smart-fields.js";
-export { FieldPolicy, type FieldPolicyDoc } from "./field-policy.js";
-export {
-  CLOUD_V1_PYTHON_CONTRACTS,
-  addCloudV1ToolContracts,
-  cloudV1StructuredContent,
-  getCloudV1ToolContract,
-  type CloudV1ToolContract,
-  type CloudV1ToolName,
-  type JsonSchema,
-} from "./mcp-contracts.js";
-export {
-  CLOUD_V1_RESOURCES,
-  readCloudV1Resource,
-  type OdooResourceContext,
-} from "./resources.js";
-export {
-  MemoryApprovalStore,
-  WRITE_APPROVAL_TTL_MS,
-  buildApprovalToken,
-  verifyWriteApproval,
-  type ApprovalTokenStore,
-  type WriteApproval,
-} from "./approval/token.js";
-export {
-  previewWrite,
-  validateWrite,
-  executeApprovedWrite,
-  chatterPost,
-  executeMethod,
-  PHASE3_TOOLS,
-} from "./tools/write.js";
-export {
-  generateJson2Payload,
-  upgradeRiskReport,
-  fitGapReport,
-  businessPackReport,
-  businessPackReportLive,
-  renderReport,
-  classifyMethodSafety,
-  BUSINESS_PACKS,
-  DEFAULT_MAX_REPORT_BYTES,
-  ABS_MAX_REPORT_BYTES,
-  PHASE4_TOOLS,
-} from "./tools/reports.js";
-export {
-  CLOUD_V1_PROMPTS,
-  PROMPT_CATALOG,
-  renderCloudPrompt,
-  promptDiagnoseFailedOdooCall,
-  promptFitGapWorkshop,
-  promptJson2MigrationPlan,
-  promptSafeWriteReview,
-  promptInvoiceApprovalChain,
-  promptPoToReceipt,
-  promptCustomerOnboarding,
-  type CloudV1PromptName,
-  type PromptDef,
-} from "./prompts.js";
+export { assertSafeOdooUrl, normalizeOdooOrigin } from "./transport/url-policy.js";
+export { type XmlRpcConfig, XmlRpcTransport } from "./transport/xmlrpc.js";
 
 /** Cloud tool surface: D14 (23) + read_attachment + render_report. */
 export const CLOUD_V1_TOOL_COUNT = 25;

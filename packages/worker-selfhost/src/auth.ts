@@ -5,11 +5,7 @@
 import type { AuthRequest, OAuthHelpers } from "@cloudflare/workers-oauth-provider";
 import { Hono } from "hono";
 import { mcpPath } from "./routes";
-import {
-  renderAuthorizePage,
-  renderErrorPage,
-  renderHomePage,
-} from "./ui";
+import { renderAuthorizePage, renderErrorPage, renderHomePage } from "./ui";
 
 export type SelfhostEnv = {
   OAUTH_KV: KVNamespace;
@@ -34,9 +30,7 @@ export function createAuthApp(slug: string) {
 
   app.get("/", (c) => {
     const origin = new URL(c.req.url).origin;
-    return c.html(
-      renderHomePage({ endpoint: `${origin}${mcpPath(slug)}`, slug }),
-    );
+    return c.html(renderHomePage({ endpoint: `${origin}${mcpPath(slug)}`, slug }));
   });
 
   app.get("/health", (c) =>
@@ -82,13 +76,9 @@ export function createAuthApp(slug: string) {
       }
     }
 
-    const client = await c.env.OAUTH_PROVIDER.lookupClient(
-      oauthReq.clientId,
-    );
+    const client = await c.env.OAUTH_PROVIDER.lookupClient(oauthReq.clientId);
     const oauthState = btoa(JSON.stringify(oauthReq));
-    return c.html(
-      renderAuthorizePage({ slug, oauthState, request: oauthReq, client }),
-    );
+    return c.html(renderAuthorizePage({ slug, oauthState, request: oauthReq, client }));
   });
 
   app.post("/authorize", async (c) => {

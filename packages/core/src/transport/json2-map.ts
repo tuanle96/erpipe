@@ -11,15 +11,7 @@ export const JSON2_POSITIONAL_ARG_MAP: Record<string, readonly string[]> = {
   name_search: ["name", "domain", "operator", "limit"],
   fields_get: ["allfields", "attributes"],
   read_group: ["domain", "fields", "groupby", "offset", "limit", "orderby", "lazy"],
-  formatted_read_group: [
-    "domain",
-    "groupby",
-    "aggregates",
-    "having",
-    "offset",
-    "limit",
-    "order",
-  ],
+  formatted_read_group: ["domain", "groupby", "aggregates", "having", "offset", "limit", "order"],
   message_post: ["ids"],
 };
 

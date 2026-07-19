@@ -1,5 +1,5 @@
-import { methodCall } from "./serialize.js";
 import { parseMethodResponse, XmlRpcFault } from "./parse.js";
+import { methodCall } from "./serialize.js";
 
 export type XmlRpcClientOptions = {
   baseUrl: string;

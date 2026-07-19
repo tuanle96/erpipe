@@ -1,10 +1,10 @@
 import {
   CLOUD_V1_RESOURCES,
-  readCloudV1Resource,
   type FieldPolicy,
   type OdooTransport,
+  readCloudV1Resource,
 } from "@erpipe/core";
-import { ResourceTemplate, type McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import { type McpServer, ResourceTemplate } from "@modelcontextprotocol/sdk/server/mcp.js";
 
 const RESOURCE_METADATA = {
   mimeType: "application/json",

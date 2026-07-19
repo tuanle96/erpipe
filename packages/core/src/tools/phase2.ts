@@ -1,20 +1,21 @@
 /**
  * Phase 2 tools: profile, schema catalog, aggregate, HR helpers, diagnostics.
  */
-import type { OdooTransport } from "../transport/types.js";
-import { JSON2_POSITIONAL_ARG_MAP } from "../transport/json2-map.js";
+
 import { OdooError } from "../errors.js";
-import {
-  clampLimit,
-  normalizeDomainInput,
-  validateModelName,
-  fieldsGet,
-  fail,
-  type ToolResult,
-  ABS_MAX_LIMIT,
-  MAX_SEARCH_LIMIT,
-} from "./helpers.js";
 import { buildJson2Payload } from "../transport/json2.js";
+import { JSON2_POSITIONAL_ARG_MAP } from "../transport/json2-map.js";
+import type { OdooTransport } from "../transport/types.js";
+import {
+  ABS_MAX_LIMIT,
+  clampLimit,
+  fail,
+  fieldsGet,
+  MAX_SEARCH_LIMIT,
+  normalizeDomainInput,
+  type ToolResult,
+  validateModelName,
+} from "./helpers.js";
 
 export type { ToolResult };
 
@@ -88,16 +89,11 @@ export async function schemaCatalog(
       const q = opts.query.trim();
       domain = ["|", ["model", "ilike", q], ["name", "ilike", q]];
     }
-    let rows = (await transport.executeKw(
-      "ir.model",
-      "search_read",
-      [domain],
-      {
-        fields: ["model", "name"],
-        limit,
-        order: "model ASC",
-      },
-    )) as { model: string; name?: string }[];
+    let rows = (await transport.executeKw("ir.model", "search_read", [domain], {
+      fields: ["model", "name"],
+      limit,
+      order: "model ASC",
+    })) as { model: string; name?: string }[];
     if (!Array.isArray(rows)) rows = [];
     const records: Record<string, unknown>[] = [];
     for (const row of rows) {
@@ -168,8 +164,7 @@ export async function aggregateRecords(
     }
     const offset = opts.offset ?? 0;
     if (offset < 0) throw new OdooError("VALIDATION_ERROR", "offset must be >= 0");
-    const clampedLimit =
-      opts.limit != null ? clampLimit(opts.limit, MAX_SEARCH_LIMIT) : null;
+    const clampedLimit = opts.limit != null ? clampLimit(opts.limit, MAX_SEARCH_LIMIT) : null;
     const domain = normalizeDomainInput(opts.domain);
     const normalizedMeasures: string[] = [];
     for (const spec of opts.measures || []) {
@@ -181,7 +176,7 @@ export async function aggregateRecords(
     const major = version.major;
     let methodUsed = "read_group";
     let rows: unknown;
-    let fallbackReason: string | null = null;
+    const fallbackReason: string | null = null;
 
     if (major >= 19) {
       methodUsed = "formatted_read_group";
@@ -333,8 +328,7 @@ export function diagnoseOdooCall(opts: {
     issues.push({
       code: "deprecated_rpc_transport",
       severity: "warning",
-      message:
-        "XML-RPC/JSON-RPC are deprecated since Odoo 19; plan JSON-2 migration.",
+      message: "XML-RPC/JSON-RPC are deprecated since Odoo 19; plan JSON-2 migration.",
     });
   }
 
@@ -385,11 +379,7 @@ export async function inspectModelRelationships(
       const computed = Boolean(meta.compute || meta.computed);
       if (readonly && !includeReadonly) continue;
       if (computed && !includeComputed) continue;
-      if (
-        fieldType === "many2one" ||
-        fieldType === "one2many" ||
-        fieldType === "many2many"
-      ) {
+      if (fieldType === "many2one" || fieldType === "one2many" || fieldType === "many2many") {
         relationships[fieldType]!.push({
           name: fieldName,
           relation: meta.relation,
@@ -482,14 +472,7 @@ export async function diagnoseAccess(
         "search_read",
         [[["model_id.model", "=", opts.model]]],
         {
-          fields: [
-            "name",
-            "perm_read",
-            "perm_write",
-            "perm_create",
-            "perm_unlink",
-            "group_id",
-          ],
+          fields: ["name", "perm_read", "perm_write", "perm_create", "perm_unlink", "group_id"],
           limit,
         },
       )) as unknown[];
@@ -505,10 +488,7 @@ export async function diagnoseAccess(
       operation,
       visible_count: visibleCount,
       expected_count: opts.expected_count ?? null,
-      count_match:
-        opts.expected_count == null
-          ? null
-          : visibleCount === opts.expected_count,
+      count_match: opts.expected_count == null ? null : visibleCount === opts.expected_count,
       model_meta: modelMeta,
       access_lines: accessRows,
       notes: [
@@ -598,12 +578,9 @@ export async function readAttachment(
       throw new OdooError("VALIDATION_ERROR", "attachment_id must be a positive integer");
     }
 
-    const metaRows = (await transport.executeKw(
-      "ir.attachment",
-      "read",
-      [[id]],
-      { fields: metaFields },
-    )) as Record<string, unknown>[];
+    const metaRows = (await transport.executeKw("ir.attachment", "read", [[id]], {
+      fields: metaFields,
+    })) as Record<string, unknown>[];
     if (!metaRows?.length) {
       return {
         success: false,
@@ -661,21 +638,14 @@ export async function readAttachment(
       };
     }
 
-    const full = (await transport.executeKw(
-      "ir.attachment",
-      "read",
-      [[id]],
-      { fields: [...metaFields, "datas"] },
-    )) as Record<string, unknown>[];
+    const full = (await transport.executeKw("ir.attachment", "read", [[id]], {
+      fields: [...metaFields, "datas"],
+    })) as Record<string, unknown>[];
     const row = full?.[0] ?? meta;
     const datas = row.datas;
     // Odoo returns base64 string; empty/false when missing
     const b64 =
-      typeof datas === "string" && datas.length > 0
-        ? datas
-        : datas
-          ? String(datas)
-          : null;
+      typeof datas === "string" && datas.length > 0 ? datas : datas ? String(datas) : null;
 
     // Defense-in-depth: reject oversized base64 even if file_size was wrong
     if (b64) {

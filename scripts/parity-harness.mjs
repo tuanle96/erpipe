@@ -1,18 +1,4 @@
 #!/usr/bin/env node
-/**
- * Cloud-v1 tier parity harness (pure corpus).
- *
- * Runs TS (@erpipe/core) and Python (mcp-odoo) on the same fixture cases,
- * normalizes named nondeterministic / intentional-diff fields, and diffs JSON.
- *
- * Env:
- *   MCP_ODOO_PATH   path to mcp-odoo checkout (default: ../mcp-odoo relative to erpipe)
- *   PYTHON          python binary (default: python3)
- *   PARITY_TS_ONLY  if 1, skip Python and only assert surface + TS renders
- *
- * Exit 0 = all cases pass; 1 = mismatch; 2 = setup error.
- */
-import { createRequire } from "node:module";
 import { spawnSync } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
@@ -25,15 +11,12 @@ const pythonRunner = path.join(root, "scripts/parity/run_python_side.py");
 
 const tsOnly = process.env.PARITY_TS_ONLY === "1";
 const pythonBin = process.env.PYTHON || "python3";
-const mcpOdooPath =
-  process.env.MCP_ODOO_PATH || path.resolve(root, "../mcp-odoo");
+const mcpOdooPath = process.env.MCP_ODOO_PATH || path.resolve(root, "../mcp-odoo");
 
 const corpus = JSON.parse(fs.readFileSync(corpusPath, "utf8"));
 
 // --- load TS core ---
-const core = await import(
-  pathToFileURL(path.join(root, "packages/core/dist/index.js")).href
-);
+const core = await import(pathToFileURL(path.join(root, "packages/core/dist/index.js")).href);
 
 // --- surface assertions ---
 const PHASE1 = core.PHASE1_TOOLS;
@@ -52,14 +35,10 @@ function failSetup(msg) {
 }
 
 if (d14Tools.length !== corpus.manifest.tool_count) {
-  failSetup(
-    `TS D14 tool count ${d14Tools.length} != manifest ${corpus.manifest.tool_count}`,
-  );
+  failSetup(`TS D14 tool count ${d14Tools.length} != manifest ${corpus.manifest.tool_count}`);
 }
 if (prompts.length !== corpus.manifest.prompt_count) {
-  failSetup(
-    `TS prompt count ${prompts.length} != manifest ${corpus.manifest.prompt_count}`,
-  );
+  failSetup(`TS prompt count ${prompts.length} != manifest ${corpus.manifest.prompt_count}`);
 }
 if (JSON.stringify([...d14Tools].sort()) !== JSON.stringify([...expectedTools].sort())) {
   failSetup(
@@ -70,9 +49,7 @@ if (JSON.stringify([...prompts]) !== JSON.stringify(expectedPrompts)) {
   failSetup(`TS prompt set mismatch vs corpus.surface.prompts`);
 }
 
-console.log(
-  `Surface OK: ${d14Tools.length} tools + ${prompts.length} prompts (cloud-v1)\n`,
-);
+console.log(`Surface OK: ${d14Tools.length} tools + ${prompts.length} prompts (cloud-v1)\n`);
 
 // --- normalize ---
 function sortKeys(value) {
@@ -90,7 +67,7 @@ function canonicalize(value) {
 }
 
 /** Drop / normalize fields that are allowed to differ between Python and TS. */
-function normalizeForCompare(tool, compare, value) {
+function normalizeForCompare(_tool, compare, value) {
   if (compare === "text") {
     if (typeof value === "string") return value;
     if (value && typeof value === "object" && "text" in value) {
@@ -198,16 +175,11 @@ async function runTsCase(caseDef) {
 // --- run Python side ---
 function runPythonAll() {
   if (!fs.existsSync(mcpOdooPath)) {
-    failSetup(
-      `mcp-odoo not found at ${mcpOdooPath}; set MCP_ODOO_PATH or PARITY_TS_ONLY=1`,
-    );
+    failSetup(`mcp-odoo not found at ${mcpOdooPath}; set MCP_ODOO_PATH or PARITY_TS_ONLY=1`);
   }
   const env = {
     ...process.env,
-    PYTHONPATH: [
-      path.join(mcpOdooPath, "src"),
-      process.env.PYTHONPATH || "",
-    ]
+    PYTHONPATH: [path.join(mcpOdooPath, "src"), process.env.PYTHONPATH || ""]
       .filter(Boolean)
       .join(path.delimiter),
   };
@@ -222,7 +194,7 @@ function runPythonAll() {
   }
   try {
     return JSON.parse(res.stdout);
-  } catch (e) {
+  } catch (_e) {
     failSetup(`Python side returned non-JSON: ${res.stdout?.slice(0, 400)}`);
   }
 }
@@ -257,9 +229,7 @@ for (const caseDef of corpus.cases) {
       caseDef.tool === "prompt"
         ? Boolean(tsResult?.text && String(tsResult.text).length > 20)
         : tsResult != null &&
-          (tsResult.success === true ||
-            tsResult.success === false ||
-            tsResult.text);
+          (tsResult.success === true || tsResult.success === false || tsResult.text);
     if (ok) logPass(id, "ts-only ok");
     else logFail(id, `TS empty: ${JSON.stringify(tsResult).slice(0, 120)}`);
     continue;
@@ -297,9 +267,5 @@ if (failed.length) {
   console.error("Failed:", failed.map((f) => f.id).join(", "));
   process.exitCode = 1;
 } else {
-  console.log(
-    tsOnly
-      ? "TS-only corpus green."
-      : "Cloud-v1 pure-tool parity green.",
-  );
+  console.log(tsOnly ? "TS-only corpus green." : "Cloud-v1 pure-tool parity green.");
 }

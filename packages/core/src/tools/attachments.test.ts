@@ -1,10 +1,10 @@
 import { describe, expect, it } from "vitest";
+import type { OdooTransport } from "../transport/types.js";
 import {
   ABS_MAX_ATTACHMENT_BYTES,
   DEFAULT_MAX_ATTACHMENT_BYTES,
   readAttachment,
 } from "./phase2.js";
-import type { OdooTransport } from "../transport/types.js";
 
 function mockTransport(
   rows: Record<string, unknown>[],

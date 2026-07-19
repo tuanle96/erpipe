@@ -3,53 +3,53 @@
  */
 import OAuthProvider from "@cloudflare/workers-oauth-provider";
 import {
+  aggregateRecords,
+  buildDomainTool,
+  businessPackReportLive,
+  CLOUD_V1_PROMPT_COUNT,
+  CLOUD_V1_PROMPTS,
+  chatterPost,
+  type DomainConditionInput,
+  diagnoseAccess,
+  diagnoseOdooCall,
+  executeApprovedWrite,
+  executeMethod,
+  FieldPolicy,
+  fitGapReport,
+  generateJson2Payload,
+  getModelFields,
+  getOdooProfile,
+  healthCheck,
+  inspectModelRelationships,
+  Json2Transport,
+  listModels,
+  MemoryApprovalStore,
+  type OdooTransport,
   PHASE1_TOOLS,
   PHASE2_TOOLS,
   PHASE3_TOOLS,
   PHASE4_TOOLS,
-  CLOUD_V1_PROMPTS,
-  CLOUD_V1_PROMPT_COUNT,
-  renderCloudPrompt,
-  Json2Transport,
-  XmlRpcTransport,
-  listModels,
-  getModelFields,
-  searchRecords,
+  previewWrite,
+  readAttachment,
   readRecord,
-  healthCheck,
-  buildDomainTool,
-  getOdooProfile,
+  renderCloudPrompt,
+  renderReport,
   schemaCatalog,
-  aggregateRecords,
   searchEmployee,
   searchHolidays,
-  diagnoseOdooCall,
-  inspectModelRelationships,
-  diagnoseAccess,
-  readAttachment,
-  previewWrite,
-  validateWrite,
-  executeApprovedWrite,
-  chatterPost,
-  executeMethod,
-  generateJson2Payload,
+  searchRecords,
   upgradeRiskReport,
-  fitGapReport,
-  businessPackReportLive,
-  renderReport,
-  MemoryApprovalStore,
-  FieldPolicy,
-  type OdooTransport,
-  type DomainConditionInput,
+  validateWrite,
   type WriteApproval,
+  XmlRpcTransport,
 } from "@erpipe/core";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { McpAgent } from "agents/mcp";
 import { z } from "zod";
 import { createAuthApp } from "./auth";
-import { mcpPath, parseSlugFromPath } from "./routes";
 import { installCloudV1ContractCompatibility } from "./mcp-contracts";
 import { registerResources } from "./resources";
+import { mcpPath, parseSlugFromPath } from "./routes";
 
 export type Props = {
   userId: string;
@@ -91,8 +91,7 @@ function makeTransport(env: Env): OdooTransport | null {
   const username = env.ODOO_USERNAME?.trim() || "admin";
 
   const useJson2 =
-    transportPref === "json2" ||
-    (transportPref !== "xmlrpc" && !!apiKey && !env.ODOO_PASSWORD);
+    transportPref === "json2" || (transportPref !== "xmlrpc" && !!apiKey && !env.ODOO_PASSWORD);
 
   if (useJson2) {
     if (!apiKey) return null;
@@ -154,8 +153,7 @@ export class SelfhostMcp extends McpAgent<Env, Record<string, never>, Props> {
   async init() {
     const transport = makeTransport(this.env);
     const writesEnabled =
-      this.env.ODOO_MCP_ENABLE_WRITES === "1" ||
-      this.env.ODOO_MCP_ENABLE_WRITES === "true";
+      this.env.ODOO_MCP_ENABLE_WRITES === "1" || this.env.ODOO_MCP_ENABLE_WRITES === "true";
     const allowUnknown =
       this.env.ODOO_MCP_ALLOW_UNKNOWN_METHODS === "1" ||
       this.env.ODOO_MCP_ALLOW_UNKNOWN_METHODS === "true";
@@ -171,13 +169,7 @@ export class SelfhostMcp extends McpAgent<Env, Record<string, never>, Props> {
     }
     installCloudV1ContractCompatibility(this.server);
     registerResources(this.server, transport, fieldPolicy);
-    const allTools = [
-      ...PHASE1_TOOLS,
-      ...PHASE2_TOOLS,
-      ...PHASE3_TOOLS,
-      ...PHASE4_TOOLS,
-      "ping",
-    ];
+    const allTools = [...PHASE1_TOOLS, ...PHASE2_TOOLS, ...PHASE3_TOOLS, ...PHASE4_TOOLS, "ping"];
 
     this.server.tool(
       "ping",
@@ -505,9 +497,7 @@ export class SelfhostMcp extends McpAgent<Env, Record<string, never>, Props> {
       },
       async (args) => {
         if (!transport) return noOdoo();
-        return textResult(
-          await chatterPost(transport, { ...args, writesEnabled }),
-        );
+        return textResult(await chatterPost(transport, { ...args, writesEnabled }));
       },
     );
 
@@ -588,8 +578,7 @@ export class SelfhostMcp extends McpAgent<Env, Record<string, never>, Props> {
         use_live_metadata: z.boolean().optional(),
         module_limit: z.number().int().positive().optional(),
       },
-      async (args) =>
-        textResult(await businessPackReportLive(transport, args)),
+      async (args) => textResult(await businessPackReportLive(transport, args)),
     );
 
     this.server.tool(
@@ -612,45 +601,37 @@ export class SelfhostMcp extends McpAgent<Env, Record<string, never>, Props> {
     this.server.registerPrompt(
       "diagnose_failed_odoo_call",
       {
-        description:
-          "Guide an assistant through diagnosing a failed Odoo model call.",
+        description: "Guide an assistant through diagnosing a failed Odoo model call.",
         argsSchema: {
           model: z.string().describe("Odoo model technical name"),
           method: z.string().describe("Method that failed"),
           error: z.string().optional().describe("Observed error text"),
         },
       },
-      async (args) =>
-        promptResult(
-          renderCloudPrompt("diagnose_failed_odoo_call", args) ?? "",
-        ),
+      async (args) => promptResult(renderCloudPrompt("diagnose_failed_odoo_call", args) ?? ""),
     );
 
     this.server.registerPrompt(
       "fit_gap_workshop",
       {
-        description:
-          "Structure an Odoo fit/gap workshop from raw requirements.",
+        description: "Structure an Odoo fit/gap workshop from raw requirements.",
         argsSchema: {
           requirement: z.string().describe("Business requirement text"),
         },
       },
-      async (args) =>
-        promptResult(renderCloudPrompt("fit_gap_workshop", args) ?? ""),
+      async (args) => promptResult(renderCloudPrompt("fit_gap_workshop", args) ?? ""),
     );
 
     this.server.registerPrompt(
       "json2_migration_plan",
       {
-        description:
-          "Plan migration from XML-RPC/JSON-RPC style calls to Odoo JSON-2.",
+        description: "Plan migration from XML-RPC/JSON-RPC style calls to Odoo JSON-2.",
         argsSchema: {
           model: z.string().describe("Odoo model technical name"),
           method: z.string().describe("Method to migrate"),
         },
       },
-      async (args) =>
-        promptResult(renderCloudPrompt("json2_migration_plan", args) ?? ""),
+      async (args) => promptResult(renderCloudPrompt("json2_migration_plan", args) ?? ""),
     );
 
     this.server.registerPrompt(
@@ -662,8 +643,7 @@ export class SelfhostMcp extends McpAgent<Env, Record<string, never>, Props> {
           operation: z.string().describe("create | write | unlink"),
         },
       },
-      async (args) =>
-        promptResult(renderCloudPrompt("safe_write_review", args) ?? ""),
+      async (args) => promptResult(renderCloudPrompt("safe_write_review", args) ?? ""),
     );
 
     this.server.registerPrompt(
@@ -677,8 +657,7 @@ export class SelfhostMcp extends McpAgent<Env, Record<string, never>, Props> {
           date_to: z.string().optional().describe("Optional date to"),
         },
       },
-      async (args) =>
-        promptResult(renderCloudPrompt("invoice_approval_chain", args) ?? ""),
+      async (args) => promptResult(renderCloudPrompt("invoice_approval_chain", args) ?? ""),
     );
 
     this.server.registerPrompt(
@@ -690,8 +669,7 @@ export class SelfhostMcp extends McpAgent<Env, Record<string, never>, Props> {
           purchase_order: z.string().describe("PO name or id reference"),
         },
       },
-      async (args) =>
-        promptResult(renderCloudPrompt("po_to_receipt", args) ?? ""),
+      async (args) => promptResult(renderCloudPrompt("po_to_receipt", args) ?? ""),
     );
 
     this.server.registerPrompt(
@@ -705,8 +683,7 @@ export class SelfhostMcp extends McpAgent<Env, Record<string, never>, Props> {
           vat: z.string().optional().describe("Optional VAT/tax id"),
         },
       },
-      async (args) =>
-        promptResult(renderCloudPrompt("customer_onboarding", args) ?? ""),
+      async (args) => promptResult(renderCloudPrompt("customer_onboarding", args) ?? ""),
     );
   }
 }
@@ -715,11 +692,7 @@ function createGuardedApiHandler(expectedSlug: string) {
   const inner = SelfhostMcp.serve("/:slug/mcp");
 
   return {
-    async fetch(
-      request: Request,
-      env: Env,
-      ctx: ExecutionContext & { props?: Props },
-    ) {
+    async fetch(request: Request, env: Env, ctx: ExecutionContext & { props?: Props }) {
       const pathSlug = parseSlugFromPath(new URL(request.url).pathname);
       if (!pathSlug || pathSlug !== expectedSlug) {
         return new Response("Not Found", { status: 404 });

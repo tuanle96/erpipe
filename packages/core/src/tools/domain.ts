@@ -93,7 +93,9 @@ export function buildDomain(input: {
 
   let domain: unknown[];
   if (operatorName === "or" && normalized.length > 1) {
-    domain = Array(normalized.length - 1).fill("|").concat(normalized);
+    domain = Array(normalized.length - 1)
+      .fill("|")
+      .concat(normalized);
   } else {
     domain = normalized;
   }

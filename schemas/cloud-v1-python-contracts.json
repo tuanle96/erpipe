@@ -99,10 +99,7 @@
             "title": "Order"
           }
         },
-        "required": [
-          "model",
-          "group_by"
-        ],
+        "required": ["model", "group_by"],
         "title": "aggregate_recordsArguments",
         "type": "object"
       },
@@ -250,9 +247,7 @@
             "title": "Tool"
           }
         },
-        "required": [
-          "success"
-        ],
+        "required": ["success"],
         "title": "AggregateRecordsResponse",
         "type": "object"
       },
@@ -293,9 +288,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "conditions"
-        ],
+        "required": ["conditions"],
         "title": "build_domainArguments",
         "type": "object"
       },
@@ -396,9 +389,7 @@
             "title": "Tool"
           }
         },
-        "required": [
-          "success"
-        ],
+        "required": ["success"],
         "title": "BuildDomainResponse",
         "type": "object"
       },
@@ -437,9 +428,7 @@
             "type": "boolean"
           }
         },
-        "required": [
-          "pack"
-        ],
+        "required": ["pack"],
         "title": "business_pack_reportArguments",
         "type": "object"
       },
@@ -452,9 +441,7 @@
             "type": "object"
           }
         },
-        "required": [
-          "result"
-        ],
+        "required": ["result"],
         "title": "business_pack_reportOutput",
         "type": "object"
       },
@@ -558,11 +545,7 @@
             "title": "Subtype Xmlid"
           }
         },
-        "required": [
-          "model",
-          "record_id",
-          "body"
-        ],
+        "required": ["model", "record_id", "body"],
         "title": "chatter_postArguments",
         "type": "object"
       },
@@ -575,9 +558,7 @@
             "type": "object"
           }
         },
-        "required": [
-          "result"
-        ],
+        "required": ["result"],
         "title": "chatter_postOutput",
         "type": "object"
       },
@@ -679,9 +660,7 @@
             "title": "Record Ids"
           }
         },
-        "required": [
-          "model"
-        ],
+        "required": ["model"],
         "title": "diagnose_accessArguments",
         "type": "object"
       },
@@ -694,9 +673,7 @@
             "type": "object"
           }
         },
-        "required": [
-          "result"
-        ],
+        "required": ["result"],
         "title": "diagnose_accessOutput",
         "type": "object"
       },
@@ -805,10 +782,7 @@
             "type": "boolean"
           }
         },
-        "required": [
-          "model",
-          "method"
-        ],
+        "required": ["model", "method"],
         "title": "diagnose_odoo_callArguments",
         "type": "object"
       },
@@ -821,9 +795,7 @@
             "type": "object"
           }
         },
-        "required": [
-          "result"
-        ],
+        "required": ["result"],
         "title": "diagnose_odoo_callOutput",
         "type": "object"
       },
@@ -848,9 +820,7 @@
             "type": "boolean"
           }
         },
-        "required": [
-          "approval"
-        ],
+        "required": ["approval"],
         "title": "execute_approved_write_toolArguments",
         "type": "object"
       },
@@ -863,9 +833,7 @@
             "type": "object"
           }
         },
-        "required": [
-          "result"
-        ],
+        "required": ["result"],
         "title": "execute_approved_write_toolOutput",
         "type": "object"
       },
@@ -931,10 +899,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "model",
-          "method"
-        ],
+        "required": ["model", "method"],
         "title": "execute_methodArguments",
         "type": "object"
       },
@@ -947,9 +912,7 @@
             "type": "object"
           }
         },
-        "required": [
-          "result"
-        ],
+        "required": ["result"],
         "title": "execute_methodOutput",
         "type": "object"
       },
@@ -1028,9 +991,7 @@
             "type": "boolean"
           }
         },
-        "required": [
-          "requirements"
-        ],
+        "required": ["requirements"],
         "title": "fit_gap_reportArguments",
         "type": "object"
       },
@@ -1043,9 +1004,7 @@
             "type": "object"
           }
         },
-        "required": [
-          "result"
-        ],
+        "required": ["result"],
         "title": "fit_gap_reportOutput",
         "type": "object"
       },
@@ -1123,10 +1082,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "model",
-          "method"
-        ],
+        "required": ["model", "method"],
         "title": "generate_json2_payloadArguments",
         "type": "object"
       },
@@ -1139,9 +1095,7 @@
             "type": "object"
           }
         },
-        "required": [
-          "result"
-        ],
+        "required": ["result"],
         "title": "generate_json2_payloadOutput",
         "type": "object"
       },
@@ -1204,9 +1158,7 @@
             "title": "Relevance"
           }
         },
-        "required": [
-          "model"
-        ],
+        "required": ["model"],
         "title": "get_model_fieldsArguments",
         "type": "object"
       },
@@ -1317,9 +1269,7 @@
             "title": "Tool"
           }
         },
-        "required": [
-          "success"
-        ],
+        "required": ["success"],
         "title": "GetModelFieldsResponse",
         "type": "object"
       },
@@ -1425,9 +1375,7 @@
             "title": "Tool"
           }
         },
-        "required": [
-          "success"
-        ],
+        "required": ["success"],
         "title": "GetOdooProfileResponse",
         "type": "object"
       },
@@ -1535,9 +1483,7 @@
             "title": "Tool"
           }
         },
-        "required": [
-          "success"
-        ],
+        "required": ["success"],
         "title": "HealthCheckResponse",
         "type": "object"
       },
@@ -1596,9 +1542,7 @@
             "type": "boolean"
           }
         },
-        "required": [
-          "model"
-        ],
+        "required": ["model"],
         "title": "inspect_model_relationshipsArguments",
         "type": "object"
       },
@@ -1611,9 +1555,7 @@
             "type": "object"
           }
         },
-        "required": [
-          "result"
-        ],
+        "required": ["result"],
         "title": "inspect_model_relationshipsOutput",
         "type": "object"
       },
@@ -1679,9 +1621,7 @@
                 "type": "string"
               }
             },
-            "required": [
-              "model"
-            ],
+            "required": ["model"],
             "title": "ModelSummary",
             "type": "object"
           }
@@ -1747,9 +1687,7 @@
             "title": "Tool"
           }
         },
-        "required": [
-          "success"
-        ],
+        "required": ["success"],
         "title": "ListModelsResponse",
         "type": "object"
       },
@@ -1841,10 +1779,7 @@
             "title": "Values List"
           }
         },
-        "required": [
-          "model",
-          "operation"
-        ],
+        "required": ["model", "operation"],
         "title": "preview_writeArguments",
         "type": "object"
       },
@@ -1857,9 +1792,7 @@
             "type": "object"
           }
         },
-        "required": [
-          "result"
-        ],
+        "required": ["result"],
         "title": "preview_writeOutput",
         "type": "object"
       },
@@ -1909,10 +1842,7 @@
             "type": "integer"
           }
         },
-        "required": [
-          "model",
-          "record_id"
-        ],
+        "required": ["model", "record_id"],
         "title": "read_recordArguments",
         "type": "object"
       },
@@ -2008,9 +1938,7 @@
             "title": "Tool"
           }
         },
-        "required": [
-          "success"
-        ],
+        "required": ["success"],
         "title": "ReadRecordResponse",
         "type": "object"
       },
@@ -2107,9 +2035,7 @@
                 "type": "string"
               }
             },
-            "required": [
-              "model"
-            ],
+            "required": ["model"],
             "title": "ModelSummary",
             "type": "object"
           }
@@ -2189,9 +2115,7 @@
             "title": "Tool"
           }
         },
-        "required": [
-          "success"
-        ],
+        "required": ["success"],
         "title": "SchemaCatalogResponse",
         "type": "object"
       },
@@ -2227,9 +2151,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "name"
-        ],
+        "required": ["name"],
         "title": "search_employeeArguments",
         "type": "object"
       },
@@ -2250,10 +2172,7 @@
                 "type": "string"
               }
             },
-            "required": [
-              "id",
-              "name"
-            ],
+            "required": ["id", "name"],
             "title": "EmployeeSearchResult",
             "type": "object"
           }
@@ -2295,9 +2214,7 @@
             "type": "boolean"
           }
         },
-        "required": [
-          "success"
-        ],
+        "required": ["success"],
         "title": "SearchEmployeeResponse",
         "type": "object"
       },
@@ -2348,10 +2265,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "start_date",
-          "end_date"
-        ],
+        "required": ["start_date", "end_date"],
         "title": "search_holidaysArguments",
         "type": "object"
       },
@@ -2451,9 +2365,7 @@
             "type": "boolean"
           }
         },
-        "required": [
-          "success"
-        ],
+        "required": ["success"],
         "title": "SearchHolidaysResponse",
         "type": "object"
       },
@@ -2543,9 +2455,7 @@
             "title": "Query"
           }
         },
-        "required": [
-          "model"
-        ],
+        "required": ["model"],
         "title": "search_recordsArguments",
         "type": "object"
       },
@@ -2672,9 +2582,7 @@
             "title": "Tool"
           }
         },
-        "required": [
-          "success"
-        ],
+        "required": ["success"],
         "title": "SearchRecordsResponse",
         "type": "object"
       },
@@ -2804,9 +2712,7 @@
             "type": "object"
           }
         },
-        "required": [
-          "result"
-        ],
+        "required": ["result"],
         "title": "upgrade_risk_reportOutput",
         "type": "object"
       },
@@ -2916,10 +2822,7 @@
             "title": "Values List"
           }
         },
-        "required": [
-          "model",
-          "operation"
-        ],
+        "required": ["model", "operation"],
         "title": "validate_writeArguments",
         "type": "object"
       },
@@ -2932,9 +2835,7 @@
             "type": "object"
           }
         },
-        "required": [
-          "result"
-        ],
+        "required": ["result"],
         "title": "validate_writeOutput",
         "type": "object"
       },

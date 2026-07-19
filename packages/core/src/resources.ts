@@ -1,7 +1,7 @@
 import { assertDomainList } from "./domain.js";
 import { FieldPolicy } from "./field-policy.js";
-import type { OdooTransport } from "./transport/types.js";
 import { fieldsGet, validateModelName } from "./tools/helpers.js";
+import type { OdooTransport } from "./transport/types.js";
 
 export const CLOUD_V1_RESOURCES = [
   {

@@ -16,12 +16,7 @@ const TECHNICAL_FIELD_NAMES = new Set([
   "display_name",
 ]);
 
-const TECHNICAL_PREFIXES = [
-  "message_",
-  "activity_",
-  "website_message_",
-  "website_meta_",
-];
+const TECHNICAL_PREFIXES = ["message_", "activity_", "website_message_", "website_meta_"];
 
 const PRIORITY: Record<string, number> = {
   name: 100,
@@ -166,9 +161,7 @@ export function selectTextQueryFields(
   let selected = TEXT_QUERY_PRIORITY.filter((n) => n in searchable);
   if (!selected.length && Object.keys(searchable).length) {
     selected = Object.keys(searchable).sort(
-      (a, b) =>
-        smartScore(b, searchable[b]!) - smartScore(a, searchable[a]!) ||
-        a.localeCompare(b),
+      (a, b) => smartScore(b, searchable[b]!) - smartScore(a, searchable[a]!) || a.localeCompare(b),
     );
   }
   return selected.slice(0, maxFields);
