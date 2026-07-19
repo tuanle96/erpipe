@@ -1,21 +1,40 @@
-name: ci
+# OSS CI — build, typecheck, test on every PR and main push.
+name: CI
 
 on:
   push:
     branches: [main]
   pull_request:
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   test:
+    name: Test
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-node@v4
         with:
           node-version-file: ".nvmrc"
           cache: npm
-      - run: npm install --legacy-peer-deps
-      # Workspace packages export types from dist/; build before typecheck on clean checkout.
-      - run: npm run build
-      - run: npm run typecheck
-      - run: npm test
+
+      - name: Install
+        run: npm ci --legacy-peer-deps
+
+      # Workspace packages export types from dist/; build before typecheck.
+      - name: Build
+        run: npm run build
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Test
+        run: npm test
+
+      - name: Lint
+        run: npm run lint
