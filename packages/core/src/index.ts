@@ -8,6 +8,30 @@ export {
   type WriteApproval,
 } from "./approval/token.js";
 export { assertDomainList, isDomainList } from "./domain.js";
+export {
+  type AggregateMeasure,
+  attributeRecords,
+  clampCrossInstanceLimit,
+  combineAccountingByCurrency,
+  combineAdditiveAggregates,
+  DEFAULT_CROSS_INSTANCE_CONCURRENCY,
+  DEFAULT_CROSS_INSTANCE_LIMIT,
+  type CurrencyAccountingReport,
+  fanOut,
+  type FanOutResult,
+  type InstanceMeta,
+  type InstanceSelection,
+  type InstanceSelector,
+  INSTANCE_TAG_KEY,
+  INSTANCE_KEY_PATTERN,
+  MAX_INSTANCE_KEY_LENGTH,
+  isCanonicalInstanceKey,
+  makeFanOutResult,
+  MAX_CROSS_INSTANCE_LIMIT,
+  MAX_CROSS_INSTANCE_RECORDS,
+  MAX_CROSS_INSTANCE_TARGETS,
+  selectInstances,
+} from "./cross-instance.js";
 export { isOdooError, OdooError, type OdooErrorCode } from "./errors.js";
 export { FieldPolicy, type FieldPolicyDoc } from "./field-policy.js";
 export {

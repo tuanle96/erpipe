@@ -1,14 +1,14 @@
 # Protocol contract (Entry Gate B)
 
-Self-contained notes for the remote MCP + OAuth shape used by ERPipe self-host and hosted products.
+Self-contained notes for the remote MCP + OAuth shape retained by the single-tenant self-host example. The hosted product uses one tenant-workspace endpoint at `https://mcp.erpipe.com/mcp` and requires an explicit instance key on every Odoo-bound tool.
 
 ## Contract
 
-1. **MCP mount:** `/{slug}/mcp` (not an unscoped bare `/mcp` for multi-connection designs)
+1. **Self-host MCP mount:** `/{slug}/mcp`
 2. **OAuth 2.1 + PKCE:** S256 only (`allowPlainPKCE: false`)
 3. **RFC 9728 PRM** (path-specific): `/.well-known/oauth-protected-resource/{slug}/mcp`
 4. **RFC 8707 `resource`:** access grant is bound to the connection URL
-5. **Cross-slug token replay** → `401` audience mismatch
+5. **Cross-slug token replay in the self-host example** → `401` audience mismatch
 6. **Library pins:** `agents@0.17.4`, `@cloudflare/workers-oauth-provider@0.8.2`
 
 ## Reserved path segments

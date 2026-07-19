@@ -40,6 +40,13 @@ export class FieldPolicy {
     return this.byInstance.size > 0;
   }
 
+  /** Whether an instance has a rule that can restrict opaque read output. */
+  restrictsReads(instance: string): boolean {
+    const models = this.byInstance.get(instance);
+    if (!models) return false;
+    return [...models.values()].some((rule) => rule.mode === "allow" || rule.fields.length > 0);
+  }
+
   private effective(
     instance: string,
     model: string,
@@ -140,5 +147,11 @@ export class FieldPolicy {
     const denied = this.deniedWriteFields(instance, model, Object.keys(values));
     if (!denied.length) return null;
     return `Field policy denies write access to ${JSON.stringify(denied)} on ${model}`;
+  }
+
+  checkAggregateFields(instance: string, model: string, fields: string[]): string | null {
+    const [, denied] = this.filterFields(instance, model, fields);
+    if (!denied.length) return null;
+    return `Field policy denies aggregate access to ${JSON.stringify(denied.sort())} on ${model}`;
   }
 }

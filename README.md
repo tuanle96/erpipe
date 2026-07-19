@@ -14,7 +14,7 @@ Open-source **TypeScript** building blocks for **remote MCP** access to [Odoo](h
 | **This repo (MIT)** | Tool logic, transports, single-tenant self-host Worker example |
 | **Hosted product** | Multi-tenant control plane + dashboard — [mcp.erpipe.com](https://mcp.erpipe.com) (separate private repo) |
 
-**Try it (ChatGPT-first, real Odoo only):** [create a free v1 workspace](https://mcp.erpipe.com/), add your HTTPS Odoo connection, then paste `https://mcp.erpipe.com/{slug}/mcp` into ChatGPT Developer Mode. Claude and other MCP clients use the same per-connection URL. There is no shared public sandbox.
+**Try it (ChatGPT-first, real Odoo only):** [create a free v1 workspace](https://mcp.erpipe.com/), add one or more HTTPS Odoo instances, then connect ChatGPT Developer Mode once to `https://mcp.erpipe.com/mcp`. Claude and other MCP clients use the same workspace URL. There is no shared public sandbox.
 
 ## Why
 
@@ -27,7 +27,8 @@ Open-source **TypeScript** building blocks for **remote MCP** access to [Odoo](h
 
 | Milestone | State |
 |-----------|--------|
-| OAuth + `/{slug}/mcp` contract | Proven — see [SPIKE.md](SPIKE.md) |
+| Hosted workspace `/mcp` contract | Implemented in the private cloud control plane |
+| Self-host `/{slug}/mcp` example | Proven — see [SPIKE.md](SPIKE.md) |
 | D14 surface | **23 tools + 7 prompts** in `@erpipe/core` |
 | Pure parity harness | `npm run parity` — [PARITY.md](PARITY.md) |
 | Live smoke (Odoo 18) | `npm run smoke:live` — [SMOKE.md](SMOKE.md) |

@@ -36,15 +36,18 @@ export function canonicalWritePayload(approval: {
   values?: unknown;
   values_list?: unknown;
   context?: unknown;
-  instance?: unknown;
+  instance: unknown;
 }): Record<string, unknown> {
+  if (typeof approval.instance !== "string" || !approval.instance.trim()) {
+    throw new Error("instance is required for write approval");
+  }
   const payload: Record<string, unknown> = {
     model: approval.model,
     operation: approval.operation,
     record_ids: approval.record_ids ?? [],
     values: approval.values ?? {},
     context: approval.context ?? {},
-    instance: approval.instance ?? "default",
+    instance: approval.instance.trim(),
   };
   if (approval.values_list != null) {
     payload.values_list = approval.values_list;
