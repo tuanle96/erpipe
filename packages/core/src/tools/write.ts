@@ -2,9 +2,13 @@
  * Gated write tools: preview_write → validate_write → execute_approved_write.
  */
 import type { OdooTransport } from "../transport/types.js";
-import { FIELDS_GET_ATTRIBUTES } from "../transport/json2-map.js";
-import { isOdooError, OdooError } from "../errors.js";
-import { validateModelName } from "./helpers.js";
+import { OdooError } from "../errors.js";
+import {
+  validateModelName,
+  fieldsGet,
+  fail as failBase,
+  type ToolResult,
+} from "./helpers.js";
 import { FieldPolicy } from "../field-policy.js";
 import {
   ApprovalTokenStore,
@@ -17,30 +21,10 @@ import {
   type WriteApproval,
 } from "../approval/token.js";
 
-export type ToolResult = Record<string, unknown>;
+export type { ToolResult };
 
 function fail(tool: string, error: unknown): ToolResult {
-  if (isOdooError(error)) {
-    return { success: false, tool, error: error.message, code: error.code };
-  }
-  return {
-    success: false,
-    tool,
-    error: error instanceof Error ? error.message : String(error),
-  };
-}
-
-async function fieldsGet(
-  transport: OdooTransport,
-  model: string,
-): Promise<Record<string, unknown>> {
-  const fields = await transport.executeKw(model, "fields_get", [], {
-    attributes: [...FIELDS_GET_ATTRIBUTES],
-  });
-  if (typeof fields !== "object" || fields === null || Array.isArray(fields)) {
-    throw new OdooError("TRANSPORT_ERROR", "fields_get returned unexpected shape");
-  }
-  return fields as Record<string, unknown>;
+  return failBase(error, tool);
 }
 
 async function hashFieldsGet(

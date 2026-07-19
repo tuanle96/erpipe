@@ -2,44 +2,21 @@
  * Phase 2 tools: profile, schema catalog, aggregate, HR helpers, diagnostics.
  */
 import type { OdooTransport } from "../transport/types.js";
-import { FIELDS_GET_ATTRIBUTES, JSON2_POSITIONAL_ARG_MAP } from "../transport/json2-map.js";
-import { isOdooError, OdooError } from "../errors.js";
+import { JSON2_POSITIONAL_ARG_MAP } from "../transport/json2-map.js";
+import { OdooError } from "../errors.js";
 import {
   clampLimit,
   normalizeDomainInput,
   validateModelName,
+  fieldsGet,
+  fail,
+  type ToolResult,
   ABS_MAX_LIMIT,
   MAX_SEARCH_LIMIT,
 } from "./helpers.js";
 import { buildJson2Payload } from "../transport/json2.js";
 
-export type ToolResult = Record<string, unknown>;
-
-function fail(error: unknown): ToolResult {
-  if (isOdooError(error)) {
-    return { success: false, error: error.message, code: error.code };
-  }
-  return {
-    success: false,
-    error: error instanceof Error ? error.message : String(error),
-  };
-}
-
-async function fieldsGet(
-  transport: OdooTransport,
-  model: string,
-): Promise<Record<string, unknown>> {
-  const fields = await transport.executeKw(model, "fields_get", [], {
-    attributes: [...FIELDS_GET_ATTRIBUTES],
-  });
-  if (typeof fields !== "object" || fields === null || Array.isArray(fields)) {
-    throw new OdooError("TRANSPORT_ERROR", "fields_get returned unexpected shape");
-  }
-  if ("error" in (fields as object)) {
-    throw new OdooError("TRANSPORT_ERROR", String((fields as { error: unknown }).error));
-  }
-  return fields as Record<string, unknown>;
-}
+export type { ToolResult };
 
 export async function getOdooProfile(
   transport: OdooTransport,

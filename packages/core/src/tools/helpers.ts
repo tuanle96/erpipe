@@ -1,4 +1,6 @@
-import { OdooError } from "../errors.js";
+import type { OdooTransport } from "../transport/types.js";
+import { FIELDS_GET_ATTRIBUTES } from "../transport/json2-map.js";
+import { isOdooError, OdooError } from "../errors.js";
 import {
   selectSmartFields,
   DEFAULT_MAX_SMART_FIELDS,
@@ -9,6 +11,45 @@ const MODEL_NAME_RE =
 
 export const MAX_SEARCH_LIMIT = 100;
 export const ABS_MAX_LIMIT = 500;
+/** Cap on bulk id reads when a tool must fan-out without a server-side limit. */
+export const BULK_READ_ID_CAP = 500;
+/** Default slice size for diagnostic list previews. */
+export const DEFAULT_PREVIEW_SLICE = 200;
+export const PREVIEW_SLICE_MED = 300;
+
+/** Tool handlers return a loose JSON-serializable object with a success flag. */
+export type ToolResult = { success: boolean } & Record<string, unknown>;
+
+export function fail(error: unknown, tool?: string): ToolResult {
+  if (isOdooError(error)) {
+    return tool
+      ? { success: false, tool, error: error.message, code: error.code }
+      : { success: false, error: error.message, code: error.code };
+  }
+  const message = error instanceof Error ? error.message : String(error);
+  return tool
+    ? { success: false, tool, error: message }
+    : { success: false, error: message };
+}
+
+export async function fieldsGet(
+  transport: OdooTransport,
+  model: string,
+): Promise<Record<string, unknown>> {
+  const fields = await transport.executeKw(model, "fields_get", [], {
+    attributes: [...FIELDS_GET_ATTRIBUTES],
+  });
+  if (typeof fields !== "object" || fields === null || Array.isArray(fields)) {
+    throw new OdooError("TRANSPORT_ERROR", "fields_get returned unexpected shape");
+  }
+  if ("error" in (fields as object)) {
+    throw new OdooError(
+      "TRANSPORT_ERROR",
+      String((fields as { error: unknown }).error),
+    );
+  }
+  return fields as Record<string, unknown>;
+}
 
 export function validateModelName(model: string): void {
   if (!MODEL_NAME_RE.test(model)) {

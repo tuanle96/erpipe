@@ -1,40 +1,19 @@
 import type { OdooTransport } from "../transport/types.js";
-import { FIELDS_GET_ATTRIBUTES } from "../transport/json2-map.js";
-import { isOdooError, OdooError } from "../errors.js";
+import { OdooError } from "../errors.js";
 import {
   clampLimit,
   normalizeDomainInput,
   resolveReadFields,
   validateModelName,
+  fieldsGet,
+  fail,
+  type ToolResult,
   ABS_MAX_LIMIT,
 } from "./helpers.js";
 import { buildDomain, type DomainConditionInput } from "./domain.js";
 import { buildTextQueryDomain, rankRelevantFields } from "../smart-fields.js";
 
-export type ToolResult = Record<string, unknown>;
-
-async function fieldsGet(
-  transport: OdooTransport,
-  model: string,
-): Promise<Record<string, unknown>> {
-  const fields = await transport.executeKw(model, "fields_get", [], {
-    attributes: [...FIELDS_GET_ATTRIBUTES],
-  });
-  if (typeof fields !== "object" || fields === null || Array.isArray(fields)) {
-    throw new OdooError("TRANSPORT_ERROR", "fields_get returned unexpected shape");
-  }
-  return fields as Record<string, unknown>;
-}
-
-function fail(error: unknown): ToolResult {
-  if (isOdooError(error)) {
-    return { success: false, error: error.message, code: error.code };
-  }
-  return {
-    success: false,
-    error: error instanceof Error ? error.message : String(error),
-  };
-}
+export type { ToolResult };
 
 export async function listModels(
   transport: OdooTransport,
@@ -42,10 +21,19 @@ export async function listModels(
 ): Promise<ToolResult> {
   try {
     const limit = clampLimit(opts.limit ?? 100, ABS_MAX_LIMIT);
-    const modelIds = (await transport.executeKw("ir.model", "search", [
-      [],
-    ])) as number[];
-    if (!modelIds?.length) {
+    const query = opts.query?.trim() ?? "";
+    // Push limit (and optional name filter) to Odoo — avoid fetching every model id.
+    const domain = query
+      ? (["|", ["model", "ilike", query], ["name", "ilike", query]] as unknown[])
+      : [];
+    const rows = (await transport.executeKw("ir.model", "search_read", [], {
+      domain,
+      fields: ["model", "name"],
+      limit,
+      order: "model asc",
+    })) as { model: string; name?: string }[];
+
+    if (!rows?.length) {
       return {
         success: false,
         error: "No models found",
@@ -53,24 +41,11 @@ export async function listModels(
         result: [],
       };
     }
-    // Cap read size for Phase 1 (full catalog can be huge)
-    const ids = modelIds.slice(0, Math.max(limit * 5, 500));
-    const rows = (await transport.executeKw("ir.model", "read", [ids], {
-      fields: ["model", "name"],
-    })) as { model: string; name?: string }[];
 
-    let records = rows
-      .map((r) => ({ model: r.model, name: r.name ?? "" }))
-      .sort((a, b) => a.model.localeCompare(b.model));
-
-    if (opts.query?.trim()) {
-      const q = opts.query.toLowerCase();
-      records = records.filter(
-        (r) =>
-          r.model.toLowerCase().includes(q) || r.name.toLowerCase().includes(q),
-      );
-    }
-    records = records.slice(0, limit);
+    const records = rows.map((r) => ({
+      model: r.model,
+      name: r.name ?? "",
+    }));
     return { success: true, count: records.length, result: records };
   } catch (e) {
     return fail(e);

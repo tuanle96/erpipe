@@ -6,10 +6,14 @@
  */
 import type { OdooTransport } from "../transport/types.js";
 import { JSON2_POSITIONAL_ARG_MAP } from "../transport/json2-map.js";
-import { isOdooError } from "../errors.js";
-import { clampLimit, ABS_MAX_LIMIT } from "./helpers.js";
+import {
+  clampLimit,
+  fail,
+  type ToolResult,
+  ABS_MAX_LIMIT,
+} from "./helpers.js";
 
-export type ToolResult = Record<string, unknown>;
+export type { ToolResult };
 
 const ODOO_RPC_REMOVAL = "Odoo 22 fall 2028";
 const ODOO_RPC_REMOVAL_MAJOR = 22;
@@ -69,16 +73,6 @@ export const BUSINESS_PACKS: Record<
     safe_reports: ["employee_lookup", "leave_calendar", "leave_status"],
   },
 };
-
-function fail(error: unknown): ToolResult {
-  if (isOdooError(error)) {
-    return { success: false, error: error.message, code: error.code };
-  }
-  return {
-    success: false,
-    error: error instanceof Error ? error.message : String(error),
-  };
-}
 
 export function classifyMethodSafety(method: string): {
   safety: string;

@@ -21,7 +21,6 @@ export {
   readRecord,
   healthCheck,
   buildDomainTool,
-  type ToolResult,
 } from "./tools/read.js";
 export {
   getOdooProfile,
@@ -40,8 +39,14 @@ export {
   clampLimit,
   normalizeDomainInput,
   resolveReadFields,
+  fieldsGet,
+  fail,
   MAX_SEARCH_LIMIT,
   ABS_MAX_LIMIT,
+  BULK_READ_ID_CAP,
+  DEFAULT_PREVIEW_SLICE,
+  PREVIEW_SLICE_MED,
+  type ToolResult,
 } from "./tools/helpers.js";
 export {
   selectSmartFields,
