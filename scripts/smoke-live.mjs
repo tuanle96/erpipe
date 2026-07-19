@@ -9,7 +9,6 @@
  *   ODOO_PASSWORD  or ODOO_API_KEY
  *   ODOO_TRANSPORT xmlrpc|json2  (default: xmlrpc if password, else json2)
  */
-import { createRequire } from "node:module";
 import { pathToFileURL } from "node:url";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -18,9 +17,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(__dirname, "..");
 
 // Load built packages
-const coreUrl = pathToFileURL(
-  path.join(root, "packages/core/dist/index.js"),
-).href;
+const coreUrl = pathToFileURL(path.join(root, "packages/core/dist/index.js")).href;
 const core = await import(coreUrl);
 
 const url = process.env.ODOO_URL;
@@ -32,9 +29,7 @@ const transportName =
   (process.env.ODOO_API_KEY && !process.env.ODOO_PASSWORD ? "json2" : "xmlrpc");
 
 if (!url || !db || !password) {
-  console.error(
-    "Need ODOO_URL, ODOO_DB, and ODOO_PASSWORD (xmlrpc) or ODOO_API_KEY (json2)",
-  );
+  console.error("Need ODOO_URL, ODOO_DB, and ODOO_PASSWORD (xmlrpc) or ODOO_API_KEY (json2)");
   process.exit(1);
 }
 
@@ -92,18 +87,13 @@ try {
     promptCount: core.CLOUD_V1_PROMPT_COUNT,
     transport: transportName,
   });
-  ok(
-    "health_check",
-    h.success
-      ? `tools=${h.server?.tools} prompts=${h.server?.prompts}`
-      : h.error,
-  );
+  ok("health_check", h.success ? `tools=${h.server?.tools} prompts=${h.server?.prompts}` : h.error);
 }
 
 // prompts (pure text — no Odoo)
 {
   const names = core.CLOUD_V1_PROMPTS;
-  if (!names || names.length !== 7) {
+  if (names?.length !== 7) {
     fail("prompts catalog", `expected 7 got ${names?.length}`);
   } else {
     let allOk = true;
@@ -231,10 +221,7 @@ try {
 
 try {
   const r = await core.schemaCatalog(transport, { query: "res.", limit: 5 });
-  ok(
-    "schema_catalog",
-    r.success ? `count=${r.count}` : JSON.stringify(r).slice(0, 120),
-  );
+  ok("schema_catalog", r.success ? `count=${r.count}` : JSON.stringify(r).slice(0, 120));
 } catch (e) {
   fail("schema_catalog", e.message);
 }
@@ -248,9 +235,7 @@ try {
   });
   ok(
     "aggregate_records",
-    r.success
-      ? `method=${r.method} rows=${r.row_count}`
-      : JSON.stringify(r).slice(0, 160),
+    r.success ? `method=${r.method} rows=${r.row_count}` : JSON.stringify(r).slice(0, 160),
   );
 } catch (e) {
   fail("aggregate_records", e.message);
@@ -294,19 +279,14 @@ try {
     transport: transportName,
     target_version: "18.0",
   });
-  ok(
-    "diagnose_odoo_call",
-    r.success ? `json2_ready=${r.classification?.json2_ready}` : "issues",
-  );
+  ok("diagnose_odoo_call", r.success ? `json2_ready=${r.classification?.json2_ready}` : "issues");
 }
 
 try {
   const r = await core.searchEmployee(transport, { name: "a", limit: 3 });
   ok(
     "search_employee",
-    r.success
-      ? `n=${(r.result || []).length}`
-      : `soft-fail ${String(r.error || "").slice(0, 80)}`,
+    r.success ? `n=${(r.result || []).length}` : `soft-fail ${String(r.error || "").slice(0, 80)}`,
   );
 } catch (e) {
   ok("search_employee", `soft-fail ${e.message.slice(0, 80)}`);
@@ -344,16 +324,11 @@ try {
 }
 {
   const r = core.fitGapReport({
-    requirements: [
-      "Manage contacts and sale orders",
-      "Custom API integration for warehouse",
-    ],
+    requirements: ["Manage contacts and sale orders", "Custom API integration for warehouse"],
   });
   ok(
     "fit_gap_report",
-    r.success
-      ? `fit=${r.summary?.fit} gap=${r.summary?.gap}`
-      : JSON.stringify(r).slice(0, 120),
+    r.success ? `fit=${r.summary?.fit} gap=${r.summary?.gap}` : JSON.stringify(r).slice(0, 120),
   );
 }
 try {
@@ -372,10 +347,56 @@ try {
   fail("business_pack_report", e.message);
 }
 
+// D14 resources — exact odoo:// payload routes shared by both Workers.
+try {
+  const models = JSON.parse(
+    await core.readCloudV1Resource(new URL("odoo://models"), { transport }),
+  );
+  if (Array.isArray(models.model_names) && models.model_names.includes("res.partner")) {
+    ok("resource odoo://models", `models=${models.model_names.length}`);
+  } else {
+    fail("resource odoo://models", JSON.stringify(models).slice(0, 160));
+  }
+
+  const model = JSON.parse(
+    await core.readCloudV1Resource(new URL("odoo://model/res.partner"), {
+      transport,
+    }),
+  );
+  if (model.model === "res.partner" && model.fields?.name) {
+    ok("resource odoo://model/{model_name}", `fields=${Object.keys(model.fields).length}`);
+  } else {
+    fail("resource odoo://model/{model_name}", JSON.stringify(model).slice(0, 160));
+  }
+
+  const resourceDomain = encodeURIComponent(JSON.stringify([]));
+  const searched = JSON.parse(
+    await core.readCloudV1Resource(new URL(`odoo://search/res.partner/${resourceDomain}`), {
+      transport,
+    }),
+  );
+  const rows = Array.isArray(searched) ? searched : searched.results;
+  if (Array.isArray(rows) && rows.length) {
+    ok("resource odoo://search/{model_name}/{domain}", `rows=${rows.length}`);
+    const id = Number(rows[0]?.id);
+    const record = JSON.parse(
+      await core.readCloudV1Resource(new URL(`odoo://record/res.partner/${id}`), { transport }),
+    );
+    if (record.id === id) {
+      ok("resource odoo://record/{model_name}/{record_id}", `id=${id}`);
+    } else {
+      fail("resource odoo://record/{model_name}/{record_id}", JSON.stringify(record).slice(0, 160));
+    }
+  } else {
+    fail("resource odoo://search/{model_name}/{domain}", JSON.stringify(searched).slice(0, 160));
+  }
+} catch (e) {
+  fail("D14 resources", e.message);
+}
+
 // Phase 3 — gated writes (opt-in)
 const writesEnabled =
-  process.env.ODOO_MCP_ENABLE_WRITES === "1" ||
-  process.env.ODOO_MCP_ENABLE_WRITES === "true";
+  process.env.ODOO_MCP_ENABLE_WRITES === "1" || process.env.ODOO_MCP_ENABLE_WRITES === "true";
 {
   const store = new core.MemoryApprovalStore();
   const partnerVals = {
@@ -422,16 +443,9 @@ const writesEnabled =
         writesEnabled: true,
       });
       if (un.success) ok("execute_approved_write unlink cleanup", "cleaned");
-      else
-        fail(
-          "execute_approved_write unlink cleanup",
-          JSON.stringify(un).slice(0, 160),
-        );
+      else fail("execute_approved_write unlink cleanup", JSON.stringify(un).slice(0, 160));
     } else {
-      fail(
-        "execute_approved_write create",
-        JSON.stringify(created).slice(0, 200),
-      );
+      fail("execute_approved_write create", JSON.stringify(created).slice(0, 200));
     }
   } else {
     const denied = await core.executeApprovedWrite(transport, store, {
@@ -442,10 +456,7 @@ const writesEnabled =
     if (!denied.success && denied.code === "WRITE_GATE_DENIED") {
       ok("execute_approved_write denied when writes off", "gate ok");
     } else {
-      fail(
-        "execute_approved_write denied when writes off",
-        JSON.stringify(denied).slice(0, 120),
-      );
+      fail("execute_approved_write denied when writes off", JSON.stringify(denied).slice(0, 120));
     }
   }
 }

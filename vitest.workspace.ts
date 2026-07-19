@@ -1,6 +1,3 @@
 import { defineWorkspace } from "vitest/config";
 
-export default defineWorkspace([
-  "packages/core",
-  "packages/xmlrpc",
-]);
+export default defineWorkspace(["packages/core", "packages/xmlrpc", "packages/worker-selfhost"]);

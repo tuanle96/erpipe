@@ -1,0 +1,2949 @@
+{
+  "manifest_version": 2,
+  "source": {
+    "behavior_commit": "89198e2efddd10eb027b96b9ae3b2a9d20c60573",
+    "behavior_tag": "v1.2.1",
+    "mcp": "1.27.0",
+    "package": "odoo-mcp",
+    "package_version": "1.2.1",
+    "pydantic": "2.13.3",
+    "python": "3.12.13",
+    "schema_source_commit": "247045a8d34bb3caa5316a85f35414823cee0d15"
+  },
+  "tier": "cloud-v1-d14",
+  "tool_count": 23,
+  "tools": {
+    "aggregate_records": {
+      "input_schema": {
+        "properties": {
+          "domain": {
+            "anyOf": [
+              {},
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Domain"
+          },
+          "group_by": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Group By",
+            "type": "array"
+          },
+          "instance": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Instance"
+          },
+          "lazy": {
+            "default": false,
+            "title": "Lazy",
+            "type": "boolean"
+          },
+          "limit": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Limit"
+          },
+          "measures": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Measures"
+          },
+          "model": {
+            "title": "Model",
+            "type": "string"
+          },
+          "offset": {
+            "default": 0,
+            "title": "Offset",
+            "type": "integer"
+          },
+          "order": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Order"
+          }
+        },
+        "required": [
+          "model",
+          "group_by"
+        ],
+        "title": "aggregate_recordsArguments",
+        "type": "object"
+      },
+      "input_schema_sha256": "c0ca3e67d9882e60c8f1fa56fec3680a259a775d6638f0bc2d2e3e7db03fe1e8",
+      "output_schema": {
+        "additionalProperties": true,
+        "properties": {
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Sanitized error message when success is false.",
+            "title": "Error"
+          },
+          "fallback_reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Fallback Reason"
+          },
+          "group_by": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Group By"
+          },
+          "major_version": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Major Version"
+          },
+          "measures": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Measures"
+          },
+          "method": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "formatted_read_group (19+) or read_group.",
+            "title": "Method"
+          },
+          "model": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Model"
+          },
+          "row_count": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Row Count"
+          },
+          "rows": {
+            "anyOf": [
+              {
+                "items": {
+                  "additionalProperties": true,
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Aggregated group rows.",
+            "title": "Rows"
+          },
+          "success": {
+            "description": "False when the call failed; see error.",
+            "title": "Success",
+            "type": "boolean"
+          },
+          "tool": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Reporting tool name.",
+            "title": "Tool"
+          }
+        },
+        "required": [
+          "success"
+        ],
+        "title": "AggregateRecordsResponse",
+        "type": "object"
+      },
+      "output_schema_sha256": "7335baa5dc3398e4ae97e742a41efdce7e70c34d2eacf6a4c16cdecb36f8b9be",
+      "runtime_verified": {
+        "error": false,
+        "success": false
+      },
+      "structured_content_mode": "direct"
+    },
+    "build_domain": {
+      "input_schema": {
+        "properties": {
+          "conditions": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "title": "Conditions",
+            "type": "array"
+          },
+          "fields_metadata": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Fields Metadata"
+          },
+          "logical_operator": {
+            "default": "and",
+            "title": "Logical Operator",
+            "type": "string"
+          }
+        },
+        "required": [
+          "conditions"
+        ],
+        "title": "build_domainArguments",
+        "type": "object"
+      },
+      "input_schema_sha256": "f65a183e755c8951782193fc492d81810cbde66b0cfccff4c24c40b25f468e46",
+      "output_schema": {
+        "additionalProperties": true,
+        "properties": {
+          "conditions": {
+            "anyOf": [
+              {
+                "items": {
+                  "items": {},
+                  "type": "array"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Normalized field/operator/value conditions.",
+            "title": "Conditions"
+          },
+          "domain": {
+            "anyOf": [
+              {
+                "items": {},
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Validated Odoo domain expression.",
+            "title": "Domain"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Sanitized error message when success is false.",
+            "title": "Error"
+          },
+          "issues": {
+            "anyOf": [
+              {
+                "items": {
+                  "additionalProperties": true,
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Validation errors and warnings.",
+            "title": "Issues"
+          },
+          "metadata_used": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Metadata Used"
+          },
+          "success": {
+            "description": "False when the call failed; see error.",
+            "title": "Success",
+            "type": "boolean"
+          },
+          "tool": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Reporting tool name.",
+            "title": "Tool"
+          }
+        },
+        "required": [
+          "success"
+        ],
+        "title": "BuildDomainResponse",
+        "type": "object"
+      },
+      "output_schema_sha256": "eb78ec4eeb039bcd5f832e1cb762d62332e83f766176bdafa1d7546a4edac7af",
+      "runtime_verified": {
+        "error": true,
+        "success": true
+      },
+      "structured_content_mode": "direct"
+    },
+    "business_pack_report": {
+      "input_schema": {
+        "properties": {
+          "instance": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Optional configured Odoo instance name; uses the default if omitted.",
+            "title": "Instance"
+          },
+          "pack": {
+            "description": "Business pack to report, such as sales, crm, inventory, accounting, or hr.",
+            "title": "Pack",
+            "type": "string"
+          },
+          "use_live_metadata": {
+            "default": true,
+            "description": "Whether to inspect live models and installed modules.",
+            "title": "Use Live Metadata",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "pack"
+        ],
+        "title": "business_pack_reportArguments",
+        "type": "object"
+      },
+      "input_schema_sha256": "7e9a0a23108927162e7e06b1f5f495612a0dcd6315d929163e56d2a849f58332",
+      "output_schema": {
+        "properties": {
+          "result": {
+            "additionalProperties": true,
+            "title": "Result",
+            "type": "object"
+          }
+        },
+        "required": [
+          "result"
+        ],
+        "title": "business_pack_reportOutput",
+        "type": "object"
+      },
+      "output_schema_sha256": "a2cb2d9dd53eddcf81efdacfa4889935a668e7c847233ad86f989c12d31e7c3e",
+      "runtime_verified": {
+        "error": false,
+        "success": false
+      },
+      "structured_content_mode": "wrapped"
+    },
+    "chatter_post": {
+      "input_schema": {
+        "properties": {
+          "approval": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Approval"
+          },
+          "attachment_ids": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "integer"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Attachment Ids"
+          },
+          "body": {
+            "title": "Body",
+            "type": "string"
+          },
+          "confirm": {
+            "default": false,
+            "title": "Confirm",
+            "type": "boolean"
+          },
+          "instance": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Instance"
+          },
+          "message_type": {
+            "default": "comment",
+            "title": "Message Type",
+            "type": "string"
+          },
+          "model": {
+            "title": "Model",
+            "type": "string"
+          },
+          "partner_ids": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "integer"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Partner Ids"
+          },
+          "record_id": {
+            "title": "Record Id",
+            "type": "integer"
+          },
+          "subtype_xmlid": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subtype Xmlid"
+          }
+        },
+        "required": [
+          "model",
+          "record_id",
+          "body"
+        ],
+        "title": "chatter_postArguments",
+        "type": "object"
+      },
+      "input_schema_sha256": "0cd90a15a8ed9112d49bf93f1978d5b15a56d19953ebde5707d1a2b547a9ed8c",
+      "output_schema": {
+        "properties": {
+          "result": {
+            "additionalProperties": true,
+            "title": "Result",
+            "type": "object"
+          }
+        },
+        "required": [
+          "result"
+        ],
+        "title": "chatter_postOutput",
+        "type": "object"
+      },
+      "output_schema_sha256": "d442a062d26bb36af301a83ab725eda1ca3b6e54d1b574c3e6f3199e35e75119",
+      "runtime_verified": {
+        "error": false,
+        "success": false
+      },
+      "structured_content_mode": "wrapped"
+    },
+    "diagnose_access": {
+      "input_schema": {
+        "properties": {
+          "domain": {
+            "anyOf": [
+              {},
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Optional Odoo domain used for the visibility check.",
+            "title": "Domain"
+          },
+          "expected_count": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Optional expected visible record count for comparison.",
+            "title": "Expected Count"
+          },
+          "include_rules": {
+            "default": true,
+            "description": "Whether to include matching record-rule metadata.",
+            "title": "Include Rules",
+            "type": "boolean"
+          },
+          "instance": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Optional configured Odoo instance name; uses the default if omitted.",
+            "title": "Instance"
+          },
+          "limit": {
+            "default": 50,
+            "description": "Maximum metadata rows to inspect; capped at 500.",
+            "title": "Limit",
+            "type": "integer"
+          },
+          "model": {
+            "description": "Technical Odoo model name to inspect.",
+            "title": "Model",
+            "type": "string"
+          },
+          "observed_error": {
+            "anyOf": [
+              {},
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Optional error text or structured error to classify.",
+            "title": "Observed Error"
+          },
+          "operation": {
+            "default": "read",
+            "description": "Access operation to diagnose, such as read or write.",
+            "title": "Operation",
+            "type": "string"
+          },
+          "record_ids": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "integer"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Optional record IDs to check directly.",
+            "title": "Record Ids"
+          }
+        },
+        "required": [
+          "model"
+        ],
+        "title": "diagnose_accessArguments",
+        "type": "object"
+      },
+      "input_schema_sha256": "8e24aef3d04684b4f051f82ad535c08b7d8e531b356832c773fccc19cf08fed2",
+      "output_schema": {
+        "properties": {
+          "result": {
+            "additionalProperties": true,
+            "title": "Result",
+            "type": "object"
+          }
+        },
+        "required": [
+          "result"
+        ],
+        "title": "diagnose_accessOutput",
+        "type": "object"
+      },
+      "output_schema_sha256": "174ce229404b5674b8847110085ac9d6e1d0a64b2d21dfbfcd1b39c33a958122",
+      "runtime_verified": {
+        "error": false,
+        "success": false
+      },
+      "structured_content_mode": "wrapped"
+    },
+    "diagnose_odoo_call": {
+      "input_schema": {
+        "properties": {
+          "args": {
+            "anyOf": [
+              {
+                "items": {},
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Optional positional call arguments.",
+            "title": "Args"
+          },
+          "include_debug": {
+            "default": false,
+            "description": "Whether to include additional diagnostic details.",
+            "title": "Include Debug",
+            "type": "boolean"
+          },
+          "kwargs": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Optional keyword call arguments.",
+            "title": "Kwargs"
+          },
+          "metadata": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Optional model or method metadata used by the diagnosis.",
+            "title": "Metadata"
+          },
+          "method": {
+            "description": "Odoo model method name to diagnose.",
+            "title": "Method",
+            "type": "string"
+          },
+          "model": {
+            "description": "Technical Odoo model name to diagnose.",
+            "title": "Model",
+            "type": "string"
+          },
+          "observed_error": {
+            "anyOf": [
+              {},
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Optional error text or structured error to classify.",
+            "title": "Observed Error"
+          },
+          "target_version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Optional target Odoo version for compatibility checks.",
+            "title": "Target Version"
+          },
+          "transport": {
+            "default": "auto",
+            "description": "Transport to assess, such as 'auto', 'xmlrpc', or 'json2'.",
+            "title": "Transport",
+            "type": "string"
+          },
+          "use_live_metadata": {
+            "default": false,
+            "description": "Whether to request live metadata; this preview tool does not fetch it.",
+            "title": "Use Live Metadata",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "model",
+          "method"
+        ],
+        "title": "diagnose_odoo_callArguments",
+        "type": "object"
+      },
+      "input_schema_sha256": "5d03c39d045960df5951567f4ca3258a0eeb3f824efd66fa26b2de68725ca71a",
+      "output_schema": {
+        "properties": {
+          "result": {
+            "additionalProperties": true,
+            "title": "Result",
+            "type": "object"
+          }
+        },
+        "required": [
+          "result"
+        ],
+        "title": "diagnose_odoo_callOutput",
+        "type": "object"
+      },
+      "output_schema_sha256": "808eca2e58b75517aa03eb035408b01b08e81f07b3dbe8d38889fcded005a33f",
+      "runtime_verified": {
+        "error": false,
+        "success": false
+      },
+      "structured_content_mode": "wrapped"
+    },
+    "execute_approved_write": {
+      "input_schema": {
+        "properties": {
+          "approval": {
+            "additionalProperties": true,
+            "title": "Approval",
+            "type": "object"
+          },
+          "confirm": {
+            "default": false,
+            "title": "Confirm",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "approval"
+        ],
+        "title": "execute_approved_write_toolArguments",
+        "type": "object"
+      },
+      "input_schema_sha256": "812382819a263931cf9f47fc6d11d475773348b00fc7583fd5c0f610f6da1265",
+      "output_schema": {
+        "properties": {
+          "result": {
+            "additionalProperties": true,
+            "title": "Result",
+            "type": "object"
+          }
+        },
+        "required": [
+          "result"
+        ],
+        "title": "execute_approved_write_toolOutput",
+        "type": "object"
+      },
+      "output_schema_sha256": "6f2ac55cd961ef9ec96f2b3248fd55387d04875af3076ab88f1207b2147aa7ac",
+      "runtime_verified": {
+        "error": false,
+        "success": false
+      },
+      "structured_content_mode": "wrapped"
+    },
+    "execute_method": {
+      "input_schema": {
+        "properties": {
+          "args": {
+            "anyOf": [
+              {
+                "items": {},
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Optional positional method arguments.",
+            "title": "Args"
+          },
+          "instance": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Optional configured Odoo instance name; uses the default if omitted.",
+            "title": "Instance"
+          },
+          "kwargs": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Optional keyword method arguments.",
+            "title": "Kwargs"
+          },
+          "method": {
+            "description": "Odoo model method to call; direct create, write, and unlink are blocked.",
+            "title": "Method",
+            "type": "string"
+          },
+          "model": {
+            "description": "Technical Odoo model name, for example 'res.partner'.",
+            "title": "Model",
+            "type": "string"
+          }
+        },
+        "required": [
+          "model",
+          "method"
+        ],
+        "title": "execute_methodArguments",
+        "type": "object"
+      },
+      "input_schema_sha256": "af7c5ef4c78f152fb76b5927c66cc94b7de822c0933f1ae5d3ac249c23c610e8",
+      "output_schema": {
+        "properties": {
+          "result": {
+            "additionalProperties": true,
+            "title": "Result",
+            "type": "object"
+          }
+        },
+        "required": [
+          "result"
+        ],
+        "title": "execute_methodOutput",
+        "type": "object"
+      },
+      "output_schema_sha256": "477e19607cc63dbaf21fc5e246e7976e02bc8377b3b00db4322aab7107a6c5bf",
+      "runtime_verified": {
+        "error": false,
+        "success": false
+      },
+      "structured_content_mode": "wrapped"
+    },
+    "fit_gap_report": {
+      "input_schema": {
+        "properties": {
+          "available_fields": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Available Fields"
+          },
+          "available_models": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Available Models"
+          },
+          "business_context": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Business Context"
+          },
+          "installed_modules": {
+            "anyOf": [
+              {
+                "items": {},
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Installed Modules"
+          },
+          "requirements": {
+            "items": {},
+            "title": "Requirements",
+            "type": "array"
+          },
+          "use_live_metadata": {
+            "default": false,
+            "title": "Use Live Metadata",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "requirements"
+        ],
+        "title": "fit_gap_reportArguments",
+        "type": "object"
+      },
+      "input_schema_sha256": "a3aafb3e421285b9f9e2f1e6fd19f911134dfb984a273cef9fadab3828d253dd",
+      "output_schema": {
+        "properties": {
+          "result": {
+            "additionalProperties": true,
+            "title": "Result",
+            "type": "object"
+          }
+        },
+        "required": [
+          "result"
+        ],
+        "title": "fit_gap_reportOutput",
+        "type": "object"
+      },
+      "output_schema_sha256": "938d4ea320ce6007f97f77719ce84a545313395c8f54f08bc56d7950b7554ac1",
+      "runtime_verified": {
+        "error": false,
+        "success": false
+      },
+      "structured_content_mode": "wrapped"
+    },
+    "generate_json2_payload": {
+      "input_schema": {
+        "properties": {
+          "args": {
+            "anyOf": [
+              {
+                "items": {},
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Args"
+          },
+          "base_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Base Url"
+          },
+          "database": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Database"
+          },
+          "include_database_header": {
+            "default": true,
+            "title": "Include Database Header",
+            "type": "boolean"
+          },
+          "kwargs": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Kwargs"
+          },
+          "method": {
+            "title": "Method",
+            "type": "string"
+          },
+          "model": {
+            "title": "Model",
+            "type": "string"
+          }
+        },
+        "required": [
+          "model",
+          "method"
+        ],
+        "title": "generate_json2_payloadArguments",
+        "type": "object"
+      },
+      "input_schema_sha256": "1e2c124071ef827a725bfd63a1cf86d436012ac324a59ff67c1376ada3aea23f",
+      "output_schema": {
+        "properties": {
+          "result": {
+            "additionalProperties": true,
+            "title": "Result",
+            "type": "object"
+          }
+        },
+        "required": [
+          "result"
+        ],
+        "title": "generate_json2_payloadOutput",
+        "type": "object"
+      },
+      "output_schema_sha256": "bed12501199c4fa6491e7dbb9a2aa2af3348cffb9a4749d1958c2aed09ebf60c",
+      "runtime_verified": {
+        "error": false,
+        "success": false
+      },
+      "structured_content_mode": "wrapped"
+    },
+    "get_model_fields": {
+      "input_schema": {
+        "properties": {
+          "field_names": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Field Names"
+          },
+          "instance": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Instance"
+          },
+          "max_fields": {
+            "default": 30,
+            "title": "Max Fields",
+            "type": "integer"
+          },
+          "model": {
+            "title": "Model",
+            "type": "string"
+          },
+          "relevance": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Relevance"
+          }
+        },
+        "required": [
+          "model"
+        ],
+        "title": "get_model_fieldsArguments",
+        "type": "object"
+      },
+      "input_schema_sha256": "3ba1c6173ea2a9eb26194cc49e79c2ab5d06762647c2c1c5d0aa6bbc4ffdc39b",
+      "output_schema": {
+        "additionalProperties": true,
+        "properties": {
+          "count": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Count"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Sanitized error message when success is false.",
+            "title": "Error"
+          },
+          "ranking": {
+            "anyOf": [
+              {
+                "items": {
+                  "additionalProperties": true,
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Relevance scores when relevance=\"top\".",
+            "title": "Ranking"
+          },
+          "relevance_applied": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Relevance Applied"
+          },
+          "restricted_fields": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Fields marked restricted by the field ACL.",
+            "title": "Restricted Fields"
+          },
+          "result": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Mapping of field name to fields_get metadata.",
+            "title": "Result"
+          },
+          "success": {
+            "description": "False when the call failed; see error.",
+            "title": "Success",
+            "type": "boolean"
+          },
+          "tool": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Reporting tool name.",
+            "title": "Tool"
+          }
+        },
+        "required": [
+          "success"
+        ],
+        "title": "GetModelFieldsResponse",
+        "type": "object"
+      },
+      "output_schema_sha256": "8c7d54762e53d87a529794f0e719e43429ddad68e0c3839185a1c641efe0fe5a",
+      "runtime_verified": {
+        "error": true,
+        "success": true
+      },
+      "structured_content_mode": "direct"
+    },
+    "get_odoo_profile": {
+      "input_schema": {
+        "properties": {
+          "include_modules": {
+            "default": true,
+            "description": "Whether to include installed-module metadata.",
+            "title": "Include Modules",
+            "type": "boolean"
+          },
+          "instance": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Optional configured Odoo instance name; uses the default if omitted.",
+            "title": "Instance"
+          },
+          "module_limit": {
+            "default": 100,
+            "description": "Maximum installed modules to include; capped at 500.",
+            "title": "Module Limit",
+            "type": "integer"
+          }
+        },
+        "title": "get_odoo_profileArguments",
+        "type": "object"
+      },
+      "input_schema_sha256": "664704ae19609534fde6245567c9899515c40a85586b8e94a35c7bd84c1c193c",
+      "output_schema": {
+        "additionalProperties": true,
+        "properties": {
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Sanitized error message when success is false.",
+            "title": "Error"
+          },
+          "metadata_used": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Metadata Used"
+          },
+          "profile": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Server, user-context, transport, and module metadata.",
+            "title": "Profile"
+          },
+          "success": {
+            "description": "False when the call failed; see error.",
+            "title": "Success",
+            "type": "boolean"
+          },
+          "tool": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Reporting tool name.",
+            "title": "Tool"
+          }
+        },
+        "required": [
+          "success"
+        ],
+        "title": "GetOdooProfileResponse",
+        "type": "object"
+      },
+      "output_schema_sha256": "36c09efd68f44c83dcc0dcc2e264a3c133afd98ebaa05beadb0bee22f7a422b7",
+      "runtime_verified": {
+        "error": false,
+        "success": false
+      },
+      "structured_content_mode": "direct"
+    },
+    "health_check": {
+      "input_schema": {
+        "properties": {},
+        "title": "health_checkArguments",
+        "type": "object"
+      },
+      "input_schema_sha256": "3b2f78f68dfc96176aa41876a043772e2952595be24c6b4fee7ff7b1f4fa8e42",
+      "output_schema": {
+        "additionalProperties": true,
+        "properties": {
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Sanitized error message when success is false.",
+            "title": "Error"
+          },
+          "plugins": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Opt-in plugin load state and tool filtering.",
+            "title": "Plugins"
+          },
+          "rate_limits": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Rate Limits"
+          },
+          "runtime": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Non-secret runtime security posture.",
+            "title": "Runtime"
+          },
+          "server": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Server name, instructions, surface counts.",
+            "title": "Server"
+          },
+          "success": {
+            "description": "False when the call failed; see error.",
+            "title": "Success",
+            "type": "boolean"
+          },
+          "tool": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Reporting tool name.",
+            "title": "Tool"
+          }
+        },
+        "required": [
+          "success"
+        ],
+        "title": "HealthCheckResponse",
+        "type": "object"
+      },
+      "output_schema_sha256": "b76b7b7c5292d0fae495bf02e01d6e2a0a6e714d1f9ba02c802eb03b8e2f6d99",
+      "runtime_verified": {
+        "error": true,
+        "success": true
+      },
+      "structured_content_mode": "direct"
+    },
+    "inspect_model_relationships": {
+      "input_schema": {
+        "properties": {
+          "fields_metadata": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Fields Metadata"
+          },
+          "include_computed": {
+            "default": true,
+            "title": "Include Computed",
+            "type": "boolean"
+          },
+          "include_readonly": {
+            "default": true,
+            "title": "Include Readonly",
+            "type": "boolean"
+          },
+          "instance": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Instance"
+          },
+          "model": {
+            "title": "Model",
+            "type": "string"
+          },
+          "use_live_metadata": {
+            "default": true,
+            "title": "Use Live Metadata",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "model"
+        ],
+        "title": "inspect_model_relationshipsArguments",
+        "type": "object"
+      },
+      "input_schema_sha256": "dd826825ab75caa75307d2f94904486edfd6283fbac9d1ac56efe5d7785f2744",
+      "output_schema": {
+        "properties": {
+          "result": {
+            "additionalProperties": true,
+            "title": "Result",
+            "type": "object"
+          }
+        },
+        "required": [
+          "result"
+        ],
+        "title": "inspect_model_relationshipsOutput",
+        "type": "object"
+      },
+      "output_schema_sha256": "556ce8d60777ddcd1b96bc20683c4e4ccc3455fac786bf549fb5c20b7f9e88fc",
+      "runtime_verified": {
+        "error": false,
+        "success": false
+      },
+      "structured_content_mode": "wrapped"
+    },
+    "list_models": {
+      "input_schema": {
+        "properties": {
+          "instance": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Instance"
+          },
+          "limit": {
+            "default": 100,
+            "title": "Limit",
+            "type": "integer"
+          },
+          "query": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Query"
+          }
+        },
+        "title": "list_modelsArguments",
+        "type": "object"
+      },
+      "input_schema_sha256": "d42bd006e8b22ca6f28d1ff313cd8040cc35ddfc22a39ea0bf76923400b6bb05",
+      "output_schema": {
+        "$defs": {
+          "ModelSummary": {
+            "additionalProperties": true,
+            "description": "One model entry from list_models / schema_catalog.",
+            "properties": {
+              "model": {
+                "description": "Technical model name, e.g. res.partner.",
+                "title": "Model",
+                "type": "string"
+              },
+              "name": {
+                "default": "",
+                "description": "Human display name.",
+                "title": "Name",
+                "type": "string"
+              }
+            },
+            "required": [
+              "model"
+            ],
+            "title": "ModelSummary",
+            "type": "object"
+          }
+        },
+        "additionalProperties": true,
+        "properties": {
+          "count": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Count"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Sanitized error message when success is false.",
+            "title": "Error"
+          },
+          "result": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/$defs/ModelSummary"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Result"
+          },
+          "success": {
+            "description": "False when the call failed; see error.",
+            "title": "Success",
+            "type": "boolean"
+          },
+          "tool": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Reporting tool name.",
+            "title": "Tool"
+          }
+        },
+        "required": [
+          "success"
+        ],
+        "title": "ListModelsResponse",
+        "type": "object"
+      },
+      "output_schema_sha256": "c6679365bf0454dcb3e852cd7426a32a3092e7e33b45e244e57586db80600309",
+      "runtime_verified": {
+        "error": true,
+        "success": true
+      },
+      "structured_content_mode": "direct"
+    },
+    "preview_write": {
+      "input_schema": {
+        "properties": {
+          "context": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Context"
+          },
+          "instance": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Instance"
+          },
+          "model": {
+            "title": "Model",
+            "type": "string"
+          },
+          "operation": {
+            "title": "Operation",
+            "type": "string"
+          },
+          "record_ids": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "integer"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Record Ids"
+          },
+          "values": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Values"
+          },
+          "values_list": {
+            "anyOf": [
+              {
+                "items": {
+                  "additionalProperties": true,
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Values List"
+          }
+        },
+        "required": [
+          "model",
+          "operation"
+        ],
+        "title": "preview_writeArguments",
+        "type": "object"
+      },
+      "input_schema_sha256": "49e817b02f294fd86d346bb7efa5bebccce450561788b64a49b717c00ed5de7d",
+      "output_schema": {
+        "properties": {
+          "result": {
+            "additionalProperties": true,
+            "title": "Result",
+            "type": "object"
+          }
+        },
+        "required": [
+          "result"
+        ],
+        "title": "preview_writeOutput",
+        "type": "object"
+      },
+      "output_schema_sha256": "84f086531e8f7d65453bbe3612449d19280904bac07a0e4c286da0a1116b3ae8",
+      "runtime_verified": {
+        "error": false,
+        "success": false
+      },
+      "structured_content_mode": "wrapped"
+    },
+    "read_record": {
+      "input_schema": {
+        "properties": {
+          "fields": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Fields"
+          },
+          "instance": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Instance"
+          },
+          "model": {
+            "title": "Model",
+            "type": "string"
+          },
+          "record_id": {
+            "title": "Record Id",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "model",
+          "record_id"
+        ],
+        "title": "read_recordArguments",
+        "type": "object"
+      },
+      "input_schema_sha256": "aac459307f5dac026a2171885cbedc779fbd79da90985ac5efd618ba4fe0837e",
+      "output_schema": {
+        "additionalProperties": true,
+        "properties": {
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Sanitized error message when success is false.",
+            "title": "Error"
+          },
+          "fields_used": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Fields Used"
+          },
+          "redacted_fields": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Redacted Fields"
+          },
+          "result": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "The record (field-ACL redacted).",
+            "title": "Result"
+          },
+          "smart_fields_applied": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Smart Fields Applied"
+          },
+          "success": {
+            "description": "False when the call failed; see error.",
+            "title": "Success",
+            "type": "boolean"
+          },
+          "tool": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Reporting tool name.",
+            "title": "Tool"
+          }
+        },
+        "required": [
+          "success"
+        ],
+        "title": "ReadRecordResponse",
+        "type": "object"
+      },
+      "output_schema_sha256": "3a2e7bc75e796550f4c80b0c8d12d6b2471c1086769060eeae39b7a671ea6f71",
+      "runtime_verified": {
+        "error": true,
+        "success": true
+      },
+      "structured_content_mode": "direct"
+    },
+    "schema_catalog": {
+      "input_schema": {
+        "properties": {
+          "include_fields": {
+            "default": false,
+            "description": "Whether to include field metadata for each model.",
+            "title": "Include Fields",
+            "type": "boolean"
+          },
+          "instance": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Optional configured Odoo instance name; uses the default if omitted.",
+            "title": "Instance"
+          },
+          "limit": {
+            "default": 50,
+            "description": "Maximum catalog models to return; capped at 500.",
+            "title": "Limit",
+            "type": "integer"
+          },
+          "models": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Optional technical model names to include in the catalog.",
+            "title": "Models"
+          },
+          "query": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Optional text used to filter catalog models.",
+            "title": "Query"
+          },
+          "refresh": {
+            "default": false,
+            "description": "Whether to bypass and refresh the cached catalog.",
+            "title": "Refresh",
+            "type": "boolean"
+          }
+        },
+        "title": "schema_catalogArguments",
+        "type": "object"
+      },
+      "input_schema_sha256": "17ad273a70b3a442f968e3d3aa21043c0a67460b24d3321ec60b1c79212c9056",
+      "output_schema": {
+        "$defs": {
+          "ModelSummary": {
+            "additionalProperties": true,
+            "description": "One model entry from list_models / schema_catalog.",
+            "properties": {
+              "model": {
+                "description": "Technical model name, e.g. res.partner.",
+                "title": "Model",
+                "type": "string"
+              },
+              "name": {
+                "default": "",
+                "description": "Human display name.",
+                "title": "Name",
+                "type": "string"
+              }
+            },
+            "required": [
+              "model"
+            ],
+            "title": "ModelSummary",
+            "type": "object"
+          }
+        },
+        "additionalProperties": true,
+        "properties": {
+          "count": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Count"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Sanitized error message when success is false.",
+            "title": "Error"
+          },
+          "metadata_used": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Metadata Used"
+          },
+          "result": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/$defs/ModelSummary"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Model entries; fields included when requested.",
+            "title": "Result"
+          },
+          "success": {
+            "description": "False when the call failed; see error.",
+            "title": "Success",
+            "type": "boolean"
+          },
+          "tool": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Reporting tool name.",
+            "title": "Tool"
+          }
+        },
+        "required": [
+          "success"
+        ],
+        "title": "SchemaCatalogResponse",
+        "type": "object"
+      },
+      "output_schema_sha256": "4f76cb56139123f5263477c52d3d44a1c92261e5a203caffec07cce3d0565bc3",
+      "runtime_verified": {
+        "error": false,
+        "success": false
+      },
+      "structured_content_mode": "direct"
+    },
+    "search_employee": {
+      "input_schema": {
+        "properties": {
+          "instance": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Instance"
+          },
+          "limit": {
+            "default": 20,
+            "title": "Limit",
+            "type": "integer"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name"
+        ],
+        "title": "search_employeeArguments",
+        "type": "object"
+      },
+      "input_schema_sha256": "690b354698bc695a28a5cb9a487e08a524ac744e2f26d0dc601a6942e6f7a453",
+      "output_schema": {
+        "$defs": {
+          "EmployeeSearchResult": {
+            "description": "Represents a single employee search result.",
+            "properties": {
+              "id": {
+                "description": "Employee ID",
+                "title": "Id",
+                "type": "integer"
+              },
+              "name": {
+                "description": "Employee name",
+                "title": "Name",
+                "type": "string"
+              }
+            },
+            "required": [
+              "id",
+              "name"
+            ],
+            "title": "EmployeeSearchResult",
+            "type": "object"
+          }
+        },
+        "description": "Response model for the search_employee tool.",
+        "properties": {
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Error message, if any",
+            "title": "Error"
+          },
+          "result": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/$defs/EmployeeSearchResult"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "List of employee search results",
+            "title": "Result"
+          },
+          "success": {
+            "description": "Indicates if the search was successful",
+            "title": "Success",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "success"
+        ],
+        "title": "SearchEmployeeResponse",
+        "type": "object"
+      },
+      "output_schema_sha256": "b59fb431924bd355e936d35a3b0c6605ff0f8a475d3fc9c8eb970888373d3fee",
+      "runtime_verified": {
+        "error": false,
+        "success": false
+      },
+      "structured_content_mode": "direct"
+    },
+    "search_holidays": {
+      "input_schema": {
+        "properties": {
+          "employee_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Optional employee ID used to filter holidays.",
+            "title": "Employee Id"
+          },
+          "end_date": {
+            "description": "End date in YYYY-MM-DD format.",
+            "title": "End Date",
+            "type": "string"
+          },
+          "instance": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Optional configured Odoo instance name; uses the default if omitted.",
+            "title": "Instance"
+          },
+          "start_date": {
+            "description": "Start date in YYYY-MM-DD format.",
+            "title": "Start Date",
+            "type": "string"
+          }
+        },
+        "required": [
+          "start_date",
+          "end_date"
+        ],
+        "title": "search_holidaysArguments",
+        "type": "object"
+      },
+      "input_schema_sha256": "dfd48cdabe9edea1c1c402c108496a25d8829954c48ef9954ab0913582d4f25f",
+      "output_schema": {
+        "$defs": {
+          "Holiday": {
+            "description": "Represents a single holiday.",
+            "properties": {
+              "display_name": {
+                "description": "Display name of the holiday",
+                "title": "Display Name",
+                "type": "string"
+              },
+              "employee_id": {
+                "description": "Employee ID associated with the holiday",
+                "items": {
+                  "anyOf": [
+                    {
+                      "type": "integer"
+                    },
+                    {
+                      "type": "string"
+                    }
+                  ]
+                },
+                "title": "Employee Id",
+                "type": "array"
+              },
+              "name": {
+                "description": "Name of the holiday",
+                "title": "Name",
+                "type": "string"
+              },
+              "start_datetime": {
+                "description": "Start date and time of the holiday",
+                "title": "Start Datetime",
+                "type": "string"
+              },
+              "state": {
+                "description": "State of the holiday",
+                "title": "State",
+                "type": "string"
+              },
+              "stop_datetime": {
+                "description": "End date and time of the holiday",
+                "title": "Stop Datetime",
+                "type": "string"
+              }
+            },
+            "required": [
+              "display_name",
+              "start_datetime",
+              "stop_datetime",
+              "employee_id",
+              "name",
+              "state"
+            ],
+            "title": "Holiday",
+            "type": "object"
+          }
+        },
+        "description": "Response model for the search_holidays tool.",
+        "properties": {
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Error message, if any",
+            "title": "Error"
+          },
+          "result": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/$defs/Holiday"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "List of holidays found",
+            "title": "Result"
+          },
+          "success": {
+            "description": "Indicates if the search was successful",
+            "title": "Success",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "success"
+        ],
+        "title": "SearchHolidaysResponse",
+        "type": "object"
+      },
+      "output_schema_sha256": "a20c5b83a772acf3c1ed38d7938452f09eb845c2a7a80a659b8d1ac213010a1e",
+      "runtime_verified": {
+        "error": false,
+        "success": false
+      },
+      "structured_content_mode": "direct"
+    },
+    "search_records": {
+      "input_schema": {
+        "properties": {
+          "domain": {
+            "anyOf": [
+              {},
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Domain"
+          },
+          "fields": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Fields"
+          },
+          "instance": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Instance"
+          },
+          "limit": {
+            "default": 10,
+            "title": "Limit",
+            "type": "integer"
+          },
+          "model": {
+            "title": "Model",
+            "type": "string"
+          },
+          "offset": {
+            "default": 0,
+            "title": "Offset",
+            "type": "integer"
+          },
+          "order": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Order"
+          },
+          "query": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Query"
+          }
+        },
+        "required": [
+          "model"
+        ],
+        "title": "search_recordsArguments",
+        "type": "object"
+      },
+      "input_schema_sha256": "15a3079b595b20c14b5c90981c530d1660dc9c198ccf83d4b3c34e8383af23e5",
+      "output_schema": {
+        "additionalProperties": true,
+        "properties": {
+          "count": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Count"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Sanitized error message when success is false.",
+            "title": "Error"
+          },
+          "fields_used": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Fields Used"
+          },
+          "query_fields_used": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Fields matched by the free-text query shortcut.",
+            "title": "Query Fields Used"
+          },
+          "redacted_fields": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Redacted Fields"
+          },
+          "result": {
+            "anyOf": [
+              {
+                "items": {
+                  "additionalProperties": true,
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Matched records (field-ACL redacted).",
+            "title": "Result"
+          },
+          "smart_fields_applied": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Smart Fields Applied"
+          },
+          "success": {
+            "description": "False when the call failed; see error.",
+            "title": "Success",
+            "type": "boolean"
+          },
+          "tool": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Reporting tool name.",
+            "title": "Tool"
+          }
+        },
+        "required": [
+          "success"
+        ],
+        "title": "SearchRecordsResponse",
+        "type": "object"
+      },
+      "output_schema_sha256": "ba23fd58aea755e600e3b4a55df1149f767ae2582f4c45fecd434adc1b53e9aa",
+      "runtime_verified": {
+        "error": true,
+        "success": true
+      },
+      "structured_content_mode": "direct"
+    },
+    "upgrade_risk_report": {
+      "input_schema": {
+        "properties": {
+          "include_debug": {
+            "default": false,
+            "description": "Whether to include additional diagnostic details.",
+            "title": "Include Debug",
+            "type": "boolean"
+          },
+          "methods": {
+            "anyOf": [
+              {
+                "items": {
+                  "additionalProperties": true,
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Optional model method metadata to assess for compatibility.",
+            "title": "Methods"
+          },
+          "modules": {
+            "anyOf": [
+              {
+                "items": {
+                  "additionalProperties": true,
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Optional module metadata to assess for upgrade risks.",
+            "title": "Modules"
+          },
+          "observed_errors": {
+            "anyOf": [
+              {
+                "items": {},
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Optional observed upgrade or migration errors to classify.",
+            "title": "Observed Errors"
+          },
+          "source_findings": {
+            "anyOf": [
+              {
+                "items": {
+                  "additionalProperties": true,
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Optional source-code findings to include in the risk report.",
+            "title": "Source Findings"
+          },
+          "source_version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Optional current Odoo version.",
+            "title": "Source Version"
+          },
+          "target_version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Optional target Odoo version.",
+            "title": "Target Version"
+          },
+          "use_live_metadata": {
+            "default": false,
+            "description": "Whether to request live metadata; this preview tool does not fetch it.",
+            "title": "Use Live Metadata",
+            "type": "boolean"
+          }
+        },
+        "title": "upgrade_risk_reportArguments",
+        "type": "object"
+      },
+      "input_schema_sha256": "f1b8711f6ee826232bc9c71f2c0c6c6f602e6720d7e137b565317bb09b9db46b",
+      "output_schema": {
+        "properties": {
+          "result": {
+            "additionalProperties": true,
+            "title": "Result",
+            "type": "object"
+          }
+        },
+        "required": [
+          "result"
+        ],
+        "title": "upgrade_risk_reportOutput",
+        "type": "object"
+      },
+      "output_schema_sha256": "3db452c8ec0285f369ce395fdec359b366e4d1979018066c115103a1123f72ab",
+      "runtime_verified": {
+        "error": false,
+        "success": false
+      },
+      "structured_content_mode": "wrapped"
+    },
+    "validate_write": {
+      "input_schema": {
+        "properties": {
+          "context": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Context"
+          },
+          "fields_metadata": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Fields Metadata"
+          },
+          "instance": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Instance"
+          },
+          "model": {
+            "title": "Model",
+            "type": "string"
+          },
+          "operation": {
+            "title": "Operation",
+            "type": "string"
+          },
+          "record_ids": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "integer"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Record Ids"
+          },
+          "use_live_metadata": {
+            "default": true,
+            "title": "Use Live Metadata",
+            "type": "boolean"
+          },
+          "values": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Values"
+          },
+          "values_list": {
+            "anyOf": [
+              {
+                "items": {
+                  "additionalProperties": true,
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Values List"
+          }
+        },
+        "required": [
+          "model",
+          "operation"
+        ],
+        "title": "validate_writeArguments",
+        "type": "object"
+      },
+      "input_schema_sha256": "7e1e43d7ae3a10d7814ef92ae0f539cd5a65c9804973a27f1b3969e161d2e6fb",
+      "output_schema": {
+        "properties": {
+          "result": {
+            "additionalProperties": true,
+            "title": "Result",
+            "type": "object"
+          }
+        },
+        "required": [
+          "result"
+        ],
+        "title": "validate_writeOutput",
+        "type": "object"
+      },
+      "output_schema_sha256": "268c9003d500b165da778965deac05c5e39559c0a34e86733abd3340842d1d9d",
+      "runtime_verified": {
+        "error": false,
+        "success": false
+      },
+      "structured_content_mode": "wrapped"
+    }
+  }
+}

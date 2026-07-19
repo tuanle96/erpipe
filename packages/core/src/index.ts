@@ -56,6 +56,20 @@ export {
 } from "./smart-fields.js";
 export { FieldPolicy, type FieldPolicyDoc } from "./field-policy.js";
 export {
+  CLOUD_V1_PYTHON_CONTRACTS,
+  addCloudV1ToolContracts,
+  cloudV1StructuredContent,
+  getCloudV1ToolContract,
+  type CloudV1ToolContract,
+  type CloudV1ToolName,
+  type JsonSchema,
+} from "./mcp-contracts.js";
+export {
+  CLOUD_V1_RESOURCES,
+  readCloudV1Resource,
+  type OdooResourceContext,
+} from "./resources.js";
+export {
   MemoryApprovalStore,
   WRITE_APPROVAL_TTL_MS,
   buildApprovalToken,

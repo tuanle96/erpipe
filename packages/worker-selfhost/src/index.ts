@@ -46,6 +46,8 @@ import { McpAgent } from "agents/mcp";
 import { z } from "zod";
 import { createAuthApp } from "./auth";
 import { mcpPath, parseSlugFromPath } from "./routes";
+import { installCloudV1ContractCompatibility } from "./mcp-contracts";
+import { registerResources } from "./resources";
 
 export type Props = {
   userId: string;
@@ -165,6 +167,8 @@ export class SelfhostMcp extends McpAgent<Env, Record<string, never>, Props> {
         /* ignore invalid policy JSON */
       }
     }
+    installCloudV1ContractCompatibility(this.server);
+    registerResources(this.server, transport, fieldPolicy);
     const allTools = [
       ...PHASE1_TOOLS,
       ...PHASE2_TOOLS,

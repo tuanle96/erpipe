@@ -30,7 +30,7 @@
   },
   "dependencies": {
     "@cloudflare/workers-oauth-provider": "0.8.2",
-    "@erpipe/core": "0.1.0",
+    "@erpipe/core": "file:../core",
     "@modelcontextprotocol/sdk": "^1.12.1",
     "agents": "0.17.4",
     "hono": "^4.8.5",

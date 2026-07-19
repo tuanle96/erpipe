@@ -5,9 +5,7 @@ describe("FieldPolicy", () => {
   it("inactive when empty", () => {
     const p = new FieldPolicy();
     expect(p.active()).toBe(false);
-    expect(p.deniedWriteFields("default", "res.partner", ["name", "email"])).toEqual(
-      [],
-    );
+    expect(p.deniedWriteFields("default", "res.partner", ["name", "email"])).toEqual([]);
     expect(p.checkWriteValues("default", "res.partner", { name: "x" })).toBeNull();
   });
 
@@ -21,12 +19,13 @@ describe("FieldPolicy", () => {
       },
     });
     expect(p.active()).toBe(true);
-    expect(
-      p.deniedWriteFields("default", "res.partner", ["name", "vat", "email"]),
-    ).toEqual(["vat", "email"]);
-    expect(p.deniedWriteFields("default", "sale.order", ["note", "amount_total"])).toEqual(
-      ["amount_total"],
-    );
+    expect(p.deniedWriteFields("default", "res.partner", ["name", "vat", "email"])).toEqual([
+      "vat",
+      "email",
+    ]);
+    expect(p.deniedWriteFields("default", "sale.order", ["note", "amount_total"])).toEqual([
+      "amount_total",
+    ]);
   });
 
   it("always keeps id and display_name", () => {
@@ -37,9 +36,9 @@ describe("FieldPolicy", () => {
         },
       },
     });
-    expect(
-      p.deniedWriteFields("default", "res.partner", ["id", "display_name", "name"]),
-    ).toEqual(["name"]);
+    expect(p.deniedWriteFields("default", "res.partner", ["id", "display_name", "name"])).toEqual([
+      "name",
+    ]);
   });
 
   it("merges star deny with model-specific allow (intersection of allow)", () => {
@@ -67,9 +66,11 @@ describe("FieldPolicy", () => {
       },
     });
     // intersection → only name
-    expect(
-      p.deniedWriteFields("prod", "res.partner", ["name", "email", "phone", "vat"]),
-    ).toEqual(["email", "phone", "vat"]);
+    expect(p.deniedWriteFields("prod", "res.partner", ["name", "email", "phone", "vat"])).toEqual([
+      "email",
+      "phone",
+      "vat",
+    ]);
   });
 
   it("returns null from checkWriteValues when all fields allowed", () => {
@@ -118,5 +119,24 @@ describe("FieldPolicy", () => {
       },
     });
     expect(p.deniedWriteFields("default", "res.partner", ["x", "y"])).toEqual(["x"]);
+  });
+
+  it("redacts read records while always retaining id", () => {
+    const p = FieldPolicy.fromDoc({
+      field_acl: {
+        default: {
+          "res.partner": { mode: "deny", fields: ["secret"] },
+        },
+      },
+    });
+    const [records, redacted] = p.redactRecords("default", "res.partner", [
+      { id: 1, name: "Azure", secret: "hidden" },
+      { id: 2, name: "Bestmix", secret: "hidden" },
+    ]);
+    expect(records).toEqual([
+      { id: 1, name: "Azure" },
+      { id: 2, name: "Bestmix" },
+    ]);
+    expect(redacted).toEqual(["secret"]);
   });
 });
