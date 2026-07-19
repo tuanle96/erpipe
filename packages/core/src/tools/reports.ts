@@ -9,66 +9,16 @@ import { JSON2_POSITIONAL_ARG_MAP } from "../transport/json2-map.js";
 import type { OdooTransport } from "../transport/types.js";
 import { BUSINESS_PACKS } from "./business-packs.js";
 import { ABS_MAX_LIMIT, clampLimit, fail, type ToolResult, validateModelName } from "./helpers.js";
+import { classifyMethodSafety } from "./method-safety.js";
 
 export type { BusinessPackDefinition } from "./business-packs.js";
 export { BUSINESS_PACKS } from "./business-packs.js";
+export { classifyMethodSafety } from "./method-safety.js";
 export type { ToolResult };
 
 const ODOO_RPC_REMOVAL = "Odoo 22 fall 2028";
 const ODOO_RPC_REMOVAL_MAJOR = 22;
 const ODOO_RPC_DEPRECATION_MAJOR = 19;
-
-const READ_ONLY_METHODS = new Set([
-  "search",
-  "search_count",
-  "search_read",
-  "read",
-  "fields_get",
-  "name_get",
-  "name_search",
-  "context_get",
-]);
-const DESTRUCTIVE_METHODS = new Set(["create", "write", "unlink"]);
-const SIDE_EFFECT_PATTERNS = [
-  /^action_/,
-  /^button_/,
-  /(^|_)send($|_)/,
-  /(^|_)post($|_)/,
-  /(^|_)validate($|_)/,
-];
-
-export function classifyMethodSafety(method: string): {
-  safety: string;
-  destructive_method: boolean;
-  confidence: string;
-} {
-  if (DESTRUCTIVE_METHODS.has(method)) {
-    return {
-      safety: "destructive",
-      destructive_method: true,
-      confidence: "high",
-    };
-  }
-  if (READ_ONLY_METHODS.has(method) || method.startsWith("get_") || method.startsWith("_get_")) {
-    return {
-      safety: "read_only",
-      destructive_method: false,
-      confidence: READ_ONLY_METHODS.has(method) ? "high" : "medium",
-    };
-  }
-  if (method === "message_post" || SIDE_EFFECT_PATTERNS.some((p) => p.test(method))) {
-    return {
-      safety: "side_effect",
-      destructive_method: false,
-      confidence: "medium",
-    };
-  }
-  return {
-    safety: "unknown",
-    destructive_method: false,
-    confidence: "low",
-  };
-}
 
 function buildJson2Body(
   model: string,
