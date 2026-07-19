@@ -31,6 +31,9 @@ export {
   diagnoseOdooCall,
   inspectModelRelationships,
   diagnoseAccess,
+  readAttachment,
+  DEFAULT_MAX_ATTACHMENT_BYTES,
+  ABS_MAX_ATTACHMENT_BYTES,
   PHASE2_TOOLS,
 } from "./tools/phase2.js";
 export { buildDomain, type DomainConditionInput, type BuildDomainResult } from "./tools/domain.js";
@@ -91,8 +94,11 @@ export {
   fitGapReport,
   businessPackReport,
   businessPackReportLive,
+  renderReport,
   classifyMethodSafety,
   BUSINESS_PACKS,
+  DEFAULT_MAX_REPORT_BYTES,
+  ABS_MAX_REPORT_BYTES,
   PHASE4_TOOLS,
 } from "./tools/reports.js";
 export {
@@ -110,7 +116,8 @@ export {
   type PromptDef,
 } from "./prompts.js";
 
-export const CLOUD_V1_TOOL_COUNT = 23;
+/** Cloud tool surface: D14 (23) + read_attachment + render_report. */
+export const CLOUD_V1_TOOL_COUNT = 25;
 export const CLOUD_V1_PROMPT_COUNT = 7;
 export const PHASE1_TOOLS = [
   "list_models",

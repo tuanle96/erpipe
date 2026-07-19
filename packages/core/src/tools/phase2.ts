@@ -522,6 +522,194 @@ export async function diagnoseAccess(
   }
 }
 
+/** Default max decoded attachment size (2 MiB). */
+export const DEFAULT_MAX_ATTACHMENT_BYTES = 2 * 1024 * 1024;
+/** Hard ceiling even if caller asks for more (5 MiB). */
+export const ABS_MAX_ATTACHMENT_BYTES = 5 * 1024 * 1024;
+
+/**
+ * Read an ir.attachment (or list metadata). Read-only — no write gate.
+ * Returns base64 `datas` only when file_size ≤ max_bytes.
+ */
+export async function readAttachment(
+  transport: OdooTransport,
+  opts: {
+    attachment_id?: number | null;
+    domain?: unknown;
+    limit?: number;
+    max_bytes?: number;
+    include_datas?: boolean;
+  } = {},
+): Promise<ToolResult> {
+  try {
+    const maxBytes = Math.min(
+      Math.max(1, Math.floor(opts.max_bytes ?? DEFAULT_MAX_ATTACHMENT_BYTES)),
+      ABS_MAX_ATTACHMENT_BYTES,
+    );
+    const includeDatas = opts.include_datas !== false;
+    const metaFields = [
+      "id",
+      "name",
+      "mimetype",
+      "file_size",
+      "type",
+      "url",
+      "res_model",
+      "res_id",
+      "create_date",
+      "write_date",
+    ];
+
+    // List mode: metadata only (never bulk-fetch datas)
+    if (opts.attachment_id == null) {
+      const limit = clampLimit(opts.limit ?? 20, 50);
+      const domain = normalizeDomainInput(opts.domain);
+      const rows = (await transport.executeKw("ir.attachment", "search_read", [], {
+        domain,
+        fields: metaFields,
+        limit,
+        order: "id desc",
+      })) as Record<string, unknown>[];
+      const list = Array.isArray(rows) ? rows : [];
+      return {
+        success: true,
+        tool: "read_attachment",
+        count: list.length,
+        max_bytes: maxBytes,
+        datas_included: false,
+        result: list.map((r) => ({
+          id: r.id,
+          name: r.name,
+          mimetype: r.mimetype,
+          file_size: r.file_size,
+          type: r.type,
+          url: r.url,
+          res_model: r.res_model,
+          res_id: r.res_id,
+          create_date: r.create_date,
+          write_date: r.write_date,
+        })),
+        note: "List mode returns metadata only. Pass attachment_id to fetch datas (base64) within max_bytes.",
+      };
+    }
+
+    const id = opts.attachment_id;
+    if (!Number.isInteger(id) || id < 1) {
+      throw new OdooError("VALIDATION_ERROR", "attachment_id must be a positive integer");
+    }
+
+    const metaRows = (await transport.executeKw(
+      "ir.attachment",
+      "read",
+      [[id]],
+      { fields: metaFields },
+    )) as Record<string, unknown>[];
+    if (!metaRows?.length) {
+      return {
+        success: false,
+        tool: "read_attachment",
+        error: `Attachment not found: ir.attachment ID ${id}`,
+      };
+    }
+    const meta = metaRows[0]!;
+    const fileSize = Number(meta.file_size ?? 0);
+    const type = String(meta.type ?? "binary");
+
+    const base = {
+      id: meta.id,
+      name: meta.name,
+      mimetype: meta.mimetype,
+      file_size: fileSize,
+      type,
+      url: meta.url ?? null,
+      res_model: meta.res_model ?? null,
+      res_id: meta.res_id ?? null,
+      create_date: meta.create_date ?? null,
+      write_date: meta.write_date ?? null,
+    };
+
+    if (type === "url") {
+      return {
+        success: true,
+        tool: "read_attachment",
+        max_bytes: maxBytes,
+        datas_included: false,
+        result: { ...base, datas: null },
+        note: "URL-type attachment — open url field; no binary datas stored on the record.",
+      };
+    }
+
+    if (!includeDatas) {
+      return {
+        success: true,
+        tool: "read_attachment",
+        max_bytes: maxBytes,
+        datas_included: false,
+        result: { ...base, datas: null },
+      };
+    }
+
+    if (fileSize > maxBytes) {
+      return {
+        success: false,
+        tool: "read_attachment",
+        code: "ATTACHMENT_TOO_LARGE",
+        error: `Attachment is ${fileSize} bytes; max_bytes is ${maxBytes}. Raise max_bytes (cap ${ABS_MAX_ATTACHMENT_BYTES}) or download outside MCP.`,
+        result: base,
+        max_bytes: maxBytes,
+        datas_included: false,
+      };
+    }
+
+    const full = (await transport.executeKw(
+      "ir.attachment",
+      "read",
+      [[id]],
+      { fields: [...metaFields, "datas"] },
+    )) as Record<string, unknown>[];
+    const row = full?.[0] ?? meta;
+    const datas = row.datas;
+    // Odoo returns base64 string; empty/false when missing
+    const b64 =
+      typeof datas === "string" && datas.length > 0
+        ? datas
+        : datas
+          ? String(datas)
+          : null;
+
+    // Defense-in-depth: reject oversized base64 even if file_size was wrong
+    if (b64) {
+      // base64 expands ~4/3; estimate decoded size
+      const approxDecoded = Math.floor((b64.length * 3) / 4);
+      if (approxDecoded > maxBytes) {
+        return {
+          success: false,
+          tool: "read_attachment",
+          code: "ATTACHMENT_TOO_LARGE",
+          error: `Decoded payload ~${approxDecoded} bytes exceeds max_bytes ${maxBytes}.`,
+          result: base,
+          max_bytes: maxBytes,
+          datas_included: false,
+        };
+      }
+    }
+
+    return {
+      success: true,
+      tool: "read_attachment",
+      max_bytes: maxBytes,
+      datas_included: b64 != null,
+      result: {
+        ...base,
+        datas: b64,
+        datas_encoding: b64 != null ? "base64" : null,
+      },
+    };
+  } catch (e) {
+    return fail(e);
+  }
+}
+
 export const PHASE2_TOOLS = [
   "aggregate_records",
   "search_employee",
@@ -531,4 +719,5 @@ export const PHASE2_TOOLS = [
   "diagnose_odoo_call",
   "diagnose_access",
   "inspect_model_relationships",
+  "read_attachment",
 ] as const;

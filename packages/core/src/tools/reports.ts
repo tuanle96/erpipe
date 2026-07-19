@@ -9,6 +9,7 @@ import { JSON2_POSITIONAL_ARG_MAP } from "../transport/json2-map.js";
 import {
   clampLimit,
   fail,
+  validateModelName,
   type ToolResult,
   ABS_MAX_LIMIT,
 } from "./helpers.js";
@@ -793,9 +794,190 @@ export async function businessPackReportLive(
   }
 }
 
+/** Default max PDF size for render_report (2 MiB). */
+export const DEFAULT_MAX_REPORT_BYTES = 2 * 1024 * 1024;
+/** Hard ceiling for report PDF payloads. */
+export const ABS_MAX_REPORT_BYTES = 5 * 1024 * 1024;
+
+/**
+ * Render an Odoo QWeb PDF report (ir.actions.report) as base64.
+ * Read-only from ERPipe's perspective — uses report engine only.
+ */
+export async function renderReport(
+  transport: OdooTransport,
+  opts: {
+    model: string;
+    record_id: number;
+    report_name?: string | null;
+    report_id?: number | null;
+    max_bytes?: number;
+  },
+): Promise<ToolResult> {
+  try {
+    validateModelName(opts.model);
+    if (!Number.isInteger(opts.record_id) || opts.record_id < 1) {
+      return {
+        success: false,
+        tool: "render_report",
+        error: "record_id must be a positive integer",
+      };
+    }
+    const maxBytes = Math.min(
+      Math.max(1, Math.floor(opts.max_bytes ?? DEFAULT_MAX_REPORT_BYTES)),
+      ABS_MAX_REPORT_BYTES,
+    );
+
+    let reportName = opts.report_name?.trim() || null;
+    let reportId = opts.report_id ?? null;
+    let reportDisplay: string | null = null;
+
+    if (!reportName && reportId == null) {
+      // Pick the first QWeb PDF report bound to this model
+      const found = (await transport.executeKw(
+        "ir.actions.report",
+        "search_read",
+        [[["model", "=", opts.model]]],
+        {
+          fields: ["id", "name", "report_name", "report_type"],
+          limit: 5,
+          order: "id asc",
+        },
+      )) as {
+        id?: number;
+        name?: string;
+        report_name?: string;
+        report_type?: string;
+      }[];
+      const pdf = (found ?? []).find(
+        (r) => !r.report_type || String(r.report_type).includes("qweb-pdf") || String(r.report_type).includes("pdf"),
+      ) ?? found?.[0];
+      if (!pdf?.report_name && !pdf?.id) {
+        return {
+          success: false,
+          tool: "render_report",
+          error: `No ir.actions.report found for model ${opts.model}. Pass report_name (e.g. sale.report_saleorder).`,
+        };
+      }
+      reportName = pdf.report_name ? String(pdf.report_name) : null;
+      reportId = pdf.id != null ? Number(pdf.id) : null;
+      reportDisplay = pdf.name ? String(pdf.name) : null;
+    } else if (reportName && reportId == null) {
+      const found = (await transport.executeKw(
+        "ir.actions.report",
+        "search_read",
+        [[["report_name", "=", reportName]]],
+        { fields: ["id", "name", "report_name"], limit: 1 },
+      )) as { id?: number; name?: string }[];
+      if (found?.[0]) {
+        reportId = Number(found[0].id);
+        reportDisplay = found[0].name ? String(found[0].name) : null;
+      }
+    }
+
+    const reportRef = reportName ?? reportId;
+    if (reportRef == null) {
+      return {
+        success: false,
+        tool: "render_report",
+        error: "Could not resolve report reference",
+      };
+    }
+
+    // Odoo 16+: ir.actions.report._render_qweb_pdf(report_ref, res_ids)
+    let raw: unknown;
+    try {
+      raw = await transport.executeKw(
+        "ir.actions.report",
+        "_render_qweb_pdf",
+        [reportRef, [opts.record_id]],
+        {},
+      );
+    } catch (e1) {
+      // Fallback: some builds expose render as public method on the report record
+      if (reportId == null) throw e1;
+      raw = await transport.executeKw(
+        "ir.actions.report",
+        "render",
+        [[reportId], [opts.record_id]],
+        {},
+      );
+    }
+
+    // Possible shapes: [pdf_bytes|base64, 'pdf'] | { data: base64 } | base64 string
+    let b64: string | null = null;
+    if (Array.isArray(raw) && raw.length >= 1) {
+      const first = raw[0];
+      if (typeof first === "string") b64 = first;
+      else if (first instanceof Uint8Array) {
+        b64 = uint8ToBase64(first);
+      } else if (first && typeof first === "object" && "data" in (first as object)) {
+        b64 = String((first as { data: unknown }).data);
+      }
+    } else if (typeof raw === "string") {
+      b64 = raw;
+    } else if (raw && typeof raw === "object" && "data" in (raw as object)) {
+      b64 = String((raw as { data: unknown }).data);
+    }
+
+    if (!b64) {
+      return {
+        success: false,
+        tool: "render_report",
+        error:
+          "Report engine returned an unexpected payload shape. Check report_name and Odoo version.",
+        report_name: reportName,
+        report_id: reportId,
+      };
+    }
+
+    const approxDecoded = Math.floor((b64.length * 3) / 4);
+    if (approxDecoded > maxBytes) {
+      return {
+        success: false,
+        tool: "render_report",
+        code: "REPORT_TOO_LARGE",
+        error: `PDF ~${approxDecoded} bytes exceeds max_bytes ${maxBytes}`,
+        report_name: reportName,
+        report_id: reportId,
+        max_bytes: maxBytes,
+        datas_included: false,
+      };
+    }
+
+    return {
+      success: true,
+      tool: "render_report",
+      model: opts.model,
+      record_id: opts.record_id,
+      report_name: reportName,
+      report_id: reportId,
+      report_display_name: reportDisplay,
+      mimetype: "application/pdf",
+      encoding: "base64",
+      approx_bytes: approxDecoded,
+      max_bytes: maxBytes,
+      datas_included: true,
+      result: { datas: b64 },
+    };
+  } catch (e) {
+    return { ...fail(e), tool: "render_report" };
+  }
+}
+
+function uint8ToBase64(bytes: Uint8Array): string {
+  let binary = "";
+  const chunk = 0x8000;
+  for (let i = 0; i < bytes.length; i += chunk) {
+    binary += String.fromCharCode(...bytes.subarray(i, i + chunk));
+  }
+  // btoa available in Workers + modern Node
+  return btoa(binary);
+}
+
 export const PHASE4_TOOLS = [
   "generate_json2_payload",
   "upgrade_risk_report",
   "fit_gap_report",
   "business_pack_report",
+  "render_report",
 ] as const;

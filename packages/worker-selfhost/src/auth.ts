@@ -1,10 +1,15 @@
 /**
- * Minimal mock authorize UI for self-host / demos.
- * Production hosted product uses Resend magic-link (closed repo).
+ * Self-host landing and OAuth authorization experience.
+ * The production hosted product uses Resend magic-link (closed repo).
  */
 import type { AuthRequest, OAuthHelpers } from "@cloudflare/workers-oauth-provider";
 import { Hono } from "hono";
 import { mcpPath } from "./routes";
+import {
+  renderAuthorizePage,
+  renderErrorPage,
+  renderHomePage,
+} from "./ui";
 
 export type SelfhostEnv = {
   OAUTH_KV: KVNamespace;
@@ -16,31 +21,22 @@ export type SelfhostEnv = {
 export function createAuthApp(slug: string) {
   const app = new Hono<{ Bindings: SelfhostEnv }>();
 
+  app.use("*", async (c, next) => {
+    await next();
+    c.header("Referrer-Policy", "no-referrer");
+    c.header("X-Content-Type-Options", "nosniff");
+    c.header("X-Frame-Options", "DENY");
+    c.header(
+      "Content-Security-Policy",
+      "default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; connect-src 'self'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'",
+    );
+  });
+
   app.get("/", (c) => {
     const origin = new URL(c.req.url).origin;
-    const path = mcpPath(slug);
-    return c.html(`<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <title>ERPipe self-host</title>
-  <style>
-    body { font-family: system-ui, sans-serif; max-width: 40rem; margin: 2rem auto; padding: 0 1rem; line-height: 1.5; }
-    code { background: #f4f4f5; padding: 0.15em 0.4em; border-radius: 4px; }
-    .box { border: 1px solid #e4e4e7; border-radius: 8px; padding: 1rem; margin: 1rem 0; }
-  </style>
-</head>
-<body>
-  <h1>ERPipe self-host</h1>
-  <p>Open-source single-connection MCP example. Mode: <code>/{slug}/mcp</code>.</p>
-  <div class="box">
-    <p><strong>MCP URL</strong></p>
-    <p><code>${origin}${path}</code></p>
-    <p><strong>Slug</strong> <code>${slug}</code> (env <code>CONNECTION_SLUG</code>)</p>
-  </div>
-  <p><a href="/health">/health</a></p>
-</body>
-</html>`);
+    return c.html(
+      renderHomePage({ endpoint: `${origin}${mcpPath(slug)}`, slug }),
+    );
   });
 
   app.get("/health", (c) =>
@@ -58,8 +54,8 @@ export function createAuthApp(slug: string) {
     try {
       oauthReq = await c.env.OAUTH_PROVIDER.parseAuthRequest(c.req.raw);
     } catch (err) {
-      const message = err instanceof Error ? err.message : "invalid_request";
-      return c.text(message, 400);
+      const message = err instanceof Error ? err.message : "Invalid OAuth request.";
+      return c.html(renderErrorPage("Authorization request is invalid", message), 400);
     }
 
     const resourceRaw = oauthReq.resource;
@@ -67,39 +63,32 @@ export function createAuthApp(slug: string) {
       try {
         const path = new URL(String(resourceRaw)).pathname.replace(/\/+$/, "");
         if (path !== mcpPath(slug)) {
-          return c.text(
-            `This self-host instance only serves ${mcpPath(slug)}; got ${path}`,
+          return c.html(
+            renderErrorPage(
+              "Resource does not match",
+              `This instance serves ${mcpPath(slug)}, but the client requested ${path}. Check the endpoint in your MCP client.`,
+            ),
             400,
           );
         }
       } catch {
-        return c.text("Invalid resource parameter", 400);
+        return c.html(
+          renderErrorPage(
+            "Resource URL is invalid",
+            "Check the ERPipe endpoint configured in your MCP client and try again.",
+          ),
+          400,
+        );
       }
     }
 
+    const client = await c.env.OAUTH_PROVIDER.lookupClient(
+      oauthReq.clientId,
+    );
     const oauthState = btoa(JSON.stringify(oauthReq));
-    return c.html(`<!doctype html>
-<html lang="en">
-<head><meta charset="utf-8" /><title>Approve MCP</title>
-<style>
-  body { font-family: system-ui; max-width: 28rem; margin: 3rem auto; padding: 0 1rem; }
-  label { display: block; margin: 0.75rem 0 0.25rem; font-weight: 600; }
-  input, button { width: 100%; padding: 0.5rem; font-size: 1rem; box-sizing: border-box; }
-  button { margin-top: 1.25rem; background: #18181b; color: #fff; border: 0; border-radius: 6px; cursor: pointer; }
-  .meta { color: #71717a; font-size: 0.85rem; }
-</style>
-</head>
-<body>
-  <h1>Approve MCP access</h1>
-  <p class="meta">Self-host connection <code>${slug}</code></p>
-  <form method="POST" action="/authorize">
-    <input type="hidden" name="oauth_state" value="${oauthState}" />
-    <label>Label (optional)</label>
-    <input name="email" type="email" value="selfhost@local" />
-    <button type="submit">Approve</button>
-  </form>
-</body>
-</html>`);
+    return c.html(
+      renderAuthorizePage({ slug, oauthState, request: oauthReq, client }),
+    );
   });
 
   app.post("/authorize", async (c) => {
@@ -111,7 +100,13 @@ export function createAuthApp(slug: string) {
     try {
       oauthReq = JSON.parse(atob(oauthState)) as AuthRequest;
     } catch {
-      return c.text("Invalid oauth_state", 400);
+      return c.html(
+        renderErrorPage(
+          "Authorization session expired",
+          "Start the connection again from your MCP client to create a new request.",
+        ),
+        400,
+      );
     }
 
     if (!oauthReq.resource) {
@@ -119,20 +114,29 @@ export function createAuthApp(slug: string) {
       oauthReq.resource = `${origin}${mcpPath(slug)}`;
     }
 
-    const { redirectTo } = await c.env.OAUTH_PROVIDER.completeAuthorization({
-      request: oauthReq,
-      userId: email,
-      metadata: { email, slug },
-      scope: oauthReq.scope ?? [],
-      props: {
+    try {
+      const { redirectTo } = await c.env.OAUTH_PROVIDER.completeAuthorization({
+        request: oauthReq,
         userId: email,
-        email,
-        slug,
-        connectionId: `selfhost_${slug}`,
-      },
-    });
-
-    return c.redirect(redirectTo, 302);
+        metadata: { email, slug },
+        scope: oauthReq.scope ?? [],
+        props: {
+          userId: email,
+          email,
+          slug,
+          connectionId: `selfhost_${slug}`,
+        },
+      });
+      return c.redirect(redirectTo, 302);
+    } catch {
+      return c.html(
+        renderErrorPage(
+          "Connection could not be authorized",
+          "Return to your MCP client and start the connection again. If the issue continues, verify this Worker's OAuth configuration.",
+        ),
+        500,
+      );
+    }
   });
 
   return app;

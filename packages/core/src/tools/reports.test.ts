@@ -185,13 +185,14 @@ describe("business_pack_report", () => {
 });
 
 describe("PHASE4_TOOLS", () => {
-  it("has exactly 4 tools for D14 23-surface", () => {
-    expect(PHASE4_TOOLS).toHaveLength(4);
+  it("includes D14 reports plus render_report", () => {
+    expect(PHASE4_TOOLS).toHaveLength(5);
     expect([...PHASE4_TOOLS]).toEqual([
       "generate_json2_payload",
       "upgrade_risk_report",
       "fit_gap_report",
       "business_pack_report",
+      "render_report",
     ]);
   });
 });

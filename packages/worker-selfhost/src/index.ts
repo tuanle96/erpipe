@@ -1,5 +1,5 @@
 /**
- * ERPipe self-host Worker — OAuth + /{slug}/mcp + Phase 1–4 tools (23) + 7 prompts.
+ * ERPipe self-host Worker — OAuth + /{slug}/mcp + Phase 1–4 tools (24) + 7 prompts.
  */
 import OAuthProvider from "@cloudflare/workers-oauth-provider";
 import {
@@ -26,6 +26,7 @@ import {
   diagnoseOdooCall,
   inspectModelRelationships,
   diagnoseAccess,
+  readAttachment,
   previewWrite,
   validateWrite,
   executeApprovedWrite,
@@ -35,6 +36,7 @@ import {
   upgradeRiskReport,
   fitGapReport,
   businessPackReportLive,
+  renderReport,
   MemoryApprovalStore,
   FieldPolicy,
   type OdooTransport,
@@ -413,6 +415,22 @@ export class SelfhostMcp extends McpAgent<Env, Record<string, never>, Props> {
       },
     );
 
+    this.server.tool(
+      "read_attachment",
+      "Read ir.attachment metadata or base64 content (size-capped, read-only)",
+      {
+        attachment_id: z.number().int().positive().optional(),
+        domain: z.unknown().optional(),
+        limit: z.number().int().positive().optional(),
+        max_bytes: z.number().int().positive().optional(),
+        include_datas: z.boolean().optional(),
+      },
+      async (args) => {
+        if (!transport) return noOdoo();
+        return textResult(await readAttachment(transport, args));
+      },
+    );
+
     // --- Phase 3 writes ---
     this.server.tool(
       "preview_write",
@@ -572,6 +590,22 @@ export class SelfhostMcp extends McpAgent<Env, Record<string, never>, Props> {
       },
       async (args) =>
         textResult(await businessPackReportLive(transport, args)),
+    );
+
+    this.server.tool(
+      "render_report",
+      "Render an Odoo QWeb PDF report (invoice, SO, picking) as base64",
+      {
+        model: z.string(),
+        record_id: z.number().int().positive(),
+        report_name: z.string().optional(),
+        report_id: z.number().int().positive().optional(),
+        max_bytes: z.number().int().positive().optional(),
+      },
+      async (args) => {
+        if (!transport) return noOdoo();
+        return textResult(await renderReport(transport, args));
+      },
     );
 
     // --- Cloud v1 prompts (7) ---
