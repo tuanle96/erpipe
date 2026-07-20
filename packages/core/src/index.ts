@@ -98,6 +98,15 @@ export {
   searchHolidays,
 } from "./tools/phase2.js";
 export {
+  classifyModelError,
+  compactFieldsGet,
+  INTENT_PACKS,
+  isInvalidFieldError,
+  modelFacts,
+  resolveIntentPackModels,
+  schemaHintForModel,
+} from "./tools/model-facts.js";
+export {
   buildDomainTool,
   getModelFields,
   healthCheck,
@@ -140,14 +149,15 @@ export type {
 export { assertSafeOdooUrl, normalizeOdooOrigin } from "./transport/url-policy.js";
 export { type XmlRpcConfig, XmlRpcTransport } from "./transport/xmlrpc.js";
 
-/** Cloud tool surface: D14 (23) + read_attachment + render_report. */
-export const CLOUD_V1_TOOL_COUNT = 25;
+/** Cloud tool surface: D14 (23) + read_attachment + render_report + model_facts. */
+export const CLOUD_V1_TOOL_COUNT = 26;
 export const CLOUD_V1_PROMPT_COUNT = 7;
 export const PHASE1_TOOLS = [
-  "list_models",
-  "get_model_fields",
   "search_records",
+  "model_facts",
   "read_record",
   "build_domain",
+  "list_models",
+  "get_model_fields",
   "health_check",
 ] as const;

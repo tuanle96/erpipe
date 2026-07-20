@@ -5,7 +5,7 @@ Canonical surface for `@erpipe/core` and `@erpipe/worker-selfhost`:
 - **23 tools** (OSS core phases 1–4)
 - **7 prompts**
 
-**Hosted workspace** (`mcp.erpipe.com/mcp`) exposes the core tools plus multi-instance helpers (`list_instances`, cross-instance reads, attachments, etc.) — **32 tools** total at the cloud agent surface. Every Odoo-bound tool requires an explicit `instance` key.
+**Hosted workspace** (`mcp.erpipe.com/mcp`) exposes the core tools plus multi-instance helpers (`list_instances`, cross-instance reads, attachments, etc.) and instance lifecycle tools (`create_instance`, `update_instance`, `rotate_instance_credentials`, `delete_instance`) — **36 tools** total at the cloud agent surface. Every Odoo-bound tool requires an explicit `instance` key. Lifecycle tools require `erpipe:write`.
 
 Source of truth in code: `PHASE1_TOOLS` … `PHASE4_TOOLS` and `CLOUD_V1_PROMPTS` in `packages/core`; hosted registration in `erpipe-cloud` agent tool registrations.
 

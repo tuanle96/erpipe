@@ -12,6 +12,11 @@ import {
   type ToolResult,
   validateModelName,
 } from "./helpers.js";
+import {
+  classifyModelError,
+  isInvalidFieldError,
+  schemaHintForModel,
+} from "./model-facts.js";
 
 export type { ToolResult };
 
@@ -39,6 +44,7 @@ export async function listModels(
         error: "No models found",
         count: 0,
         result: [],
+        next_steps: ["Prefer model_facts with models=['res.partner'] when you know technical names"],
       };
     }
 
@@ -48,6 +54,21 @@ export async function listModels(
     }));
     return { success: true, count: records.length, result: records };
   } catch (e) {
+    const msg = e instanceof Error ? e.message : String(e);
+    const denied =
+      /not allowed|access denied|accesserror|you are not allowed/i.test(msg) ||
+      (e instanceof OdooError && e.code === "ACCESS_DENIED");
+    if (denied) {
+      return {
+        success: false,
+        tool: "list_models",
+        code: "IR_MODEL_DENIED",
+        error: msg,
+        next_steps: [
+          "Use model_facts with technical models=['account.move', ...] instead of browsing ir.model",
+        ],
+      };
+    }
     return fail(e);
   }
 }
@@ -63,16 +84,23 @@ export async function getModelFields(
 ): Promise<ToolResult> {
   try {
     validateModelName(opts.model);
-    if (opts.relevance != null && opts.relevance !== "top") {
-      throw new OdooError("VALIDATION_ERROR", 'relevance must be "top" when provided');
+    const relevance = opts.relevance ?? "top";
+    if (relevance !== "top" && relevance !== "full") {
+      throw new OdooError("VALIDATION_ERROR", 'relevance must be "top" or "full"');
     }
     let fields = await fieldsGet(transport, opts.model);
     if (opts.field_names?.length) {
       fields = Object.fromEntries(
         opts.field_names.filter((n) => n in fields).map((n) => [n, fields[n]]),
       );
+      return {
+        success: true,
+        count: Object.keys(fields).length,
+        result: fields,
+        relevance_applied: false,
+      };
     }
-    if (opts.relevance === "top") {
+    if (relevance === "top") {
       const max = opts.max_fields ?? 30;
       const ranking = rankRelevantFields(fields, max);
       const names = ranking.map((r) => r.field);
@@ -85,7 +113,12 @@ export async function getModelFields(
         ranking,
       };
     }
-    return { success: true, count: Object.keys(fields).length, result: fields };
+    return {
+      success: true,
+      count: Object.keys(fields).length,
+      result: fields,
+      relevance_applied: false,
+    };
   } catch (e) {
     return fail(e);
   }
@@ -145,6 +178,32 @@ export async function searchRecords(
     if (queryFieldsUsed) report.query_fields_used = queryFieldsUsed;
     return report;
   } catch (e) {
+    const msg = e instanceof Error ? e.message : String(e);
+    if (isInvalidFieldError(msg)) {
+      return {
+        success: false,
+        tool: "search_records",
+        code: "FIELD_INVALID",
+        error: msg,
+        retryable: false,
+        schema_hint: schemaHintForModel(opts.model, "search"),
+        next_steps: [
+          "Call model_facts for this model once, then retry search_records using only returned field names.",
+          "Do not chain list_models → get_model_fields.",
+        ],
+      };
+    }
+    const classified = classifyModelError(e);
+    if (classified.code === "UPSTREAM_UNAVAILABLE") {
+      return {
+        success: false,
+        tool: "search_records",
+        code: "UPSTREAM_UNAVAILABLE",
+        error: classified.message,
+        retryable: true,
+        next_steps: ["Retry the same search_records once; Odoo returned a transient upstream error."],
+      };
+    }
     return fail(e);
   }
 }
