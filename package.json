@@ -2,10 +2,10 @@
   "name": "erpipe",
   "version": "0.1.0",
   "private": true,
-  "description": "ERPipe — MCP for Odoo (open-core TypeScript monorepo)",
+  "description": "ERPipe — open-core TypeScript MCP for Odoo. Hosted free product: https://mcp.erpipe.com",
   "license": "MIT",
   "author": "Lê Anh Tuấn <justin.le.1105@gmail.com>",
-  "homepage": "https://github.com/tuanle96/erpipe#readme",
+  "homepage": "https://mcp.erpipe.com/",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/tuanle96/erpipe.git"

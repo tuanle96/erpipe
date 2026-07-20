@@ -2,7 +2,7 @@
   "name": "@erpipe/worker-selfhost",
   "version": "0.1.0",
   "private": true,
-  "description": "Single-tenant ERPipe Worker example (OAuth + /{slug}/mcp + D14 tools)",
+  "description": "Single-tenant ERPipe Worker example (OAuth + /{slug}/mcp + 26 phase tools). Hosted multi-tenant: mcp.erpipe.com",
   "license": "MIT",
   "author": "Lê Anh Tuấn <justin.le.1105@gmail.com>",
   "homepage": "https://github.com/tuanle96/erpipe/tree/main/packages/worker-selfhost#readme",

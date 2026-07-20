@@ -1,10 +1,10 @@
 {
   "name": "@erpipe/core",
   "version": "0.1.1",
-  "description": "ERPipe core — Odoo transports, tools, field policy (Workers-free)",
+  "description": "ERPipe core — Odoo MCP tools, transports, field policy (Workers-free). Hosted: mcp.erpipe.com",
   "license": "MIT",
   "author": "Lê Anh Tuấn <justin.le.1105@gmail.com>",
-  "homepage": "https://github.com/tuanle96/erpipe/tree/main/packages/core#readme",
+  "homepage": "https://mcp.erpipe.com/",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/tuanle96/erpipe.git",
