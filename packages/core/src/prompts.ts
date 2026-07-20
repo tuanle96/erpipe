@@ -105,8 +105,8 @@ export function promptDiagnoseFailedOdooCall(args: {
     `Model: ${args.model}\n` +
     `Method: ${args.method}\n` +
     `Observed error: ${empty(args.error, "<not provided>")}\n\n` +
-    "Use diagnose_odoo_call, diagnose_access, inspect_model_relationships, " +
-    "and get_model_fields before execute_method. Preserve Odoo error details, " +
+    "Use model_facts for the model, then diagnose_odoo_call / diagnose_access / " +
+    "inspect_model_relationships before execute_method. Preserve Odoo error details, " +
     "but do not expose secrets."
   );
 }
@@ -116,7 +116,7 @@ export function promptFitGapWorkshop(args: { requirement: string }): string {
     "Classify this requirement into standard Odoo, configuration, Studio, " +
     "custom module, avoid, or unknown.\n" +
     `Requirement: ${args.requirement}\n\n` +
-    "Use fit_gap_report first, then schema_catalog/list_models for evidence. " +
+    "Use fit_gap_report first, then model_facts (or schema_catalog) for evidence. " +
     "Recommend the smallest Odoo-native implementation path."
   );
 }
@@ -153,6 +153,8 @@ export function promptInvoiceApprovalChain(
     `Journal filter: ${empty(args.journal, "<all sales journals>")}\n` +
     `Date range: ${empty(args.date_from, "<unbounded>")} to ${empty(args.date_to, "<unbounded>")}\n\n` +
     "Steps:\n" +
+    "0. model_facts(models=['account.move'], intent='search') once — use returned " +
+    "field names and selection keys only.\n" +
     "1. search_records on account.move with domain " +
     "[('move_type','=','out_invoice'),('state','=','draft')] (plus the journal/" +
     "date filters). Use aggregate_records to summarise count and total by partner.\n" +
@@ -175,9 +177,11 @@ export function promptPoToReceipt(args: { purchase_order: string }): string {
   return (
     "Perform a three-way match for a purchase order. Requires Purchase and " +
     "Inventory — verify with business_pack_report(pack='inventory') and " +
-    "list_models; stop if purchase.order or stock.picking is unavailable.\n" +
+    "model_facts; stop if purchase.order or stock.picking is inaccessible.\n" +
     `Purchase order: ${args.purchase_order}\n\n` +
     "Steps:\n" +
+    "0. model_facts(models=['purchase.order','stock.picking','account.move'], " +
+    "intent='search') once.\n" +
     "1. read_record on purchase.order for ordered lines (product, qty, price_unit) " +
     "and state.\n" +
     "2. search_records on stock.picking linked to the PO for received quantities; " +
@@ -201,12 +205,14 @@ export function promptCustomerOnboarding(args: {
 }): string {
   return (
     "Onboard a new customer without creating duplicates. Core res.partner is " +
-    "always available; payment terms need Accounting — check with list_models " +
+    "always available; payment terms need Accounting — check with model_facts " +
     "for account.payment.term before referencing it.\n" +
     `Company: ${args.company_name}\n` +
     `Email: ${empty(args.email, "<none>")}\n` +
     `VAT: ${empty(args.vat, "<none>")}\n\n` +
     "Steps:\n" +
+    "0. model_facts(models=['res.partner','account.payment.term'], intent='write') " +
+    "once; use only returned fields.\n" +
     "1. Dedup FIRST: search_records on res.partner with a free-text query on the " +
     "company name, and separately by email/vat when provided. If a confident " +
     "match exists, STOP and report it instead of creating a duplicate.\n" +

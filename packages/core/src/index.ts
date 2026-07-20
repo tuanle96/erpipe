@@ -8,6 +8,30 @@ export {
   type WriteApproval,
 } from "./approval/token.js";
 export { assertDomainList, isDomainList } from "./domain.js";
+export {
+  type AggregateMeasure,
+  attributeRecords,
+  clampCrossInstanceLimit,
+  combineAccountingByCurrency,
+  combineAdditiveAggregates,
+  DEFAULT_CROSS_INSTANCE_CONCURRENCY,
+  DEFAULT_CROSS_INSTANCE_LIMIT,
+  type CurrencyAccountingReport,
+  fanOut,
+  type FanOutResult,
+  type InstanceMeta,
+  type InstanceSelection,
+  type InstanceSelector,
+  INSTANCE_TAG_KEY,
+  INSTANCE_KEY_PATTERN,
+  MAX_INSTANCE_KEY_LENGTH,
+  isCanonicalInstanceKey,
+  makeFanOutResult,
+  MAX_CROSS_INSTANCE_LIMIT,
+  MAX_CROSS_INSTANCE_RECORDS,
+  MAX_CROSS_INSTANCE_TARGETS,
+  selectInstances,
+} from "./cross-instance.js";
 export { isOdooError, OdooError, type OdooErrorCode } from "./errors.js";
 export { FieldPolicy, type FieldPolicyDoc } from "./field-policy.js";
 export {
@@ -74,6 +98,15 @@ export {
   searchHolidays,
 } from "./tools/phase2.js";
 export {
+  classifyModelError,
+  compactFieldsGet,
+  INTENT_PACKS,
+  isInvalidFieldError,
+  modelFacts,
+  resolveIntentPackModels,
+  schemaHintForModel,
+} from "./tools/model-facts.js";
+export {
   buildDomainTool,
   getModelFields,
   healthCheck,
@@ -116,14 +149,15 @@ export type {
 export { assertSafeOdooUrl, normalizeOdooOrigin } from "./transport/url-policy.js";
 export { type XmlRpcConfig, XmlRpcTransport } from "./transport/xmlrpc.js";
 
-/** Cloud tool surface: D14 (23) + read_attachment + render_report. */
-export const CLOUD_V1_TOOL_COUNT = 25;
+/** Cloud tool surface: D14 (23) + read_attachment + render_report + model_facts. */
+export const CLOUD_V1_TOOL_COUNT = 26;
 export const CLOUD_V1_PROMPT_COUNT = 7;
 export const PHASE1_TOOLS = [
-  "list_models",
-  "get_model_fields",
   "search_records",
+  "model_facts",
   "read_record",
   "build_domain",
+  "list_models",
+  "get_model_fields",
   "health_check",
 ] as const;

@@ -64,9 +64,10 @@ export async function previewWrite(opts: {
   values_list?: Record<string, unknown>[] | null;
   record_ids?: number[] | null;
   context?: Record<string, unknown> | null;
-  instance?: string;
+  instance: string;
 }): Promise<ToolResult> {
   try {
+    if (!opts.instance.trim()) throw new Error("instance is required for write approval");
     validateModelName(opts.model);
     const issues: { code: string; severity: string; message: string }[] = [];
     const operation = String(opts.operation ?? "")
@@ -139,7 +140,7 @@ export async function previewWrite(opts: {
       record_ids: recordIds,
       values,
       context: { ...(opts.context ?? {}) },
-      instance: opts.instance ?? "default",
+      instance: opts.instance.trim(),
       ...(valuesList != null ? { values_list: valuesList } : {}),
     };
     const token = await buildApprovalToken(canonical);
@@ -174,7 +175,7 @@ export async function validateWrite(
     values_list?: Record<string, unknown>[] | null;
     record_ids?: number[] | null;
     context?: Record<string, unknown> | null;
-    instance?: string;
+    instance: string;
     fieldPolicy?: FieldPolicy;
     fieldPolicyVersion?: number;
     use_live_metadata?: boolean;
@@ -193,7 +194,7 @@ export async function validateWrite(
     }[];
 
     const policy = opts.fieldPolicy ?? new FieldPolicy();
-    const instance = opts.instance ?? "default";
+    const instance = opts.instance;
     if (approval.values && Object.keys(approval.values).length) {
       const block = policy.checkWriteValues(
         instance,
@@ -332,7 +333,7 @@ export async function executeApprovedWrite(
 
     // Re-check field policy at execute (defense in depth)
     const policy = opts.fieldPolicy ?? new FieldPolicy();
-    const instance = stored.instance || "default";
+    const instance = stored.instance;
     if (stored.values && Object.keys(stored.values).length) {
       const block = policy.checkWriteValues(instance, stored.model, stored.values);
       if (block) {
@@ -442,16 +443,34 @@ export async function executeMethod(
     const method = opts.method;
     const destructive = new Set(["create", "write", "unlink"]);
     if (destructive.has(method)) {
+      const operation = method === "unlink" ? "unlink" : method === "write" ? "write" : "create";
       return {
         success: false,
         tool: "execute_method",
+        code: "WRITE_GATE_DENIED",
         error:
-          "create/write/unlink must use preview_write → validate_write → execute_approved_write.",
+          "create/write/unlink cannot run via execute_method. Use the gated write path once — do not retry execute_method.",
+        next_tool: "preview_write",
+        next_steps: [
+          "1. preview_write({ instance, model, operation, values|values_list, record_ids? })",
+          "2. validate_write({ same args as preview })",
+          "3. execute_approved_write({ approval: <token from validate_write>, confirm: true })",
+          "If denied with writes_enabled=false: enable Writes on the instance in the dashboard first.",
+        ],
+        example: {
+          preview_write: {
+            instance: "<instance-key>",
+            model: opts.model,
+            operation,
+            values: operation === "create" ? { name: "Example" } : { name: "Updated" },
+            ...(operation === "write" || operation === "unlink" ? { record_ids: [1] } : {}),
+          },
+        },
       };
     }
     const key = `${opts.model}.${method}`;
     const allowed = opts.allowedMethods ?? [];
-    if (!opts.allowUnknownMethods && allowed.length && !allowed.includes(key)) {
+    if (!opts.allowUnknownMethods && !allowed.includes(key)) {
       return {
         success: false,
         tool: "execute_method",

@@ -82,16 +82,31 @@ describe("listModels", () => {
 });
 
 describe("getModelFields", () => {
-  it("returns fields_get map", async () => {
+  it("defaults to relevance top", async () => {
+    const t = mockTransport({
+      fields_get: () => ({
+        name: { type: "char", string: "Name" },
+        email: { type: "char", string: "Email" },
+        message_ids: { type: "one2many" },
+      }),
+    });
+    const res = await getModelFields(t, { model: "res.partner" });
+    expect(res.success).toBe(true);
+    expect(res.relevance_applied).toBe(true);
+    expect(res.count).toBeGreaterThan(0);
+  });
+
+  it("returns full fields_get map when relevance=full", async () => {
     const t = mockTransport({
       fields_get: () => ({
         name: { type: "char" },
         email: { type: "char" },
       }),
     });
-    const res = await getModelFields(t, { model: "res.partner" });
+    const res = await getModelFields(t, { model: "res.partner", relevance: "full" });
     expect(res.success).toBe(true);
     expect(res.count).toBe(2);
+    expect(res.relevance_applied).toBe(false);
   });
 
   it("rejects invalid model names", async () => {

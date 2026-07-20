@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { MemoryApprovalStore } from "../approval/token";
 import { FieldPolicy } from "../field-policy";
 import type { OdooTransport } from "../transport/types";
-import { executeApprovedWrite, previewWrite, validateWrite } from "./write";
+import { executeApprovedWrite, executeMethod, previewWrite, validateWrite } from "./write";
 
 function mockTransport(
   fields: Record<string, unknown> = {
@@ -34,6 +34,7 @@ describe("write gate", () => {
     const t = mockTransport();
     const store = new MemoryApprovalStore();
     const preview = await previewWrite({
+      instance: "east",
       model: "res.partner",
       operation: "create",
       values: { name: "ERPipe Smoke Partner" },
@@ -42,6 +43,7 @@ describe("write gate", () => {
     const _approval = preview.approval as Record<string, unknown>;
 
     const validated = await validateWrite(t, store, {
+      instance: "east",
       model: "res.partner",
       operation: "create",
       values: { name: "ERPipe Smoke Partner" },
@@ -71,6 +73,7 @@ describe("write gate", () => {
     const t = mockTransport();
     const store = new MemoryApprovalStore();
     const validated = await validateWrite(t, store, {
+      instance: "east",
       model: "res.partner",
       operation: "create",
       values: { name: "X" },
@@ -95,6 +98,7 @@ describe("write gate", () => {
       },
     });
     const validated = await validateWrite(t, store, {
+      instance: "default",
       model: "res.partner",
       operation: "create",
       values: { name: "X", secret: "nope" },
@@ -110,10 +114,41 @@ describe("write gate", () => {
     const t = mockTransport({ name: { type: "char" } });
     const store = new MemoryApprovalStore();
     const validated = await validateWrite(t, store, {
+      instance: "east",
       model: "res.partner",
       operation: "create",
       values: { name: "X", not_a_field: 1 },
     });
     expect(validated.success).toBe(false);
+  });
+
+  it("denies execute_method when strict mode has an empty allowlist", async () => {
+    const transport = mockTransport();
+    const result = await executeMethod(transport, {
+      model: "sale.order",
+      method: "custom_mutation",
+      writesEnabled: true,
+      allowUnknownMethods: false,
+      allowedMethods: [],
+    });
+    expect(result).toMatchObject({ success: false, code: "WRITE_GATE_DENIED" });
+    expect(transport.calls).toHaveLength(0);
+  });
+
+  it("redirects create/write/unlink to gated write path with next_tool", async () => {
+    const transport = mockTransport();
+    const result = await executeMethod(transport, {
+      model: "product.template",
+      method: "create",
+      writesEnabled: true,
+      allowUnknownMethods: true,
+    });
+    expect(result).toMatchObject({
+      success: false,
+      code: "WRITE_GATE_DENIED",
+      next_tool: "preview_write",
+    });
+    expect(result.next_steps).toBeDefined();
+    expect(transport.calls).toHaveLength(0);
   });
 });

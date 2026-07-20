@@ -139,4 +139,33 @@ describe("FieldPolicy", () => {
     ]);
     expect(redacted).toEqual(["secret"]);
   });
+
+  it("blocks aggregate fields denied by the read policy", () => {
+    const p = FieldPolicy.fromDoc({
+      field_acl: {
+        east: {
+          "account.move": { mode: "deny", fields: ["amount_total"] },
+        },
+      },
+    });
+    expect(p.checkAggregateFields("east", "account.move", ["state"])).toBeNull();
+    expect(p.checkAggregateFields("east", "account.move", ["state", "amount_total"])).toMatch(
+      /amount_total/,
+    );
+  });
+
+  it("detects instance-specific restrictions for opaque reads", () => {
+    const p = FieldPolicy.fromDoc({
+      field_acl: {
+        east: { "res.partner": { mode: "deny", fields: ["secret"] } },
+      },
+    });
+    expect(p.restrictsReads("east")).toBe(true);
+    expect(p.restrictsReads("west")).toBe(false);
+    expect(
+      FieldPolicy.fromDoc({
+        field_acl: { east: { "res.partner": { mode: "deny", fields: [] } } },
+      }).restrictsReads("east"),
+    ).toBe(false);
+  });
 });

@@ -14,20 +14,21 @@ Open-source **TypeScript** building blocks for **remote MCP** access to [Odoo](h
 | **This repo (MIT)** | Tool logic, transports, single-tenant self-host Worker example |
 | **Hosted product** | Multi-tenant control plane + dashboard — [mcp.erpipe.com](https://mcp.erpipe.com) (separate private repo) |
 
-**Try it (ChatGPT-first, real Odoo only):** [create a free v1 workspace](https://mcp.erpipe.com/), add your HTTPS Odoo connection, then paste `https://mcp.erpipe.com/{slug}/mcp` into ChatGPT Developer Mode. Claude and other MCP clients use the same per-connection URL. There is no shared public sandbox.
+**Try it (ChatGPT-first, real Odoo only):** [create a free v1 workspace](https://mcp.erpipe.com/), add one or more HTTPS Odoo instances, then connect ChatGPT Developer Mode once to `https://mcp.erpipe.com/mcp`. Claude and other MCP clients use the same workspace URL. There is no shared public sandbox.
 
 ## Why
 
 - Talk to Odoo from **ChatGPT** (primary), Claude, Cursor, and custom MCP agents over a stable URL shape
 - Workers-safe XML-RPC + JSON-2 transports
 - **Gated writes** (preview → approve → execute) with field policy
-- Shared **23-tool + 7-prompt** surface (D14 / cloud v1) — see [docs/tools.md](docs/tools.md)
+- Shared **23-tool + 7-prompt** core surface (D14) — hosted workspace adds multi-instance tools (32 total) — see [docs/tools.md](docs/tools.md)
 
 ## Status
 
 | Milestone | State |
 |-----------|--------|
-| OAuth + `/{slug}/mcp` contract | Proven — see [SPIKE.md](SPIKE.md) |
+| Hosted workspace `/mcp` contract | Implemented in the private cloud control plane |
+| Self-host `/{slug}/mcp` example | Proven — see [SPIKE.md](SPIKE.md) |
 | D14 surface | **23 tools + 7 prompts** in `@erpipe/core` |
 | Pure parity harness | `npm run parity` — [PARITY.md](PARITY.md) |
 | Live smoke (Odoo 18) | `npm run smoke:live` — [SMOKE.md](SMOKE.md) |
@@ -93,17 +94,16 @@ Deploy:
 npm run deploy:selfhost
 ```
 
-## Canonical MCP URL
+## Canonical MCP URLs
 
-Connection-scoped path (production-proven with ChatGPT Developer Mode and Claude):
+| Surface | URL shape | Notes |
+|---------|-----------|--------|
+| **Hosted product** | `https://mcp.erpipe.com/mcp` | One workspace OAuth app; Odoo-bound tools require an explicit `instance` key (`list_instances` to discover). |
+| **Self-host example** | `https://<host>/{connection_slug}/mcp` | Single-tenant Worker demo in `@erpipe/worker-selfhost`. |
 
-```text
-https://<host>/{connection_slug}/mcp
-```
+Hosted setup: [mcp.erpipe.com/docs/connector](https://mcp.erpipe.com/docs/connector) · compatibility: [erpipe.com/compatibility](https://erpipe.com/compatibility)
 
-Setup: [mcp.erpipe.com/docs/connector](https://mcp.erpipe.com/docs/connector)
-
-Reserved slugs (never use as connection id): `authorize`, `token`, `register`, `mcp`, `sse`, `.well-known`, `assets`, `health`, `app`, `admin`.
+Reserved path segments (never use as a self-host connection id): `authorize`, `token`, `register`, `mcp`, `sse`, `.well-known`, `assets`, `health`, `app`, `admin`.
 
 ## Docs
 

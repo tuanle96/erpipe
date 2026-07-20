@@ -28,8 +28,17 @@
   "vars": {
     "CONNECTION_SLUG": "default"
   },
+  // observability.enabled alone only enables logs; traces need an explicit flag (Workers Tracing beta).
   "observability": {
-    "enabled": true
+    "enabled": true,
+    "logs": {
+      "enabled": true
+    },
+    "traces": {
+      "enabled": true,
+      // Selfhost traffic is low — sample everything for local/debug visibility.
+      "head_sampling_rate": 1
+    }
   },
   "dev": {
     "port": 8787
