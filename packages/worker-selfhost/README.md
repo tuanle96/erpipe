@@ -4,7 +4,7 @@ Minimal **single-tenant** Cloudflare Worker that exposes ERPipe over MCP:
 
 - OAuth 2.1 + PKCE **S256 only**
 - MCP at `/{CONNECTION_SLUG}/mcp` (default slug: `default`)
-- Full **D14 surface**: **23 tools + 7 prompts** from `@erpipe/core` (plus a small `ping` helper)
+- Core surface: **26 tools + 7 prompts** from `@erpipe/core` (phases 1–4) plus a small `ping` helper (**27 tools** total)
 
 This package is an **example / self-host template** (`private: true` — not published to npm).
 
@@ -49,7 +49,7 @@ npx wrangler secret put ODOO_API_KEY
 
 See the monorepo catalog: [docs/tools.md](../../docs/tools.md).
 
-Surface is assembled from `PHASE1_TOOLS` … `PHASE4_TOOLS` plus `ping`.
+Surface is assembled from `PHASE1_TOOLS` … `PHASE4_TOOLS` (26) plus `ping`. Hosted multi-instance / lifecycle / webhook tools are **not** included (private cloud only).
 
 ## Protocol notes
 

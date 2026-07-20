@@ -21,7 +21,7 @@ Open-source **TypeScript** building blocks for **remote MCP** access to [Odoo](h
 - Talk to Odoo from **ChatGPT** (primary), Claude, Cursor, and custom MCP agents over a stable URL shape
 - Workers-safe XML-RPC + JSON-2 transports
 - **Gated writes** (preview → approve → execute) with field policy
-- Shared **23-tool + 7-prompt** core surface (D14) — hosted workspace adds multi-instance tools (32 total) — see [docs/tools.md](docs/tools.md)
+- Shared **26-tool + 7-prompt** core surface in `@erpipe/core` (D14 parity set of 23 plus `model_facts`, `read_attachment`, `render_report`) — hosted workspace is **37 tools** (multi-instance, lifecycle, webhook events, `ping`) — see [docs/tools.md](docs/tools.md)
 
 ## Status
 
@@ -29,9 +29,10 @@ Open-source **TypeScript** building blocks for **remote MCP** access to [Odoo](h
 |-----------|--------|
 | Hosted workspace `/mcp` contract | Implemented in the private cloud control plane |
 | Self-host `/{slug}/mcp` example | Proven — see [SPIKE.md](SPIKE.md) |
-| D14 surface | **23 tools + 7 prompts** in `@erpipe/core` |
+| Core surface | **26 tools + 7 prompts + 4 resources** in `@erpipe/core` |
+| Hosted surface | **37 tools + 7 prompts** at `mcp.erpipe.com/mcp` |
 | Pure parity harness | `npm run parity` — [PARITY.md](PARITY.md) |
-| Live smoke (Odoo 18) | `npm run smoke:live` — [SMOKE.md](SMOKE.md) |
+| Live smoke (Odoo 16–19) | `npm run smoke:live` — [SMOKE.md](SMOKE.md) |
 
 **Pins:**
 
