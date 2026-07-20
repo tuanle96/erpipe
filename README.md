@@ -21,7 +21,7 @@ Open-source **TypeScript** building blocks for **remote MCP** access to [Odoo](h
 - Talk to Odoo from **ChatGPT** (primary), Claude, Cursor, and custom MCP agents over a stable URL shape
 - Workers-safe XML-RPC + JSON-2 transports
 - **Gated writes** (preview → approve → execute) with field policy
-- Shared **23-tool + 7-prompt** surface (D14 / cloud v1) — see [docs/tools.md](docs/tools.md)
+- Shared **23-tool + 7-prompt** core surface (D14) — hosted workspace adds multi-instance tools (32 total) — see [docs/tools.md](docs/tools.md)
 
 ## Status
 
@@ -94,17 +94,16 @@ Deploy:
 npm run deploy:selfhost
 ```
 
-## Canonical MCP URL
+## Canonical MCP URLs
 
-Connection-scoped path (production-proven with ChatGPT Developer Mode and Claude):
+| Surface | URL shape | Notes |
+|---------|-----------|--------|
+| **Hosted product** | `https://mcp.erpipe.com/mcp` | One workspace OAuth app; Odoo-bound tools require an explicit `instance` key (`list_instances` to discover). |
+| **Self-host example** | `https://<host>/{connection_slug}/mcp` | Single-tenant Worker demo in `@erpipe/worker-selfhost`. |
 
-```text
-https://<host>/{connection_slug}/mcp
-```
+Hosted setup: [mcp.erpipe.com/docs/connector](https://mcp.erpipe.com/docs/connector) · compatibility: [erpipe.com/compatibility](https://erpipe.com/compatibility)
 
-Setup: [mcp.erpipe.com/docs/connector](https://mcp.erpipe.com/docs/connector)
-
-Reserved slugs (never use as connection id): `authorize`, `token`, `register`, `mcp`, `sse`, `.well-known`, `assets`, `health`, `app`, `admin`.
+Reserved path segments (never use as a self-host connection id): `authorize`, `token`, `register`, `mcp`, `sse`, `.well-known`, `assets`, `health`, `app`, `admin`.
 
 ## Docs
 
