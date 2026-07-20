@@ -134,4 +134,21 @@ describe("write gate", () => {
     expect(result).toMatchObject({ success: false, code: "WRITE_GATE_DENIED" });
     expect(transport.calls).toHaveLength(0);
   });
+
+  it("redirects create/write/unlink to gated write path with next_tool", async () => {
+    const transport = mockTransport();
+    const result = await executeMethod(transport, {
+      model: "product.template",
+      method: "create",
+      writesEnabled: true,
+      allowUnknownMethods: true,
+    });
+    expect(result).toMatchObject({
+      success: false,
+      code: "WRITE_GATE_DENIED",
+      next_tool: "preview_write",
+    });
+    expect(result.next_steps).toBeDefined();
+    expect(transport.calls).toHaveLength(0);
+  });
 });

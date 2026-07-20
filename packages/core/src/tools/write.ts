@@ -443,11 +443,29 @@ export async function executeMethod(
     const method = opts.method;
     const destructive = new Set(["create", "write", "unlink"]);
     if (destructive.has(method)) {
+      const operation = method === "unlink" ? "unlink" : method === "write" ? "write" : "create";
       return {
         success: false,
         tool: "execute_method",
+        code: "WRITE_GATE_DENIED",
         error:
-          "create/write/unlink must use preview_write → validate_write → execute_approved_write.",
+          "create/write/unlink cannot run via execute_method. Use the gated write path once — do not retry execute_method.",
+        next_tool: "preview_write",
+        next_steps: [
+          "1. preview_write({ instance, model, operation, values|values_list, record_ids? })",
+          "2. validate_write({ same args as preview })",
+          "3. execute_approved_write({ approval: <token from validate_write>, confirm: true })",
+          "If denied with writes_enabled=false: enable Writes on the instance in the dashboard first.",
+        ],
+        example: {
+          preview_write: {
+            instance: "<instance-key>",
+            model: opts.model,
+            operation,
+            values: operation === "create" ? { name: "Example" } : { name: "Updated" },
+            ...(operation === "write" || operation === "unlink" ? { record_ids: [1] } : {}),
+          },
+        },
       };
     }
     const key = `${opts.model}.${method}`;
