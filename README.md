@@ -14,11 +14,11 @@ Open-source **TypeScript** building blocks for **remote MCP** access to [Odoo](h
 | **This repo (MIT)** | Tool logic, transports, single-tenant self-host Worker example |
 | **Hosted product** | Multi-tenant control plane + dashboard — [mcp.erpipe.com](https://mcp.erpipe.com) (separate private repo) |
 
-**Try it (ChatGPT-first, real Odoo only):** [create a free v1 workspace](https://mcp.erpipe.com/), add one or more HTTPS Odoo instances, then connect ChatGPT Developer Mode once to `https://mcp.erpipe.com/mcp`. Claude and other MCP clients use the same workspace URL. There is no shared public sandbox.
+**Try it (real Odoo only):** [create a free v1 workspace](https://mcp.erpipe.com/), add one or more HTTPS Odoo instances, then connect ChatGPT, Codex CLI, Claude Code, Gemini CLI, Antigravity CLI, or Grok to the shared endpoint `https://mcp.erpipe.com/mcp`. Follow the [human setup recipe or copy a prompt for your AI agent](https://erpipe.com/docs/connector). There is no shared public sandbox.
 
 ## Why
 
-- Talk to Odoo from **ChatGPT** (primary), Claude, Cursor, and custom MCP agents over a stable URL shape
+- Talk to Odoo from ChatGPT, Codex CLI, Claude Code, Gemini CLI, Antigravity CLI, Grok, Cursor, and custom MCP agents over a stable URL shape
 - Workers-safe XML-RPC + JSON-2 transports
 - **Gated writes** (preview → approve → execute) with field policy
 - Shared **26-tool + 7-prompt** core surface in `@erpipe/core` (D14 parity set of 23 plus `model_facts`, `read_attachment`, `render_report`) — hosted workspace is **37 tools** (multi-instance, lifecycle, webhook events, `ping`) — see [docs/tools.md](docs/tools.md)
