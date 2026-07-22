@@ -1,7 +1,7 @@
 blank_issues_enabled: true
 contact_links:
   - name: Security vulnerability
-    url: https://github.com/tuanle96/erpipe/security/advisories/new
+    url: https://github.com/erpipe-org/erpipe/security/advisories/new
     about: Report a security issue privately (do not open a public issue).
   - name: Hosted product (ERPipe Cloud)
     url: https://mcp.erpipe.com

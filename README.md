@@ -1,6 +1,6 @@
 # ERPipe — MCP for Odoo
 
-[![CI](https://github.com/tuanle96/erpipe/actions/workflows/ci.yml/badge.svg)](https://github.com/tuanle96/erpipe/actions/workflows/ci.yml)
+[![CI](https://github.com/erpipe-org/erpipe/actions/workflows/ci.yml/badge.svg)](https://github.com/erpipe-org/erpipe/actions/workflows/ci.yml)
 [![npm @erpipe/core](https://img.shields.io/npm/v/@erpipe/core.svg)](https://www.npmjs.com/package/@erpipe/core)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Node](https://img.shields.io/badge/node-%3E%3D20-brightgreen)](package.json)
@@ -72,7 +72,7 @@ Self-host Worker example stays in this monorepo only (`@erpipe/worker-selfhost` 
 ### Develop from source
 
 ```bash
-git clone https://github.com/tuanle96/erpipe.git
+git clone https://github.com/erpipe-org/erpipe.git
 cd erpipe
 npm install
 npm run build

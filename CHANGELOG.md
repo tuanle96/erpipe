@@ -44,5 +44,5 @@ npm install @erpipe/core @erpipe/odoo-xmlrpc
 - `@erpipe/worker-selfhost` remains private (example only)
 - Hosted multi-tenant product remains a separate private repository
 
-[0.1.1]: https://github.com/tuanle96/erpipe/releases/tag/v0.1.1
-[0.1.0]: https://github.com/tuanle96/erpipe/releases/tag/v0.1.0
+[0.1.1]: https://github.com/erpipe-org/erpipe/releases/tag/v0.1.1
+[0.1.0]: https://github.com/erpipe-org/erpipe/releases/tag/v0.1.0
