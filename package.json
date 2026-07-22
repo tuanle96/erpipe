@@ -39,7 +39,7 @@
     "parity:ts": "npm run build -w @erpipe/core && PARITY_TS_ONLY=1 node scripts/parity-harness.mjs"
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.0.6",
+    "@biomejs/biome": "^2.5.5",
     "typescript": "^5.8.3",
     "vitest": "^3.2.4"
   },
