@@ -8,10 +8,10 @@
   "homepage": "https://mcp.erpipe.com/",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/tuanle96/erpipe.git"
+    "url": "git+https://github.com/erpipe-org/erpipe.git"
   },
   "bugs": {
-    "url": "https://github.com/tuanle96/erpipe/issues"
+    "url": "https://github.com/erpipe-org/erpipe/issues"
   },
   "keywords": [
     "mcp",

@@ -4,14 +4,14 @@
   "description": "Fetch-based XML-RPC client for Odoo (Workers-compatible)",
   "license": "MIT",
   "author": "Lê Anh Tuấn <justin.le.1105@gmail.com>",
-  "homepage": "https://github.com/tuanle96/erpipe/tree/main/packages/xmlrpc#readme",
+  "homepage": "https://github.com/erpipe-org/erpipe/tree/main/packages/xmlrpc#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/tuanle96/erpipe.git",
+    "url": "git+https://github.com/erpipe-org/erpipe.git",
     "directory": "packages/xmlrpc"
   },
   "bugs": {
-    "url": "https://github.com/tuanle96/erpipe/issues"
+    "url": "https://github.com/erpipe-org/erpipe/issues"
   },
   "keywords": [
     "odoo",

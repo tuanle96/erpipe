@@ -13,7 +13,7 @@
 
 Preferred:
 
-1. **GitHub Security Advisories** — [Report a vulnerability](https://github.com/tuanle96/erpipe/security/advisories/new) on this repository  
+1. **GitHub Security Advisories** — [Report a vulnerability](https://github.com/erpipe-org/erpipe/security/advisories/new) on this repository
 2. Or email the maintainer: **justin.le.1105@gmail.com** with subject `[SECURITY] erpipe`
 
 Please include:

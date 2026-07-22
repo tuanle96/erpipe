@@ -5,14 +5,14 @@
   "description": "Single-tenant ERPipe Worker example (OAuth + /{slug}/mcp + 26 phase tools). Hosted multi-tenant: mcp.erpipe.com",
   "license": "MIT",
   "author": "Lê Anh Tuấn <justin.le.1105@gmail.com>",
-  "homepage": "https://github.com/tuanle96/erpipe/tree/main/packages/worker-selfhost#readme",
+  "homepage": "https://github.com/erpipe-org/erpipe/tree/main/packages/worker-selfhost#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/tuanle96/erpipe.git",
+    "url": "git+https://github.com/erpipe-org/erpipe.git",
     "directory": "packages/worker-selfhost"
   },
   "bugs": {
-    "url": "https://github.com/tuanle96/erpipe/issues"
+    "url": "https://github.com/erpipe-org/erpipe/issues"
   },
   "keywords": [
     "mcp",

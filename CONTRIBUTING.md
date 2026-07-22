@@ -11,7 +11,7 @@ Thanks for helping improve open-core MCP access to Odoo.
 ## Setup
 
 ```bash
-git clone https://github.com/tuanle96/erpipe.git
+git clone https://github.com/erpipe-org/erpipe.git
 cd erpipe
 npm install
 npm run build
