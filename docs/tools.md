@@ -7,20 +7,21 @@ Source of truth in code:
 | Core phase tools (`PHASE1`…`PHASE4`) | **26** | `@erpipe/core` (`packages/core`) |
 | Prompts | **7** | `CLOUD_V1_PROMPTS` |
 | MCP resources | **4** | `CLOUD_V1_RESOURCES` |
-| Hosted workspace MCP | **37 tools** | `ALL_TOOLS` in erpipe-cloud `agent/constants.ts` |
+| Hosted workspace MCP | **38 tools** | `ALL_TOOLS` in erpipe-cloud `agent/constants.ts` |
 | Self-host example | **27 tools** (26 phase + `ping`) | `@erpipe/worker-selfhost` |
 
 Python parity contracts still pin the original **D14 23-tool** names; TypeScript adds `model_facts`, `read_attachment`, and `render_report` on the core phase lists (`CLOUD_V1_TOOL_COUNT = 26`).
 
-**Hosted extras** (not in OSS self-host): multi-instance + lifecycle + Odoo event pull + `ping` on the cloud agent:
+**Hosted extras** (not in OSS self-host): multi-instance + lifecycle + Odoo event pull + HITL status + `ping` on the cloud agent:
 
 ```text
 26 phase
 + ping
 + list_instances, search_across_instances, aggregate_across_instances, accounting_health_across_instances
 + create_instance, update_instance, rotate_instance_credentials, delete_instance
++ get_write_approval_status
 + list_odoo_events, ack_odoo_event
-= 37
+= 38
 ```
 
 Every Odoo-bound hosted tool requires an explicit `instance` key (`list_instances` to discover). Lifecycle tools require OAuth scope `erpipe:write`.
@@ -59,11 +60,11 @@ Every Odoo-bound hosted tool requires an explicit `instance` key (`list_instance
 |------|---------|
 | `preview_write` | Preview create/write/unlink + approval token |
 | `validate_write` | Validate values against field policy |
-| `execute_approved_write` | Execute only with a valid approval token |
+| `execute_approved_write` | Execute only with a valid approval token (may return `outcome=pending` while HITL waits) |
 | `chatter_post` | Post a chatter message |
 | `execute_method` | Call a model method (safety-classified) |
 
-Writes require host policy. Prefer **preview → validate → execute**. On hosted product: connection `writes_enabled` defaults OFF; owner HITL / `write_mode` and journal gates still apply.
+Writes require host policy. Prefer **preview → validate → execute**. On hosted product: connection `writes_enabled` defaults OFF; owner HITL / `write_mode` and journal gates still apply. When `execute_approved_write` returns `HITL_APPROVAL_REQUIRED`, that is a **wait state** (not failure): keep the approval object, have the owner Approve in the dashboard, then poll `get_write_approval_status` or retry execute.
 
 ### Phase 4 — reports (5)
 
@@ -75,13 +76,19 @@ Writes require host policy. Prefer **preview → validate → execute**. On host
 | `business_pack_report` | Business pack summary report |
 | `render_report` | Render a report payload (e.g. base64) |
 
-## Tools — hosted only (11)
+## Tools — hosted only (12)
 
 ### Common
 
 | Tool | Purpose |
 |------|---------|
 | `ping` | Lightweight liveness / agent identity |
+
+### HITL approval (hosted)
+
+| Tool | Purpose |
+|------|---------|
+| `get_write_approval_status` | Poll a write approval by `approval_request_id` while waiting for owner Approve |
 
 ### Multi-instance (read-only fleet)
 
